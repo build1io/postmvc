@@ -9,7 +9,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
         InstanceIsOfPrimitiveType = 5,
         InstanceIsMissing         = 6,
 
-        ValueNotProvided = 20,
+        ValueNotProvided  = 20,
         ValueNotDestroyed = 21,
 
         InjectionTypeMismatch = 40,

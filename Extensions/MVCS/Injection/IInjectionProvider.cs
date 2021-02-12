@@ -1,6 +1,6 @@
 namespace Build1.PostMVC.Extensions.MVCS.Injection
 {
-    public interface IInjectionInstanceProvider
+    public interface IInjectionProvider
     {
         object GetInstance(object parent, Inject attribute);
         void   ReturnInstance(object instance);

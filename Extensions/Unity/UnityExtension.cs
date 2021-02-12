@@ -47,7 +47,7 @@ namespace Build1.PostMVC.Extensions.Unity
         {
             var injectionBinder = GetDependentExtension<MVCSExtension>().InjectionBinder;
             injectionBinder.Bind<IUnityViewEventProcessor>().To<UnityViewEventProcessor>().AsSingleton();
-            injectionBinder.Bind<ILogger>().ToInstanceProvider<LoggerProvider>().ByAttribute<Logger>();
+            injectionBinder.Bind<ILogger>().ToProvider<LoggerProvider>().ByAttribute<Logger>();
             injectionBinder.Bind<IAgentsController>().To<AgentsController>().AsSingleton();
             injectionBinder.Bind<IAppController>().To<AppController>().AsSingleton().ConstructOnStart();
             injectionBinder.Bind<IAssetsController>().To<AssetsController>().AsSingleton();

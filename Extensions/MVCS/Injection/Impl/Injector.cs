@@ -11,12 +11,14 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 
         private readonly IInjectionBinder                   _binder;
         private readonly IReflector<MVCSItemReflectionInfo> _reflector;
+        private readonly HashSet<object>                    _constructed;
         private readonly Dictionary<IInjectionBinding, int> _circularDependencyCounters;
 
         public Injector(IInjectionBinder binder)
         {
             _binder = binder;
             _reflector = new Reflector<MVCSItemReflectionInfo>();
+            _constructed = new HashSet<object>();
             _circularDependencyCounters = new Dictionary<IInjectionBinding, int>();
         }
 
@@ -70,15 +72,34 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             {
                 case InjectionBindingType.InstanceProvider when binding.InjectionMode == InjectionMode.Factory:
                 {
-                    if (!(binding.Value is Type))
+                    if (binding.ToConstruct && CheckIsConstructed(binding.Value))
+                    {
                         Destroy(binding.Value, true);
+                        UnmarkConstructed(binding.Value);
+                    }
+
+                    break;
+                }
+
+                case InjectionBindingType.Value when binding.InjectionMode == InjectionMode.Singleton:
+                {
+                    if (binding.ToConstruct && CheckIsConstructed(binding.Value))
+                    {
+                        Destroy(binding.Value, true);
+                        UnmarkConstructed(binding.Value);
+                    }
+
                     break;
                 }
 
                 case InjectionBindingType.Type when binding.InjectionMode == InjectionMode.Singleton:
                 {
-                    if (!(binding.Value is Type))
+                    if (binding.ToConstruct && CheckIsConstructed(binding.Value))
+                    {
                         Destroy(binding.Value, true);
+                        UnmarkConstructed(binding.Value);
+                    }
+
                     break;
                 }
             }
@@ -94,7 +115,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
                 throw new InjectionException(InjectionExceptionType.InstanceIsMissing);
 
             type = instance.GetType();
-            if (type.IsPrimitive || type == typeof(Decimal) || type == typeof(string))
+            if (!CheckTypeCanBeConstructed(type))
                 throw new InjectionException(InjectionExceptionType.InstanceIsOfPrimitiveType);
         }
 
@@ -124,18 +145,30 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             {
                 case InjectionBindingType.InstanceProvider when binding.InjectionMode == InjectionMode.Factory:
                 {
-                    if (binding.Value is Type type)
+                    var instanceProvider = binding.Value is Type type
+                                               ? (IInjectionProvider)Activator.CreateInstance(type)
+                                               : (IInjectionProvider)binding.Value;
+
+                    if (binding.ToConstruct && !CheckIsConstructed(instanceProvider))
                     {
-                        var instanceProvider = Activator.CreateInstance(type);
                         Construct(instanceProvider, true);
                         binding.SetValue(instanceProvider);
+                        MarkConstructed(binding.Value);
                     }
 
-                    return ((IInjectionInstanceProvider)binding.Value).GetInstance(instance, injectionInfo.Attribute);
+                    return instanceProvider.GetInstance(instance, injectionInfo.Attribute);
                 }
 
                 case InjectionBindingType.Value when binding.InjectionMode == InjectionMode.Singleton:
+                {
+                    if (binding.ToConstruct && !CheckIsConstructed(binding.Value))
+                    {
+                        Construct(binding.Value, true);
+                        MarkConstructed(binding.Value);
+                    }
+
                     return binding.Value;
+                }
 
                 case InjectionBindingType.Type when binding.InjectionMode == InjectionMode.Factory:
                 {
@@ -146,11 +179,12 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 
                 case InjectionBindingType.Type when binding.InjectionMode == InjectionMode.Singleton:
                 {
-                    if (binding.Value is Type type)
+                    if (binding.ToConstruct && !CheckIsConstructed(binding.Value))
                     {
-                        var value = Activator.CreateInstance(type);
+                        var value = Activator.CreateInstance((Type)binding.Value);
                         Construct(value, true);
                         binding.SetValue(value);
+                        MarkConstructed(binding.Value);
                     }
 
                     return binding.Value;
@@ -169,7 +203,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
                 var binding = _binder.GetBinding(type);
                 if (binding != null)
                     DestroyInjectedValue(instance, binding, injection);
-                
+
                 // No need to reset value type values as it'll be consuming resources.
                 if (!type.IsValueType)
                     injection.PropertyInfo.SetValue(instance, null, null);
@@ -182,14 +216,21 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             switch (binding.BindingType)
             {
                 case InjectionBindingType.InstanceProvider when binding.InjectionMode == InjectionMode.Factory:
-                    ((IInjectionInstanceProvider)binding.Value).ReturnInstance(instance);
+                    // Provider constructed (if configured) on the first instance inject.
+                    // Provider is destroyed when it's binding is destroyed.
+                    ((IInjectionProvider)binding.Value).ReturnInstance(instance);
                     return;
                 case InjectionBindingType.Value when binding.InjectionMode == InjectionMode.Singleton:
+                    // Value is constructed (if configured) on the first instance inject.
+                    // Value is destroyed when it's binding is destroyed.
                     return;
                 case InjectionBindingType.Type when binding.InjectionMode == InjectionMode.Factory:
+                    // Factory instance is destroyed when it's un injected.
                     Destroy(value, true);
                     return;
                 case InjectionBindingType.Type when binding.InjectionMode == InjectionMode.Singleton:
+                    // Singleton must stay alive even if all dependent parts un injected it.
+                    // Singleton will be destroyed when it's binding is destroyed.
                     return;
                 default:
                     throw new InjectionException(InjectionExceptionType.ValueNotDestroyed);
@@ -243,6 +284,27 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 
             if (_circularDependencyCounters[binding] == 0)
                 _circularDependencyCounters.Remove(binding);
+        }
+
+        /*
+         * Constructed Instances.
+         */
+
+        private bool CheckIsConstructed(object instance)
+        {
+            return _constructed.Contains(instance);
+        }
+
+        private void MarkConstructed(object instance)   { _constructed.Add(instance); }
+        private void UnmarkConstructed(object instance) { _constructed.Remove(instance); }
+
+        /*
+         * Static.
+         */
+
+        public static bool CheckTypeCanBeConstructed(Type type)
+        {
+            return !type.IsPrimitive && type != typeof(Decimal) && type != typeof(string);
         }
     }
 }

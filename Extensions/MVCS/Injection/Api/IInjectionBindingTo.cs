@@ -1,9 +1,12 @@
 namespace Build1.PostMVC.Extensions.MVCS.Injection.Api
 {
-    public interface IInjectionBindingTo : IInjectionBindingAs
+    public interface IInjectionBindingTo
     {
-        IInjectionBinding            To<T>() where T : class, new();
-        IInjectionBindingByAttribute ToValue(object value);
-        IInjectionBindingByAttribute ToInstanceProvider<T>() where T : IInjectionInstanceProvider;
+        IInjectionBindingToType  To<T>() where T : class, new();
+        IInjectionBindingToValue To(object value);
+        IInjectionBindingToValue ToValue(object value);
+
+        IInjectionBindingToProvider         ToProvider<T>() where T : IInjectionProvider, new();
+        IInjectionBindingToProviderInstance ToProvider(IInjectionProvider provider);
     }
 }

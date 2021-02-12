@@ -25,8 +25,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
          * Public.
          */
 
-        // TODO: rethink screens and convert them to types to the less data will sit in ram
-        
         public void Initialize(IEnumerable<Screen> screens)
         {
             foreach (var screen in screens)
@@ -45,7 +43,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
 
                 if (!screen.ToPreInstantiate)
                     continue;
-                
+
                 var layerView = UILayerController.GetLayerView<Transform>(configuration.appLayerId);
                 Instantiate(screen, configuration, layerView, false);
             }

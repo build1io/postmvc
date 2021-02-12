@@ -4,7 +4,7 @@ using Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 {
-    public sealed class LoggerProvider : IInjectionInstanceProvider
+    public sealed class LoggerProvider : IInjectionProvider
     {
         public object GetInstance(object parent, Inject attribute)
         {
