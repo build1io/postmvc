@@ -13,7 +13,10 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
         [SetUp]
         public void SetUp()
         {
-            _binder = new CommandBinder(new InjectionBinder());
+            _binder = new CommandBinder
+            {
+                InjectionBinder = new InjectionBinder()
+            };
         }
 
         [Test]

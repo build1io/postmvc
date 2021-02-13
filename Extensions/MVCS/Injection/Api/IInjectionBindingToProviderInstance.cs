@@ -4,6 +4,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Api
     {
         IInjectionBindingToBinding  ByAttribute<T>() where T : Inject;
         IInjectionBindingToProvider ConstructProvider();
+        IInjectionBindingToBinding  ConstructOnStart();
         IInjectionBinding           ToBinding();
     }
 }

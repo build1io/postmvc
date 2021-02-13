@@ -1,26 +1,23 @@
 using System;
 using System.Collections.Generic;
 using Build1.PostMVC.Extensions.MVCS.Injection;
-using Build1.PostMVC.Extensions.MVCS.Injection.Api;
 using Build1.PostMVC.Extensions.MVCS.Mediation.Api;
 
 namespace Build1.PostMVC.Extensions.MVCS.Mediation.Impl
 {
     internal sealed class MediationBinder : IMediationBinder
     {
-        private readonly IInjectionBinder _injectionBinder;
+        [Inject] public IInjectionBinder IInjectionBinder { get; set; }
 
         private readonly Dictionary<object, IMediationBinding> _bindings;
         private readonly Dictionary<object, IInjectionBinding> _bindingsCache;
         private readonly Dictionary<IView, IMediator>          _mediators;
 
         private readonly MediationMode _mode;
-        
-        public MediationBinder(MediationMode mode, IInjectionBinder injectionBinder)
+
+        public MediationBinder(MediationMode mode)
         {
             _mode = mode;
-            _injectionBinder = injectionBinder;
-
             _bindings = new Dictionary<object, IMediationBinding>();
             _bindingsCache = new Dictionary<object, IInjectionBinding>();
             _mediators = new Dictionary<IView, IMediator>();
@@ -52,13 +49,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Mediation.Impl
         {
             if (!viewInterfaceType.IsInterface)
                 throw new MediationException(MediationExceptionType.ViewInterfaceIsNotAnInterface, viewInterfaceType.FullName);
-            
+
             if (!typeof(IView).IsAssignableFrom(viewInterfaceType))
                 throw new MediationException(MediationExceptionType.ViewInterfaceDoesntImplementRequiredInterface, $"{viewInterfaceType.FullName} != {typeof(IView).FullName}");
-            
+
             if (!viewInterfaceType.IsAssignableFrom(viewType))
                 throw new MediationException(MediationExceptionType.ViewTypeDoesntImplementSpecifiedInterface, $"{viewType.FullName} != {viewInterfaceType.FullName}");
-            
+
             return BindImpl(viewType, viewInterfaceType);
         }
 
@@ -102,13 +99,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Mediation.Impl
 
             if (!_bindings.TryGetValue(view.GetType(), out var binding) && _mode == MediationMode.Strict)
                 throw new MediationException(MediationExceptionType.MediationBindingNotFound, view.GetType().FullName);
-            
-            _injectionBinder.Construct(view, true);
-            
+
+            IInjectionBinder.Construct(view, true);
+
             if (TryCreateMediator(binding, out var mediator))
             {
                 view.SetMediator(mediator);
-                InjectViewAndDependencies(binding, mediator, view, true);    
+                InjectViewAndDependencies(binding, mediator, view, true);
             }
 
             _mediators.Add(view, mediator);
@@ -120,23 +117,23 @@ namespace Build1.PostMVC.Extensions.MVCS.Mediation.Impl
                 throw new MediationException(MediationExceptionType.ViewInstanceNotFoundForRemoval, view.GetType().FullName);
 
             if (mediator != null)
-                _injectionBinder.Destroy(mediator, true);
-            
-            _injectionBinder.Destroy(view, true);
-            
+                IInjectionBinder.Destroy(mediator, true);
+
+            IInjectionBinder.Destroy(view, true);
+
             _mediators.Remove(view);
         }
 
         public void UpdateViewInjections(IView view)
         {
-            _injectionBinder.Construct(view, false);
+            IInjectionBinder.Construct(view, false);
 
             if (view.Mediator == null)
                 return;
-            
+
             if (!_bindings.TryGetValue(view.GetType(), out var binding) && _mode == MediationMode.Strict)
                 throw new MediationException(MediationExceptionType.MediationBindingNotFound, view.GetType().FullName);
-            
+
             InjectViewAndDependencies(binding, view.Mediator, view, false);
         }
 
@@ -162,15 +159,15 @@ namespace Build1.PostMVC.Extensions.MVCS.Mediation.Impl
             if (_bindingsCache.TryGetValue(injectionType, out var injectionBinding))
             {
                 injectionBinding.SetValue(view);
-                _injectionBinder.Bind(injectionBinding);
-                _injectionBinder.Construct(mediator, triggerPostConstructors);
-                _injectionBinder.Unbind(injectionBinding);
+                IInjectionBinder.Bind(injectionBinding);
+                IInjectionBinder.Construct(mediator, triggerPostConstructors);
+                IInjectionBinder.Unbind(injectionBinding);
             }
             else
             {
-                injectionBinding = (IInjectionBinding)_injectionBinder.Bind(injectionType).ToValue(view);
-                _injectionBinder.Construct(mediator, triggerPostConstructors);
-                _injectionBinder.Unbind(injectionType);
+                injectionBinding = (IInjectionBinding)IInjectionBinder.Bind(injectionType).ToValue(view);
+                IInjectionBinder.Construct(mediator, triggerPostConstructors);
+                IInjectionBinder.Unbind(injectionType);
                 _bindingsCache.Add(injectionType, injectionBinding);
             }
         }

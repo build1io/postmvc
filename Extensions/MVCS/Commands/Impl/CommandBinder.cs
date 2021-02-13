@@ -10,7 +10,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 {
     public sealed class CommandBinder : ICommandBinder
     {
-        private readonly IInjectionBinder                                _injectionBinder;
+        [Inject] public IInjectionBinder InjectionBinder { get; set; }
+
         private readonly Dictionary<EventBase, List<CommandBindingBase>> _bindings;
         private readonly List<CommandBindingBase>                        _bindingsToUnbind;
 
@@ -18,10 +19,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         private readonly List<ICommandBase>                           _activeCommands;
         private readonly Dictionary<ICommandBase, CommandBindingBase> _activeSequences;
 
-        public CommandBinder(IInjectionBinder injectionBinder)
+        public CommandBinder()
         {
-            _injectionBinder = injectionBinder;
-
             _bindings = new Dictionary<EventBase, List<CommandBindingBase>>();
             _bindingsToUnbind = new List<CommandBindingBase>(8);
 
@@ -163,7 +162,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
             if (!_activeSequences.TryGetValue(command, out binding))
                 return false;
-            
+
             _activeSequences.Remove(command);
             return true;
         }
@@ -382,7 +381,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             if (isNewInstance)
                 command.SetCommandBinder(this);
             if (isNewInstance || command.IsClean)
-                _injectionBinder.Construct(command, true);
+                InjectionBinder.Construct(command, true);
             return command;
         }
 

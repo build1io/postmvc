@@ -1,23 +1,30 @@
 using System;
+using Build1.PostMVC.Extensions.MVCS.Commands;
 using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
+using Build1.PostMVC.Extensions.MVCS.Injection;
 
 namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 {
     public sealed class EventDispatcherWithCommandProcessing : IEventDispatcher
     {
-        private readonly IEventDispatcher _dispatcher;
-        private readonly CommandBinder   _commandBinder; // The end type must be specified to escape AOT issues. 
-
-        public EventDispatcherWithCommandProcessing(IEventDispatcher dispatcher, CommandBinder commandBinder)
+        [Inject] public ICommandBinder CommandBinder
         {
-            _dispatcher = dispatcher;
-            _commandBinder = commandBinder;
+            get => _commandBinder;
+            set => _commandBinder = (CommandBinder)value;
+        }  
+
+        private readonly IEventDispatcher _dispatcher;
+        private          CommandBinder    _commandBinder; // The end type must be specified to escape AOT issues.
+
+        public EventDispatcherWithCommandProcessing()
+        {
+            _dispatcher = new EventDispatcher();
         }
-        
+
         /*
          * Add.
          */
-        
+
         public void AddListener(Event @event, Action listener)                                     { _dispatcher.AddListener(@event, listener); }
         public void AddListener<T1>(Event<T1> @event, Action<T1> listener)                         { _dispatcher.AddListener(@event, listener); }
         public void AddListener<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)             { _dispatcher.AddListener(@event, listener); }
@@ -26,7 +33,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         /*
          * Add Once.
          */
-        
+
         public void AddListenerOnce(Event @event, Action listener)                                     { _dispatcher.AddListenerOnce(@event, listener); }
         public void AddListenerOnce<T1>(Event<T1> @event, Action<T1> listener)                         { _dispatcher.AddListenerOnce(@event, listener); }
         public void AddListenerOnce<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)             { _dispatcher.AddListenerOnce(@event, listener); }
@@ -35,7 +42,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         /*
          * Remove.
          */
-        
+
         public void RemoveListener(Event @event, Action listener)                                     { _dispatcher.RemoveListener(@event, listener); }
         public void RemoveListener<T1>(Event<T1> @event, Action<T1> listener)                         { _dispatcher.RemoveListener(@event, listener); }
         public void RemoveListener<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)             { _dispatcher.RemoveListener(@event, listener); }
@@ -44,7 +51,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         /*
          * Remove All.
          */
-        
+
         public void RemoveAllListeners()                 { _dispatcher.RemoveAllListeners(); }
         public void RemoveAllListeners(EventBase @event) { _dispatcher.RemoveAllListeners(@event); }
 

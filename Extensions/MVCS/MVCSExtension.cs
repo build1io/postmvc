@@ -25,20 +25,19 @@ namespace Build1.PostMVC.Extensions.MVCS
 
         public MVCSExtension(MediationMode mediationMode)
         {
+            EventDispatcher = new EventDispatcherWithCommandProcessing();
             InjectionBinder = new InjectionBinder();
-            var commandBinder = new CommandBinder(InjectionBinder);
-            CommandBinder = commandBinder;
-            EventDispatcher = new EventDispatcherWithCommandProcessing(new EventDispatcher(), commandBinder);
-            MediationBinder = new MediationBinder(mediationMode, InjectionBinder);
+            CommandBinder = new CommandBinder();
+            MediationBinder = new MediationBinder(mediationMode);
         }
 
         public override void OnInitialized()
         {
             InjectionBinder.Bind<IContext>().ToValue(Context);
-            InjectionBinder.Bind<IEventDispatcher>().ToValue(EventDispatcher);
+            InjectionBinder.Bind<IEventDispatcher>().ToValue(EventDispatcher).ConstructOnStart();
             InjectionBinder.Bind<IInjectionBinder>().ToValue(InjectionBinder);
-            InjectionBinder.Bind<ICommandBinder>().ToValue(CommandBinder);
-            InjectionBinder.Bind<IMediationBinder>().ToValue(MediationBinder);
+            InjectionBinder.Bind<ICommandBinder>().ToValue(CommandBinder).ConstructOnStart();
+            InjectionBinder.Bind<IMediationBinder>().ToValue(MediationBinder).ConstructOnStart();
         }
 
         public override void OnDispose()

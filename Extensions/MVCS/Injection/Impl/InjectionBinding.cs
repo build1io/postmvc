@@ -98,6 +98,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 
         public IInjectionBindingToBinding ConstructOnStart()
         {
+            ToConstruct = true;
             ToConstructOnStart = true;
             return this;
         }

@@ -20,9 +20,16 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
             Command00.OnExecute = null;
             Command00Copy.OnExecute = null;
 
-            var binder = new CommandBinder(new InjectionBinder());
+            var binder = new CommandBinder
+            {
+                InjectionBinder = new InjectionBinder()
+            };
+            
             _binder = binder;
-            _dispatcher = new EventDispatcherWithCommandProcessing(new EventDispatcher(), binder);
+            _dispatcher = new EventDispatcherWithCommandProcessing
+            {
+                CommandBinder = binder
+            };
         }
 
         [Test]
