@@ -34,9 +34,9 @@ namespace Build1.PostMVC.Extensions.MVCS
         public override void OnInitialized()
         {
             InjectionBinder.Bind<IContext>().ToValue(Context);
-            InjectionBinder.Bind<IEventDispatcher>().ToValue(EventDispatcher).ConstructOnStart();
+            InjectionBinder.Bind<IEventDispatcher>().ToValue(EventDispatcher).ConstructValue();
             InjectionBinder.Bind<IInjectionBinder>().ToValue(InjectionBinder);
-            InjectionBinder.Bind<ICommandBinder>().ToValue(CommandBinder).ConstructOnStart();
+            InjectionBinder.Bind<ICommandBinder>().ToValue(CommandBinder).ConstructValue();
             InjectionBinder.Bind<IMediationBinder>().ToValue(MediationBinder);
         }
 
