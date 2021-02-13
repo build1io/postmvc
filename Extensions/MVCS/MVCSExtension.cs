@@ -28,7 +28,7 @@ namespace Build1.PostMVC.Extensions.MVCS
             EventDispatcher = new EventDispatcherWithCommandProcessing();
             InjectionBinder = new InjectionBinder();
             CommandBinder = new CommandBinder();
-            MediationBinder = new MediationBinder(mediationMode);
+            MediationBinder = new MediationBinder(mediationMode, InjectionBinder);
         }
 
         public override void OnInitialized()
@@ -37,7 +37,7 @@ namespace Build1.PostMVC.Extensions.MVCS
             InjectionBinder.Bind<IEventDispatcher>().ToValue(EventDispatcher).ConstructOnStart();
             InjectionBinder.Bind<IInjectionBinder>().ToValue(InjectionBinder);
             InjectionBinder.Bind<ICommandBinder>().ToValue(CommandBinder).ConstructOnStart();
-            InjectionBinder.Bind<IMediationBinder>().ToValue(MediationBinder).ConstructOnStart();
+            InjectionBinder.Bind<IMediationBinder>().ToValue(MediationBinder);
         }
 
         public override void OnDispose()
