@@ -43,6 +43,7 @@ namespace Build1.PostMVC.Extensions.MVCS
         public override void OnDispose()
         {
             InjectionBinder.UnbindAll();
+            CommandBinder.UnbindAll();
         }
 
         public override void OnModuleConstructed(IModule module)
