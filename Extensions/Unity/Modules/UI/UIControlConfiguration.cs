@@ -8,7 +8,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI
     {
         public DevicePlatform DevicePlatform { get; }
         public DeviceType     DeviceType     { get; }
-        public bool           Installed      { get; private set; }
 
         public readonly int                    assetBundleId;
         public readonly string                 prefabName;
@@ -37,11 +36,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI
             this.appLayerId = appLayerId;
             
             bindings = new List<UIControlBinding>();
-        }
-
-        public void SetInstalled()
-        {
-            Installed = true;
         }
 
         protected UIControlConfiguration AddBinding<V>()

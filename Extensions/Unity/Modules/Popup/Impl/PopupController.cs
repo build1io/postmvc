@@ -24,17 +24,22 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
         [Inject]                   public IMediationBinder   MediationBinder   { get; set; }
         [Inject]                   public IUILayerController UILayerController { get; set; }
 
-        private Queue<PopupBase> _queue;
-        private Queue<object>    _queueData;
+        private readonly Queue<PopupBase>     _queue;
+        private readonly Queue<object>        _queueData;
+        private readonly HashSet<PopupConfig> _installedConfigs;
 
         private PopupBase _currentPopupInfo;
+
+        public PopupController()
+        {
+            _queue = new Queue<PopupBase>();
+            _queueData = new Queue<object>();
+            _installedConfigs = new HashSet<PopupConfig>();
+        }
 
         [PostConstruct]
         public void PostConstruct()
         {
-            _queue = new Queue<PopupBase>();
-            _queueData = new Queue<object>();
-
             Dispatcher.AddListener(PopupEvent.Closed, OnPopupClosed);
         }
 
@@ -53,9 +58,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
             foreach (var popup in popups)
             {
                 var configuration = DeviceController.GetConfiguration(popup);
-                if (configuration.Installed)
+                if (CheckConfigInstalled(configuration))
                     continue;
-                
+
                 InstallConfiguration(configuration);
 
                 if (!popup.ToPreInstantiate)
@@ -150,9 +155,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
                 dataBinding = InjectionBinder.Bind(popup.dataType).ToValue(data).ToBinding();
 
             var configuration = DeviceController.GetConfiguration(popup);
-            if (!configuration.Installed)
+            if (!CheckConfigInstalled(configuration))
                 InstallConfiguration(configuration);
-            
+
             var layer = UILayerController.GetLayerView(configuration.appLayerId);
             var transform = layer.transform.Find(popup.name);
             var instance = transform != null ? transform.gameObject : null;
@@ -194,8 +199,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
 
             return instance;
         }
+        
+        private bool CheckConfigInstalled(PopupConfig configuration)
+        {
+            return _installedConfigs.Contains(configuration);
+        }
 
-        private void InstallConfiguration(UIControlConfiguration configuration)
+        private void InstallConfiguration(PopupConfig configuration)
         {
             foreach (var binding in configuration)
             {
@@ -206,7 +216,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
                     bindingTo.To(binding.mediatorType);
             }
 
-            configuration.SetInstalled();
+            _installedConfigs.Add(configuration);
         }
 
         /*

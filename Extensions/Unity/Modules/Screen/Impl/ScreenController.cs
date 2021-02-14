@@ -22,7 +22,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
         [Inject]                   public IMediationBinder   MediationBinder   { get; set; }
         [Inject]                   public IDeviceController  DeviceController  { get; set; }
 
+        private readonly HashSet<ScreenConfig> _installedConfigs;
+
         private Screen _currentScreen;
+
+        public ScreenController()
+        {
+            _installedConfigs = new HashSet<ScreenConfig>();
+        }
 
         /*
          * Public.
@@ -33,9 +40,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
             foreach (var screen in screens)
             {
                 var configuration = DeviceController.GetConfiguration(screen);
-                if (configuration.Installed)
+                if (CheckConfigInstalled(configuration))
                     continue;
-                
+
                 InstallConfiguration(configuration);
 
                 if (!screen.ToPreInstantiate)
@@ -56,7 +63,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
                 return;
 
             var configuration = DeviceController.GetConfiguration(_currentScreen);
-            if (!configuration.Installed)
+            if (!CheckConfigInstalled(configuration))
                 InstallConfiguration(configuration);
 
             var layer = UILayerController.GetLayerView<Transform>(configuration.appLayerId);
@@ -98,7 +105,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
             instance.name = screen.name;
         }
 
-        private void InstallConfiguration(UIControlConfiguration configuration)
+        private bool CheckConfigInstalled(ScreenConfig configuration)
+        {
+            return _installedConfigs.Contains(configuration);
+        }
+
+        private void InstallConfiguration(ScreenConfig configuration)
         {
             foreach (var binding in configuration)
             {
@@ -108,8 +120,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
                 if (binding.mediatorType != null)
                     bindingTo.To(binding.mediatorType);
             }
-            
-            configuration.SetInstalled();
+
+            _installedConfigs.Add(configuration);
         }
     }
 }
