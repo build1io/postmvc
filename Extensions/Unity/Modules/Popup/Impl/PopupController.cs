@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Injection;
-using Build1.PostMVC.Extensions.MVCS.Injection.Api;
 using Build1.PostMVC.Extensions.MVCS.Mediation;
-using Build1.PostMVC.Extensions.MVCS.Mediation.Api;
 using Build1.PostMVC.Extensions.Unity.Modules.Assets;
 using Build1.PostMVC.Extensions.Unity.Modules.Device;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
@@ -18,14 +16,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
 {
     public sealed class PopupController : IPopupController
     {
-        [Inject]                   public IEventDispatcher   Dispatcher        { get; set; }
         [Logger(LogLevel.Verbose)] public ILogger            Logger            { get; set; }
+        [Inject]                   public IEventDispatcher   Dispatcher        { get; set; }
         [Inject]                   public IAssetsController  AssetsController  { get; set; }
         [Inject]                   public IDeviceController  DeviceController  { get; set; }
         [Inject]                   public IInjectionBinder   InjectionBinder   { get; set; }
         [Inject]                   public IMediationBinder   MediationBinder   { get; set; }
         [Inject]                   public IUILayerController UILayerController { get; set; }
-        
+
         private Queue<PopupBase> _queue;
         private Queue<object>    _queueData;
 
@@ -55,20 +53,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
             foreach (var popup in popups)
             {
                 var configuration = DeviceController.GetConfiguration(popup);
-                foreach (var binding in configuration)
-                {
-                    IMediationBindingTo bindingTo;
-                    if (binding.viewInterfaceType != null)
-                        bindingTo = MediationBinder.Bind(binding.viewType, binding.viewInterfaceType);
-                    else
-                        bindingTo = MediationBinder.Bind(binding.viewType);
-                    if (binding.mediatorType != null)
-                        bindingTo.To(binding.mediatorType);
-                }
+                if (configuration.Installed)
+                    continue;
+                
+                InstallConfiguration(configuration);
 
                 if (!popup.ToPreInstantiate)
                     continue;
-                
+
                 var layerView = UILayerController.GetLayerView<Transform>(configuration.appLayerId);
                 Instantiate(popup, configuration, layerView, false);
             }
@@ -158,6 +150,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
                 dataBinding = InjectionBinder.Bind(popup.dataType).ToValue(data).ToBinding();
 
             var configuration = DeviceController.GetConfiguration(popup);
+            if (!configuration.Installed)
+                InstallConfiguration(configuration);
+            
             var layer = UILayerController.GetLayerView(configuration.appLayerId);
             var transform = layer.transform.Find(popup.name);
             var instance = transform != null ? transform.gameObject : null;
@@ -198,6 +193,20 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
             instance.name = popup.name;
 
             return instance;
+        }
+
+        private void InstallConfiguration(UIControlConfiguration configuration)
+        {
+            foreach (var binding in configuration)
+            {
+                var bindingTo = binding.viewInterfaceType != null
+                                    ? MediationBinder.Bind(binding.viewType, binding.viewInterfaceType)
+                                    : MediationBinder.Bind(binding.viewType);
+                if (binding.mediatorType != null)
+                    bindingTo.To(binding.mediatorType);
+            }
+
+            configuration.SetInstalled();
         }
 
         /*

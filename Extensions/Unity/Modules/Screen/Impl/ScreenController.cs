@@ -2,22 +2,25 @@ using System.Collections.Generic;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.MVCS.Mediation;
-using Build1.PostMVC.Extensions.MVCS.Mediation.Api;
 using Build1.PostMVC.Extensions.Unity.Modules.Assets;
 using Build1.PostMVC.Extensions.Unity.Modules.Device;
+using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using Build1.PostMVC.Extensions.Unity.Modules.UI;
 using Build1.PostMVC.Extensions.Unity.Utils;
 using UnityEngine;
+using Logger = Build1.PostMVC.Extensions.Unity.Modules.Logging.Logger;
+using ILogger = Build1.PostMVC.Extensions.Unity.Modules.Logging.ILogger;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
 {
     public sealed class ScreenController : IScreenController
     {
-        [Inject] public IEventDispatcher   Dispatcher        { get; set; }
-        [Inject] public IUILayerController UILayerController { get; set; }
-        [Inject] public IAssetsController  AssetsController  { get; set; }
-        [Inject] public IMediationBinder   MediationBinder   { get; set; }
-        [Inject] public IDeviceController  DeviceController  { get; set; }
+        [Logger(LogLevel.Verbose)] public ILogger            Logger            { get; set; }
+        [Inject]                   public IEventDispatcher   Dispatcher        { get; set; }
+        [Inject]                   public IUILayerController UILayerController { get; set; }
+        [Inject]                   public IAssetsController  AssetsController  { get; set; }
+        [Inject]                   public IMediationBinder   MediationBinder   { get; set; }
+        [Inject]                   public IDeviceController  DeviceController  { get; set; }
 
         private Screen _currentScreen;
 
@@ -30,16 +33,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
             foreach (var screen in screens)
             {
                 var configuration = DeviceController.GetConfiguration(screen);
-                foreach (var binding in configuration)
-                {
-                    IMediationBindingTo bindingTo;
-                    if (binding.viewInterfaceType != null)
-                        bindingTo = MediationBinder.Bind(binding.viewType, binding.viewInterfaceType);
-                    else
-                        bindingTo = MediationBinder.Bind(binding.viewType);
-                    if (binding.mediatorType != null)
-                        bindingTo.To(binding.mediatorType);
-                }
+                if (configuration.Installed)
+                    continue;
+                
+                InstallConfiguration(configuration);
 
                 if (!screen.ToPreInstantiate)
                     continue;
@@ -59,16 +56,15 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
                 return;
 
             var configuration = DeviceController.GetConfiguration(_currentScreen);
+            if (!configuration.Installed)
+                InstallConfiguration(configuration);
+
             var layer = UILayerController.GetLayerView<Transform>(configuration.appLayerId);
             var instanceTransform = layer.Find(configuration.prefabName);
             if (instanceTransform != null)
-            {
                 instanceTransform.gameObject.SetActive(true);
-            }
             else
-            {
                 Instantiate(screen, configuration, layer, true);
-            }
 
             Dispatcher.Dispatch(ScreenEvent.Open, screen);
         }
@@ -100,6 +96,20 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
 
             var instance = Object.Instantiate(prefab, parent.transform);
             instance.name = screen.name;
+        }
+
+        private void InstallConfiguration(UIControlConfiguration configuration)
+        {
+            foreach (var binding in configuration)
+            {
+                var bindingTo = binding.viewInterfaceType != null
+                                    ? MediationBinder.Bind(binding.viewType, binding.viewInterfaceType)
+                                    : MediationBinder.Bind(binding.viewType);
+                if (binding.mediatorType != null)
+                    bindingTo.To(binding.mediatorType);
+            }
+            
+            configuration.SetInstalled();
         }
     }
 }

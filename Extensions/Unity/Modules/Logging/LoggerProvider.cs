@@ -4,23 +4,14 @@ using Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 {
-    public sealed class LoggerProvider : IInjectionProvider
+    public sealed class LoggerProvider : InjectionProvider<Logger>
     {
-        public object GetInstance(object parent, Inject attribute)
+        public override object GetInstance(object parent, Logger attribute)
         {
-            if (parent == null)
-                throw new LoggerException(LoggerExceptionType.InstanceIsMissing);
-            
-            if (attribute == null)
-                throw new LoggerException(LoggerExceptionType.InjectionAttributeIsMissing);
-            
-            if (!(attribute is Logger))
-                throw new LoggerException(LoggerExceptionType.InjectionAttributeTypeMismatch);
-            
-            return GetLogger(parent.GetType(), ((Logger)attribute).logLevel);
+            return GetLogger(parent.GetType(), attribute.logLevel);
         }
 
-        public void ReturnInstance(object instance)
+        public override void ReturnInstance(object instance)
         {
         }
 

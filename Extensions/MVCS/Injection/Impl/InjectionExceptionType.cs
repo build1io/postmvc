@@ -12,10 +12,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
         ValueNotProvided  = 20,
         ValueNotDestroyed = 21,
 
-        InjectionTypeMismatch = 40,
-
-        CircularDependency                     = 50,
-        CircularDependencyIsCounterMissing     = 51,
-        CircularDependencyCounterIsAlreadyZero = 52
+        InjectionTypeMismatch          = 40,
+        
+        InjectionAttributeIsMissing    = 50,
+        InjectionAttributeTypeMismatch = 51,
+        
+        CircularDependency                     = 100,
+        CircularDependencyIsCounterMissing     = 101,
+        CircularDependencyCounterIsAlreadyZero = 102
     }
 }
