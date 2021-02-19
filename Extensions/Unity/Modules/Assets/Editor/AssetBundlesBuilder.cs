@@ -4,7 +4,6 @@ using System.IO;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using UnityEditor;
 using UnityEditor.Build;
-using UnityEngine;
 using ILogger = Build1.PostMVC.Extensions.Unity.Modules.Logging.ILogger;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Editor
@@ -34,10 +33,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Editor
 
             if (!Directory.Exists(AssetBundlesDirectory))
                 Directory.CreateDirectory(AssetBundlesDirectory);
-
-            // Debug builds has uncompressed asset bundles.
-            if (Debug.isDebugBuild)
-                options |= BuildAssetBundleOptions.UncompressedAssetBundle;
 
             var output = BuildPipeline.BuildAssetBundles(AssetBundlesDirectory, options, target);
             if (output == null) // No asset bundles.
