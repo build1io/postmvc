@@ -127,14 +127,28 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
          * Construction / Deconstruction.
          */
 
-        public void Construct(object instance, bool triggerPostConstructors)
+        public T Construct<T>(T instance, bool triggerPostConstructors) where T : class
         {
             _injector.Construct(instance, triggerPostConstructors);
+            return instance;
+        }
+        
+        public object Construct(object instance, bool triggerPostConstructors)
+        {
+            _injector.Construct(instance, triggerPostConstructors);
+            return instance;
         }
 
-        public void Destroy(object instance, bool triggerPreDestroys)
+        public T Destroy<T>(T instance, bool triggerPreDestroys) where T : class
         {
             _injector.Destroy(instance, triggerPreDestroys);
+            return instance;
+        }
+        
+        public object Destroy(object instance, bool triggerPreDestroys)
+        {
+            _injector.Destroy(instance, triggerPreDestroys);
+            return instance;
         }
     }
 }
