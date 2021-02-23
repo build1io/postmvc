@@ -4,7 +4,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App
     {
         string Version     { get; }
         int    BuildNumber { get; }
-        bool   IsPaused    { get; }
+
+        bool IsPaused  { get; }
+        bool IsFocused { get; }
 
         void Restart();
     }

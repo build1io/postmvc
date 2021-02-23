@@ -21,7 +21,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
 
         public string Version     => Application.version;
         public int    BuildNumber { get; private set; }
-        public bool   IsPaused    { get; private set; }
+
+        public bool IsPaused  { get; private set; }
+        public bool IsFocused { get; private set; }
 
         private AppAgent _agent;
         private string   _mainSceneName;
@@ -92,11 +94,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
 
         private void OnFocus(bool focused)
         {
-            // Required for correctly work in Editor.
-            if (!Application.isPlaying)
+            if (IsFocused == focused)
                 return;
-
+            
             Logger.Debug(() => $"OnFocus({focused})");
+
+            IsFocused = focused;
             Dispatcher.Dispatch(AppEvent.Focus, focused);
         }
 
