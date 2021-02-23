@@ -56,7 +56,7 @@ namespace Build1.PostMVC.Extensions.Unity
             injectionBinder.Bind<IDisplayController>().To<DisplayController>().AsSingleton();
             injectionBinder.Bind<IPopupController>().To<PopupController>().AsSingleton();
             injectionBinder.Bind<IScreenController>().To<ScreenController>().AsSingleton();
-            injectionBinder.Bind<IUILayerController>().To<UILayerController>().AsSingleton();
+            injectionBinder.Bind<IUILayersController>().To<UILayersController>().AsSingleton();
             injectionBinder.Bind<IUpdateController>().To<UpdateController>().AsSingleton();
         }
 

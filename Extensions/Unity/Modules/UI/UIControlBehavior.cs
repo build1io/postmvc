@@ -5,7 +5,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI
     [Flags]
     public enum UIControlBehavior
     {
+        /// Control will be pre instantiated on initialization.
+        /// UIControlsController.Initialize method must be called. 
         PreInstantiate = 1 << 0,
-        DestroyOnClose = 1 << 1
+        
+        /// Control will be destroyed on deactivation.
+        DestroyOnDeactivation = 1 << 1
     }
 }

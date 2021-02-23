@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
 {
-    public sealed class UILayerController : IUILayerController
+    public sealed class UILayersController : IUILayersController
     {
         private readonly Dictionary<int, GameObject> _layers;
         
-        public UILayerController()
+        public UILayersController()
         {
             _layers = new Dictionary<int, GameObject>();
         }

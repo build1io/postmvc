@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.UI
 {
-    public interface IUILayerController
+    public interface IUILayersController
     {
         void RegisterLayer(int layerId, GameObject view);
 
