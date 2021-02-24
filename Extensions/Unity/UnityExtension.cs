@@ -13,17 +13,7 @@ using Build1.PostMVC.Extensions.Unity.Modules.Assets;
 using Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl;
 using Build1.PostMVC.Extensions.Unity.Modules.Async;
 using Build1.PostMVC.Extensions.Unity.Modules.Async.Impl;
-using Build1.PostMVC.Extensions.Unity.Modules.Device;
-using Build1.PostMVC.Extensions.Unity.Modules.Device.Impl;
-using Build1.PostMVC.Extensions.Unity.Modules.Display;
-using Build1.PostMVC.Extensions.Unity.Modules.Display.Impl;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
-using Build1.PostMVC.Extensions.Unity.Modules.Popup;
-using Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl;
-using Build1.PostMVC.Extensions.Unity.Modules.Screen;
-using Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl;
-using Build1.PostMVC.Extensions.Unity.Modules.UI;
-using Build1.PostMVC.Extensions.Unity.Modules.UI.Impl;
 using Build1.PostMVC.Extensions.Unity.Modules.Update;
 using Build1.PostMVC.Extensions.Unity.Modules.Update.Impl;
 using UnityEngine;
@@ -52,11 +42,6 @@ namespace Build1.PostMVC.Extensions.Unity
             injectionBinder.Bind<IAppController>().To<AppController>().AsSingleton().ConstructOnStart();
             injectionBinder.Bind<IAssetsController>().To<AssetsController>().AsSingleton();
             injectionBinder.Bind<IAsyncResolver>().To<AsyncResolver>().AsSingleton();
-            injectionBinder.Bind<IDeviceController>().To<DeviceController>().AsSingleton();
-            injectionBinder.Bind<IDisplayController>().To<DisplayController>().AsSingleton();
-            injectionBinder.Bind<IPopupController>().To<PopupController>().AsSingleton();
-            injectionBinder.Bind<IScreenController>().To<ScreenController>().AsSingleton();
-            injectionBinder.Bind<IUILayersController>().To<UILayersController>().AsSingleton();
             injectionBinder.Bind<IUpdateController>().To<UpdateController>().AsSingleton();
         }
 

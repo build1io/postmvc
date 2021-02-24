@@ -11,18 +11,19 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Device.Impl
 {
     public sealed class DeviceController : IDeviceController
     {
-        [Logger(LogLevel.Verbose)] public ILogger           Logger           { get; set; }
+        [Logger(LogLevel.Verbose)] public ILogger            Logger            { get; set; }
         [Inject]                   public IDisplayController DisplayController { get; set; }
 
         public DeviceType     CurrentDeviceType     { get; private set; }
         public DevicePlatform CurrentDevicePlatform { get; private set; }
 
-        public bool IsMobile => CurrentDevicePlatform == DevicePlatform.iOS || 
+        public bool IsMobile => CurrentDevicePlatform == DevicePlatform.iOS ||
                                 CurrentDevicePlatform == DevicePlatform.Android;
+
         public bool IsDesktop => CurrentDevicePlatform == DevicePlatform.OSX ||
                                  CurrentDevicePlatform == DevicePlatform.Windows ||
                                  CurrentDevicePlatform == DevicePlatform.WebGL;
-        
+
         public bool IsPhone  => CurrentDeviceType == DeviceType.Phone;
         public bool IsTablet => CurrentDeviceType == DeviceType.Tablet;
 
@@ -89,12 +90,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Device.Impl
                     case RuntimePlatform.WebGLPlayer:   return DevicePlatform.WebGL;
                     case RuntimePlatform.OSXPlayer:     return DevicePlatform.OSX;
                     case RuntimePlatform.WindowsPlayer: return DevicePlatform.Windows;
-                    
+
                     case RuntimePlatform.OSXEditor:
-                                        case RuntimePlatform.WindowsEditor:
-                                            // If platform wasn't processed correctly and we're currently in Unity Editor, break.
-                                            // It'll try processing by the build target from editor settings.
-                                            break;
+                    case RuntimePlatform.WindowsEditor:
+                        // If platform wasn't processed correctly and we're currently in Unity Editor, break.
+                        // It'll try processing by the build target from editor settings.
+                        break;
 
                     default:
                         throw new Exception($"Unsupported platform: {platform}");
