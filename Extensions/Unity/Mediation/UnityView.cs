@@ -117,7 +117,18 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
 
         private static bool TryFindContext(out IContext context)
         {
-            var contextGameObject = GameObject.Find(UnityExtension.RootGameObjectName);
+            GameObject contextGameObject = null;
+            
+            try
+            {
+                contextGameObject = GameObject.Find(UnityExtension.RootGameObjectName);
+            }
+            catch
+            {
+                // Ignored.
+                // It throws exception on application quit in Editor. 
+            }
+
             if (contextGameObject != null)
             {
                 context = contextGameObject.GetComponent<ContextUnityView>().Context;
