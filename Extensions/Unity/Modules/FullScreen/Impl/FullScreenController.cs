@@ -7,7 +7,7 @@ using ILogger = Build1.PostMVC.Extensions.Unity.Modules.Logging.ILogger;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.FullScreen.Impl
 {
-    public sealed class FullScreenController : IFullScreenController
+    internal sealed class FullScreenController : IFullScreenController
     {
         [Logger(LogLevel.All)] public ILogger          Logger     { get; set; }
         [Inject]               public IEventDispatcher Dispatcher { get; set; }
@@ -22,10 +22,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.FullScreen.Impl
                 return;
             }
             
-            // There is a bug.
             // Fullscreen will be out of sync if a player exits fullscreen by himself.
-            // TODO: fix =)
-            
+
             UnityEngine.Screen.fullScreen = !UnityEngine.Screen.fullScreen;
             IsInFullScreen = UnityEngine.Screen.fullScreen;
 
