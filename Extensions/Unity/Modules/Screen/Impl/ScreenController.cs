@@ -17,6 +17,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
             _currentScreens = new List<Screen>(4);
         }
 
+        public void Show(Screen screen)
+        {
+            Show(screen, ScreenBehavior.Default);
+        }
+
         public void Show(Screen screen, ScreenBehavior behavior)
         {
             if (behavior == ScreenBehavior.Default && _currentScreens.Count > 0)
