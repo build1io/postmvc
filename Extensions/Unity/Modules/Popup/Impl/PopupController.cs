@@ -19,7 +19,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
         private readonly Queue<PopupBase> _queue;
         private readonly Queue<object>    _queueData;
 
-        private PopupBase _currentPopupInfo;
+        private PopupBase _currentPopup;
 
         public PopupController()
         {
@@ -56,7 +56,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
             _queue.Enqueue(popup);
             _queueData.Enqueue(null);
             
-            if (_currentPopupInfo == null)
+            if (_currentPopup == null)
                 ProcessQueue();
         }
 
@@ -73,7 +73,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
             _queue.Enqueue(popup);
             _queueData.Enqueue(data);
             
-            if (_currentPopupInfo == null)
+            if (_currentPopup == null)
                 ProcessQueue();
         }
 
@@ -83,14 +83,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
 
         public void Close()
         {
-            Close(_currentPopupInfo);
+            Close(_currentPopup);
         }
         
         public void Close(PopupBase popup)
         {
-            if (_currentPopupInfo != popup)
+            if (_currentPopup != popup)
             {
-                Logger.Error(p => $"Current popup doesn't match to closing popup: {_currentPopupInfo} != {p}", popup);
+                Logger.Error(p => $"Current popup doesn't match to closing popup: {_currentPopup} != {p}", popup);
                 return;
             }
             
@@ -100,8 +100,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
                 return;
             }
 
-            var closedPopup = _currentPopupInfo;
-            _currentPopupInfo = null;
+            var closedPopup = _currentPopup;
+            _currentPopup = null;
 
             Dispatcher.Dispatch(PopupEvent.Closed, closedPopup);
         }
@@ -112,9 +112,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
 
         private void ProcessQueue()
         {
-            if (_currentPopupInfo != null)
+            if (_currentPopup != null)
             {
-                Logger.Error(() => $"Can't process queue. Current dialog isn't closed: {_currentPopupInfo}");
+                Logger.Error(() => $"Can't process queue. Current dialog isn't closed: {_currentPopup}");
                 return;
             }
 
@@ -125,27 +125,24 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
             var popup = _queue.Dequeue();
             var data = _queueData.Dequeue();
 
-            _currentPopupInfo = popup;
+            _currentPopup = popup;
 
             IInjectionBinding dataBinding = null;
 
             if (popup.dataType != null)
                 dataBinding = InjectionBinder.Bind(popup.dataType).ToValue(data).ToBinding();
             
-            var instance = GetInstance(popup, UIControlOptions.Instantiate, out var isNewInstance);
+            var instance = GetInstance(popup, UIControlOptions.Instantiate);
             var view = instance.GetComponent<PopupView>();
             if (view == null)
                 throw new Exception("Popup view doesn't inherit from PopupView.");
 
             view.SetUp(popup);
 
-            if (!isNewInstance)
-            {
-                if (popup.dataType != null && view.Initialized)
-                    MediationBinder.UpdateViewInjections(view);
+            if (view.Initialized)
+                MediationBinder.UpdateViewInjections(view);
 
-                view.gameObject.SetActive(true);
-            }
+            view.gameObject.SetActive(true);
 
             if (dataBinding != null)
                 InjectionBinder.Unbind(dataBinding);

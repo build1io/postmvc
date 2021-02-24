@@ -66,7 +66,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
 
             var activate = (options & UIControlOptions.Activate) == UIControlOptions.Activate;
             var layer = UILayerController.GetLayerView<Transform>(configuration.appLayerId);
-            var instanceTransform = layer.Find(configuration.prefabName);
+            var instanceTransform = layer.Find(control.name);
             if (instanceTransform != null)
             {
                 if (activate)
