@@ -43,7 +43,6 @@ namespace Build1.PostMVC.Extensions.MVCS
         public override void OnDispose()
         {
             InjectionBinder.UnbindAll();
-            CommandBinder.UnbindAll();
         }
 
         public override void OnModuleConstructed(IModule module)
@@ -68,6 +67,11 @@ namespace Build1.PostMVC.Extensions.MVCS
         public override void OnContextStarted()
         {
             InjectionBinder.GetInstance<IEventDispatcher>().Dispatch(ContextEvent.Started);
+        }
+
+        public override void OnContextStopping()
+        {
+            CommandBinder.UnbindAll();
         }
 
         public override void OnContextStopped()
