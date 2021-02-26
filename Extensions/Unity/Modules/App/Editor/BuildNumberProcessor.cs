@@ -60,10 +60,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Editor
             {
                 case UnityEditor.BuildTarget.iOS:     return UnityEditor.PlayerSettings.iOS.buildNumber;
                 case UnityEditor.BuildTarget.Android: return UnityEditor.PlayerSettings.Android.bundleVersionCode.ToString();
-
-                case UnityEditor.BuildTarget.WebGL:
-                    Logger.Warn($"Not applicable for: {target}");
-                    return null;
+                case UnityEditor.BuildTarget.WebGL:   return null; // Not applicable for WebGL.
 
                 default:
                     throw new Exception($"Not implemented for build target: {target}");
