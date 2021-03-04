@@ -21,33 +21,49 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 
         public void AddListener(Event @event, Action listener)
         {
-            _listeners.TryGetValue(@event, out var listenersObj);
-            var listeners = listenersObj as Action;
-            if (listeners == null || !listeners.GetInvocationList().Contains(listener))
+            if (!_listeners.TryGetValue(@event, out var listenersObj))
+            {
+                _listeners[@event] = listener;
+                return;
+            }
+            var listeners = (Action)listenersObj;
+            if (!listeners.GetInvocationList().Contains(listener))
                 _listeners[@event] = listeners + listener;
         }
 
         public void AddListener<T1>(Event<T1> @event, Action<T1> listener)
         {
-            _listeners.TryGetValue(@event, out var listenersObj);
-            var listeners = listenersObj as Action<T1>;
-            if (listeners == null || !listeners.GetInvocationList().Contains(listener))
+            if (!_listeners.TryGetValue(@event, out var listenersObj))
+            {
+                _listeners[@event] = listener;
+                return;
+            }
+            var listeners = (Action<T1>)listenersObj;
+            if (!listeners.GetInvocationList().Contains(listener))
                 _listeners[@event] = listeners + listener;
         }
 
         public void AddListener<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)
         {
-            _listeners.TryGetValue(@event, out var listenersObj);
-            var listeners = listenersObj as Action<T1, T2>;
-            if (listeners == null || !listeners.GetInvocationList().Contains(listener))
+            if (!_listeners.TryGetValue(@event, out var listenersObj))
+            {
+                _listeners[@event] = listener;
+                return;
+            }
+            var listeners = (Action<T1, T2>)listenersObj;
+            if (!listeners.GetInvocationList().Contains(listener))
                 _listeners[@event] = listeners + listener;
         }
 
         public void AddListener<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener)
         {
-            _listeners.TryGetValue(@event, out var listenersObj);
-            var listeners = listenersObj as Action<T1, T2, T3>;
-            if (listeners == null || !listeners.GetInvocationList().Contains(listener))
+            if (!_listeners.TryGetValue(@event, out var listenersObj))
+            {
+                _listeners[@event] = listener;
+                return;
+            }
+            var listeners = (Action<T1, T2, T3>)listenersObj;
+            if (!listeners.GetInvocationList().Contains(listener))
                 _listeners[@event] = listeners + listener;
         }
 
@@ -57,33 +73,49 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 
         public void AddListenerOnce(Event @event, Action listener)
         {
-            _listeners.TryGetValue(@event, out var listenersObj);
-            var listeners = listenersObj as Action;
-            if (listeners == null || !listeners.GetInvocationList().Contains(listener))
+            if (!_listenersOnce.TryGetValue(@event, out var listenersObj))
+            {
+                _listenersOnce[@event] = listener;
+                return;
+            }
+            var listeners = (Action)listenersObj;
+            if (!listeners.GetInvocationList().Contains(listener))
                 _listenersOnce[@event] = listeners + listener;
         }
 
         public void AddListenerOnce<T1>(Event<T1> @event, Action<T1> listener)
         {
-            _listeners.TryGetValue(@event, out var listenersObj);
-            var listeners = listenersObj as Action<T1>;
-            if (listeners == null || !listeners.GetInvocationList().Contains(listener))
+            if (!_listenersOnce.TryGetValue(@event, out var listenersObj))
+            {
+                _listenersOnce[@event] = listener;
+                return;
+            }
+            var listeners = (Action<T1>)listenersObj;
+            if (!listeners.GetInvocationList().Contains(listener))
                 _listenersOnce[@event] = listeners + listener;
         }
 
         public void AddListenerOnce<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)
         {
-            _listeners.TryGetValue(@event, out var listenersObj);
-            var listeners = listenersObj as Action<T1, T2>;
-            if (listeners == null || !listeners.GetInvocationList().Contains(listener))
+            if (!_listenersOnce.TryGetValue(@event, out var listenersObj))
+            {
+                _listenersOnce[@event] = listener;
+                return;
+            }
+            var listeners = (Action<T1, T2>)listenersObj;
+            if (!listeners.GetInvocationList().Contains(listener))
                 _listenersOnce[@event] = listeners + listener;
         }
 
         public void AddListenerOnce<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener)
         {
-            _listeners.TryGetValue(@event, out var listenersObj);
-            var listeners = listenersObj as Action<T1, T2, T3>;
-            if (listeners == null || !listeners.GetInvocationList().Contains(listener))
+            if (!_listenersOnce.TryGetValue(@event, out var listenersObj))
+            {
+                _listenersOnce[@event] = listener;
+                return;
+            }
+            var listeners = (Action<T1, T2, T3>)listenersObj;
+            if (!listeners.GetInvocationList().Contains(listener))
                 _listenersOnce[@event] = listeners + listener;
         }
 
