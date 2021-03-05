@@ -14,7 +14,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
          */
 
         public abstract void LoadAssetBundleAsync(string bundleName,
-                                                  Action<AssetBundle> onComplete,
+                                                  Action<UnityEngine.AssetBundle> onComplete,
                                                   Action<AssetsException> onError);
 
         /*

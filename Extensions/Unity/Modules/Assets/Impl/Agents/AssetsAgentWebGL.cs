@@ -9,14 +9,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
     internal sealed class AssetsAgentWebGL : AssetsAgentBase
     {
         public override void LoadAssetBundleAsync(string bundleName, 
-                                                  Action<AssetBundle> onComplete, 
+                                                  Action<UnityEngine.AssetBundle> onComplete, 
                                                   Action<AssetsException> onError)
         {
             StartCoroutine(LoadAssetBundleAsyncImpl(bundleName, onComplete, onError));
         }
 
         private IEnumerator LoadAssetBundleAsyncImpl(string bundleName, 
-                                                     Action<AssetBundle> onComplete, 
+                                                     Action<UnityEngine.AssetBundle> onComplete, 
                                                      Action<AssetsException> onError)
         {
             var bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);

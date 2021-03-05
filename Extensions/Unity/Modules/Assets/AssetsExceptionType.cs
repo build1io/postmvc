@@ -4,11 +4,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
     {
         AssetNotFound             = 1,
         AtlasNotFound             = 2,
-        BundleNotRegistered       = 3,
-        BundleAlreadyRegistered   = 4,
-        BundleNotFound            = 5,
-        BundleLoadingNetworkError = 6,
-        BundleLoadingHttpError    = 7,
-        BundleNotLoaded           = 8
+        AtlasBundleNotLoaded      = 3,
+        BundleNotFound            = 4,
+        BundleLoadingNetworkError = 5,
+        BundleLoadingHttpError    = 6,
+        BundleNotLoaded           = 7
     }
 }

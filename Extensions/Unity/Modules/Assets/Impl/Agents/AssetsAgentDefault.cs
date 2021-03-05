@@ -7,20 +7,20 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
 {
     internal sealed class AssetsAgentDefault : AssetsAgentBase
     {
-        public override void LoadAssetBundleAsync(string bundleName, 
-                                                  Action<AssetBundle> onComplete, 
+        public override void LoadAssetBundleAsync(string bundleName,
+                                                  Action<UnityEngine.AssetBundle> onComplete,
                                                   Action<AssetsException> onError)
         {
             StartCoroutine(LoadAssetBundleAsyncImpl(bundleName, onComplete, onError));
         }
 
-        private IEnumerator LoadAssetBundleAsyncImpl(string bundleName, 
-                                                     Action<AssetBundle> onComplete,
+        private IEnumerator LoadAssetBundleAsyncImpl(string bundleName,
+                                                     Action<UnityEngine.AssetBundle> onComplete,
                                                      Action<AssetsException> onError)
         {
             var bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
-            var bundleLoadRequest = AssetBundle.LoadFromFileAsync(bundlePath);
-            
+            var bundleLoadRequest = UnityEngine.AssetBundle.LoadFromFileAsync(bundlePath);
+
             yield return bundleLoadRequest;
 
             if (bundleLoadRequest.assetBundle == null)
@@ -29,7 +29,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
             }
             else
             {
-                onComplete?.Invoke(bundleLoadRequest.assetBundle);    
+                onComplete?.Invoke(bundleLoadRequest.assetBundle);
             }
         }
     }
