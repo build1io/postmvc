@@ -21,7 +21,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 
         public void AddListener(Event @event, Action listener)
         {
-            if (!_listeners.TryGetValue(@event, out var listenersObj))
+            if (!_listeners.TryGetValue(@event, out var listenersObj) || listenersObj == null)
             {
                 _listeners[@event] = listener;
                 return;
@@ -33,7 +33,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 
         public void AddListener<T1>(Event<T1> @event, Action<T1> listener)
         {
-            if (!_listeners.TryGetValue(@event, out var listenersObj))
+            if (!_listeners.TryGetValue(@event, out var listenersObj) || listenersObj == null)
             {
                 _listeners[@event] = listener;
                 return;
@@ -45,7 +45,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 
         public void AddListener<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)
         {
-            if (!_listeners.TryGetValue(@event, out var listenersObj))
+            if (!_listeners.TryGetValue(@event, out var listenersObj) || listenersObj == null)
             {
                 _listeners[@event] = listener;
                 return;
@@ -57,7 +57,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 
         public void AddListener<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener)
         {
-            if (!_listeners.TryGetValue(@event, out var listenersObj))
+            if (!_listeners.TryGetValue(@event, out var listenersObj) || listenersObj == null)
             {
                 _listeners[@event] = listener;
                 return;
@@ -73,7 +73,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 
         public void AddListenerOnce(Event @event, Action listener)
         {
-            if (!_listenersOnce.TryGetValue(@event, out var listenersObj))
+            if (!_listenersOnce.TryGetValue(@event, out var listenersObj) || listenersObj == null)
             {
                 _listenersOnce[@event] = listener;
                 return;
@@ -85,7 +85,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 
         public void AddListenerOnce<T1>(Event<T1> @event, Action<T1> listener)
         {
-            if (!_listenersOnce.TryGetValue(@event, out var listenersObj))
+            if (!_listenersOnce.TryGetValue(@event, out var listenersObj) || listenersObj == null)
             {
                 _listenersOnce[@event] = listener;
                 return;
@@ -97,7 +97,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 
         public void AddListenerOnce<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)
         {
-            if (!_listenersOnce.TryGetValue(@event, out var listenersObj))
+            if (!_listenersOnce.TryGetValue(@event, out var listenersObj) || listenersObj == null)
             {
                 _listenersOnce[@event] = listener;
                 return;
@@ -109,7 +109,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 
         public void AddListenerOnce<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener)
         {
-            if (!_listenersOnce.TryGetValue(@event, out var listenersObj))
+            if (!_listenersOnce.TryGetValue(@event, out var listenersObj) || listenersObj == null)
             {
                 _listenersOnce[@event] = listener;
                 return;
