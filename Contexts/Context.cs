@@ -8,18 +8,28 @@ namespace Build1.PostMVC.Contexts
 {
     public sealed class Context : IContext
     {
-        public static Action<IContext> OnContextStart;
-        public static Action<IContext> OnContextStop;
+        public static event Action<IContext> OnContextStarting;
+        public static event Action<IContext> OnContextStarted;
+        public static event Action<IContext> OnContextQuitting;
+        public static event Action<IContext> OnContextStopping;
+        public static event Action<IContext> OnContextStopped;
 
         public IContext RootContext { get; }
 
         public bool IsRootContext => this == RootContext;
         public bool IsStarted     { get; private set; }
+        public bool IsQuitting    { get; private set; }
         public bool IsStopping    { get; private set; }
 
-        public Action OnStart { get; set; }
-        public Action OnStop  { get; set; }
-        
+        public event Action<IModule> OnModuleConstructing;
+        public event Action<IModule> OnModuleDisposing;
+
+        public event Action OnStarting;
+        public event Action OnStarted;
+        public event Action OnQuitting;
+        public event Action OnStopping;
+        public event Action OnStopped;
+
         private readonly HashSet<Type>                _extensions;
         private readonly Dictionary<Type, IExtension> _extensionInstances;
 
@@ -98,46 +108,21 @@ namespace Build1.PostMVC.Contexts
                     _extensionInstances.Add(extensionType, extension);
                 }
 
-                extension.SetContext(this);
-                extension.SetRootContext(RootContext);
+                extension.SetContext(this, RootContext);
             }
 
             foreach (var extension in _extensionInstances.Values)
-                extension.OnInitialized();
+                extension.Initialize();
 
             foreach (var extension in _extensionInstances.Values)
-                extension.OnSetup();
+                extension.Setup();
         }
 
         private void DisposeExtensions()
         {
             foreach (var extension in _extensionInstances.Values)
-                extension.OnDispose();
+                extension.Dispose();
             _extensionInstances.Clear();
-        }
-
-        private void NotifyExtensionsOnContextStarting()
-        {
-            foreach (var extension in _extensionInstances.Values)
-                extension.OnContextStarting();
-        }
-        
-        private void NotifyExtensionsOnContextStarted()
-        {
-            foreach (var extension in _extensionInstances.Values)
-                extension.OnContextStarted();
-        }
-
-        private void NotifyExtensionsAboutContextStopping()
-        {
-            foreach (var extension in _extensionInstances.Values)
-                extension.OnContextStopping();
-        }
-        
-        private void NotifyExtensionsAboutContextStopped()
-        {
-            foreach (var extension in _extensionInstances.Values)
-                extension.OnContextStopped();
         }
 
         /*
@@ -161,8 +146,7 @@ namespace Build1.PostMVC.Contexts
                 var module = (IModule)Activator.CreateInstance(moduleType);
                 module.SetContext(this);
 
-                foreach (var extension in _extensionInstances.Values)
-                    extension.OnModuleConstructed(module);
+                OnModuleConstructing?.Invoke(module);
 
                 module.Configure();
                 _moduleInstances.Add(moduleType, module);
@@ -172,8 +156,7 @@ namespace Build1.PostMVC.Contexts
         private void DisposeModules()
         {
             foreach (var module in _moduleInstances.Values)
-            foreach (var extension in _extensionInstances.Values)
-                extension.OnModuleDispose(module);
+                OnModuleDisposing?.Invoke(module);
             _moduleInstances.Clear();
         }
 
@@ -181,47 +164,58 @@ namespace Build1.PostMVC.Contexts
          * Start / Stop.
          */
 
-        public IContext Start()
+        public void Start()
         {
             if (IsStarted)
                 throw new ContextException(ContextExceptionType.ContextAlreadyStarted);
 
             InitializeExtensions();
             InitializeModules();
-            
-            NotifyExtensionsOnContextStarting();
-            
-            OnStart?.Invoke();
-            OnContextStart?.Invoke(this);
-            
-            NotifyExtensionsOnContextStarted();
-            
+
+            OnStarting?.Invoke();
+            OnContextStarting?.Invoke(this);
+
             IsStarted = true;
-            return this;
+
+            OnStarted?.Invoke();
+            OnContextStarted?.Invoke(this);
+        }
+
+        public void SetQuitting()
+        {
+            if (IsQuitting)
+                return;
+
+            if (!IsStarted)
+                throw new ContextException(ContextExceptionType.ContextNotStarted);
+
+            IsQuitting = true;
+            
+            OnQuitting?.Invoke();
+            OnContextQuitting?.Invoke(this);
         }
 
         public void Stop()
         {
             if (IsStopping)
                 return;
-            
+
             if (!IsStarted)
                 throw new ContextException(ContextExceptionType.ContextNotStarted);
 
             IsStopping = true;
-            
-            NotifyExtensionsAboutContextStopping();
-            
-            OnStop?.Invoke();
-            OnContextStop?.Invoke(this);
-            
-            NotifyExtensionsAboutContextStopped();
-            
-            DisposeModules();
-            DisposeExtensions();
+
+            OnStopping?.Invoke();
+            OnContextStopping?.Invoke(this);
 
             IsStopping = false;
             IsStarted = false;
+
+            OnStopped?.Invoke();
+            OnContextStopped?.Invoke(this);
+
+            DisposeModules();
+            DisposeExtensions();
         }
     }
 }

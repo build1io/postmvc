@@ -1,35 +1,21 @@
 using Build1.PostMVC.Contexts;
-using Build1.PostMVC.Modules;
 
 namespace Build1.PostMVC.Extensions
 {
     public abstract class Extension : IExtension
     {
-        public IContext Context     { get; private set; }
-        public IContext RootContext { get; private set; }
+        protected IContext Context     { get; private set; }
+        protected IContext RootContext { get; private set; }
 
-        public void SetContext(IContext context)
+        public void SetContext(IContext context, IContext rootContext)
         {
             Context = context;
-        }
-
-        public void SetRootContext(IContext rootContext)
-        {
             RootContext = rootContext;
         }
 
-        public virtual void OnInitialized() { }
-        public virtual void OnSetup()       { }
-        public virtual void OnDispose()     { }
-
-        public virtual void OnModuleConstructed(IModule module) { }
-        public virtual void OnModuleDispose(IModule module)     { }
-
-        public virtual void OnContextStarting() { }
-        public virtual void OnContextStarted()  { }
-
-        public virtual void OnContextStopping() { }
-        public virtual void OnContextStopped()  { }
+        public virtual void Initialize() { }
+        public virtual void Setup()      { }
+        public virtual void Dispose()    { }
 
         protected T GetDependentExtension<T>() where T : IExtension
         {

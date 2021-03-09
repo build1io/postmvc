@@ -6,10 +6,11 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 {
     public abstract class CommandBindingBase
     {
-        internal EventBase  Event      { get; }
-        internal List<Type> Commands   { get; }
-        internal bool       IsOnce     { get; private set; }
-        internal bool       IsSequence { get; private set; }
+        internal EventBase  Event          { get; }
+        internal List<Type> Commands       { get; }
+        internal bool       IsOnce         { get; private set; }
+        internal bool       IsSequence     { get; private set; }
+        internal bool       IsUnbindOnQuit { get; private set; }
 
         protected CommandBindingBase(EventBase type)
         {
@@ -26,6 +27,12 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         public CommandBindingBase InSequence()
         {
             IsSequence = true;
+            return this;
+        }
+
+        public CommandBindingBase UnbindOnQuit()
+        {
+            IsUnbindOnQuit = true;
             return this;
         }
     }
