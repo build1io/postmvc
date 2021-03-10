@@ -29,7 +29,7 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
             if (TryFindContext(out var context))
                 ProcessContextIntegration(context);
             else
-                Context.OnContextStart += ProcessContextIntegration;
+                Context.OnContextStarted += ProcessContextIntegration;
         }
 
         protected virtual void OnEnable()
@@ -61,10 +61,10 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
 
         private void ProcessContextIntegration(IContext context)
         {
-            Context.OnContextStart -= ProcessContextIntegration;
+            Context.OnContextStarted -= ProcessContextIntegration;
 
             _context = context;
-            _context.OnStop += OnContextStop;
+            _context.OnStopping += OnContextStopping;
 
             var mvcs = _context.GetExtension<MVCSExtension>();
             _viewEventProcessor = mvcs.InjectionBinder.GetInstance<IUnityViewEventProcessor>();
@@ -77,7 +77,7 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
 
         private void DisposeContextIntegration()
         {
-            Context.OnContextStart -= ProcessContextIntegration;
+            Context.OnContextStarted -= ProcessContextIntegration;
 
             if (_mediationBinder != null)
             {
@@ -87,7 +87,7 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
 
             if (_context != null)
             {
-                _context.OnStop -= OnContextStop;
+                _context.OnStopping -= OnContextStopping;
                 _context = null;
             }
 
@@ -95,7 +95,7 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
             Initialized = false;
         }
 
-        private void OnContextStop()
+        private void OnContextStopping()
         {
             // Once view finds it's context, it listens to Stop event.
             // If context is stopped, all initialized views are destroyed.

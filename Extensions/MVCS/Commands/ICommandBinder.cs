@@ -15,6 +15,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         void Unbind(CommandBindingBase binding);
         void UnbindAll(EventBase type);
         void UnbindAll();
+        void UnbindOnQuit();
 
         IList<CommandBindingBase> GetBindings(EventBase type);
 

@@ -10,6 +10,27 @@ namespace Build1.PostMVC.Extensions.Unity.Contexts
         public IContext Context { get; private set; }
         public object   ViewRaw => this;
 
+        private void OnApplicationQuit()
+        {
+            Context.SetQuitting();
+        }
+        
+        #if UNITY_EDITOR
+        
+        /*
+         * Added for debug needs, to test disposal processes.
+         */
+        public void OnDisable()
+        {
+            Context.Stop();
+        }
+        
+        #endif
+        
+        /*
+         * Public.
+         */
+        
         public void SetContext(IContext context)
         {
             Context = context;
@@ -25,17 +46,5 @@ namespace Build1.PostMVC.Extensions.Unity.Contexts
                 return transform as T;
             throw new Exception($"Incompatible required type for view [{typeof(T).FullName}].");
         }
-
-        #if UNITY_EDITOR
-        
-        /*
-         * Added for debug needs, to test disposal processes.
-         */
-        public void OnDisable()
-        {
-            Context.Stop();
-        }
-        
-        #endif
     }
 }

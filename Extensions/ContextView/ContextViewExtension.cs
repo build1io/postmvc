@@ -16,15 +16,15 @@ namespace Build1.PostMVC.Extensions.ContextView
             View = view;
         }
 
-        public override void OnInitialized()
+        public override void Initialize()
         {
             var injectionBinder = GetDependentExtension<MVCSExtension>().InjectionBinder;
             injectionBinder.Bind<IContextView>().ToValue(new Context.Impl.ContextView(View, Context));
         }
 
-        public override void OnDispose()
+        public override void Dispose()
         {
-            // We don't need to unbind anything, as MVCSExtension does this.
+            // We don't need to unbind anything. MVCSExtension does it.
         }
     }
 }

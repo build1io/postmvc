@@ -31,8 +31,16 @@ namespace Build1.PostMVC.Extensions.MVCS
             MediationBinder = new MediationBinder(mediationMode, InjectionBinder);
         }
 
-        public override void OnInitialized()
+        public override void Initialize()
         {
+            Context.OnStarting += OnContextStarting;
+            Context.OnStarted += OnContextStarted;
+            Context.OnQuitting += OnContextQuitting;
+            Context.OnStopped += OnContextStopped;
+
+            Context.OnModuleConstructing += OnModuleConstructing;
+            Context.OnModuleDisposing += OnModuleDisposing;
+
             InjectionBinder.Bind<IContext>().ToValue(Context);
             InjectionBinder.Bind<IEventDispatcher>().ToValue(EventDispatcher).ConstructValue();
             InjectionBinder.Bind<IInjectionBinder>().ToValue(InjectionBinder);
@@ -40,22 +48,25 @@ namespace Build1.PostMVC.Extensions.MVCS
             InjectionBinder.Bind<IMediationBinder>().ToValue(MediationBinder);
         }
 
-        public override void OnDispose()
+        public override void Dispose()
         {
+            Context.OnStarting -= OnContextStarting;
+            Context.OnStarted -= OnContextStarted;
+            Context.OnQuitting -= OnContextQuitting;
+            Context.OnStopped -= OnContextStopped;
+
+            Context.OnModuleConstructing -= OnModuleConstructing;
+            Context.OnModuleDisposing -= OnModuleDisposing;
+            
+            CommandBinder.UnbindAll();
             InjectionBinder.UnbindAll();
         }
 
-        public override void OnModuleConstructed(IModule module)
-        {
-            InjectionBinder.Construct(module, true);
-        }
+        /*
+         * Context.
+         */
 
-        public override void OnModuleDispose(IModule module)
-        {
-            InjectionBinder.Destroy(module, true);
-        }
-
-        public override void OnContextStarting()
+        private void OnContextStarting()
         {
             InjectionBinder.ForEachBinding(binding =>
             {
@@ -64,19 +75,26 @@ namespace Build1.PostMVC.Extensions.MVCS
             });
         }
 
-        public override void OnContextStarted()
+        private void OnContextStarted()
         {
             InjectionBinder.GetInstance<IEventDispatcher>().Dispatch(ContextEvent.Started);
         }
 
-        public override void OnContextStopping()
+        private void OnContextQuitting()
         {
-            CommandBinder.UnbindAll();
+            CommandBinder.UnbindOnQuit();
         }
 
-        public override void OnContextStopped()
+        private void OnContextStopped()
         {
             InjectionBinder.GetInstance<IEventDispatcher>().Dispatch(ContextEvent.Stopped);
         }
+
+        /*
+         * Modules.
+         */
+
+        private void OnModuleConstructing(IModule module) { InjectionBinder.Construct(module, true); }
+        private void OnModuleDisposing(IModule module)    { InjectionBinder.Destroy(module, true); }
     }
 }

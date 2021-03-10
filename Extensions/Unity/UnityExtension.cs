@@ -33,7 +33,7 @@ namespace Build1.PostMVC.Extensions.Unity
          * Public.
          */
 
-        public override void OnInitialized()
+        public override void Initialize()
         {
             var injectionBinder = GetDependentExtension<MVCSExtension>().InjectionBinder;
             injectionBinder.Bind<IUnityViewEventProcessor>().To<UnityViewEventProcessor>().AsSingleton();
@@ -45,7 +45,7 @@ namespace Build1.PostMVC.Extensions.Unity
             injectionBinder.Bind<IUpdateController>().To<UpdateController>().AsSingleton();
         }
 
-        public override void OnSetup()
+        public override void Setup()
         {
             object view = null;
             if (Context.TryGetExtension<ContextViewExtension>(out var viewExtension))
@@ -76,9 +76,9 @@ namespace Build1.PostMVC.Extensions.Unity
             _contextViewGameObject = viewGameObject;
         }
 
-        public override void OnDispose()
+        public override void Dispose()
         {
-            // We don't need to unbind anything, as MVCSExtension does this.
+            // We don't need to unbind anything. MVCSExtension does it.
             // But we need to remove Context View Game Object.
             Object.Destroy(_contextViewGameObject);
             _contextViewGameObject = null;

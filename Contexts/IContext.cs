@@ -10,10 +10,17 @@ namespace Build1.PostMVC.Contexts
 
         bool IsRootContext { get; }
         bool IsStarted     { get; }
+        bool IsQuitting    { get; }
         bool IsStopping    { get; }
 
-        Action OnStart { get; set; }
-        Action OnStop  { get; set; }
+        event Action<IModule> OnModuleConstructing;
+        event Action<IModule> OnModuleDisposing;
+
+        event Action OnStarting;
+        event Action OnStarted;
+        event Action OnQuitting;
+        event Action OnStopping;
+        event Action OnStopped;
 
         IContext AddExtension(IExtension extension);
         IContext AddExtension<T>() where T : IExtension, new();
@@ -23,7 +30,8 @@ namespace Build1.PostMVC.Contexts
 
         IContext AddModule<T>() where T : IModule, new();
 
-        IContext Start();
-        void     Stop();
+        void Start();
+        void SetQuitting();
+        void Stop();
     }
 }

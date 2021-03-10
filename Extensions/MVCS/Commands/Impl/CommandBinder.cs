@@ -84,6 +84,15 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         public void UnbindAll(EventBase type) { _bindings.Remove(type); }
         public void UnbindAll()               { _bindings.Clear(); }
 
+        public void UnbindOnQuit()
+        {
+            foreach (var bindingsList in _bindings.Values)
+            foreach (var binding in bindingsList)
+                if (binding.IsUnbindOnQuit)
+                    _bindingsToUnbind.Add(binding);
+            UnbindImpl();
+        }
+
         private void UnbindIfOnce(CommandBindingBase binding)
         {
             if (binding.IsOnce)
