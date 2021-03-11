@@ -2,7 +2,7 @@ using System;
 
 namespace Build1.PostMVC.Utils.Extensions
 {
-    public static class TimeExtension
+    public static class TimeExtensions
     {
         public static string FormatAsSeconds(this int seconds)
         {

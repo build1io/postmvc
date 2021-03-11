@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Build1.PostMVC.Utils.Extensions
 {
-    public static class CollectionExtension
+    public static class CollectionExtensions
     {
         private static readonly Random _random = new Random();
         
