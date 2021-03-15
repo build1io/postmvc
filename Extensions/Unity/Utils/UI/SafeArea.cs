@@ -105,7 +105,7 @@ namespace Build1.PostMVC.Extensions.Unity.Utils.UI
             if (top != 0)
                 top -= safeAreaRect.height * applicableOffsetTopPercentage + applicableOffsetTopPixels;
             else
-                top = safeAreaRect.height * unapplicableOffsetTopPercentage + unapplicableOffsetTopPixels;
+                top -= safeAreaRect.height * unapplicableOffsetTopPercentage + unapplicableOffsetTopPixels;
 
             var bottom = safeAreaRect.y;
             if (bottom != 0)
