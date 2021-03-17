@@ -1,6 +1,6 @@
 using Build1.PostMVC.Contexts;
 
-namespace Build1.PostMVC.Extensions.ContextView.Context
+namespace Build1.PostMVC.Extensions.ContextView.Contexts
 {
     public interface IContextView
     {

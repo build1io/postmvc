@@ -1,6 +1,6 @@
 using Build1.PostMVC.Contexts;
 
-namespace Build1.PostMVC.Extensions.ContextView.Context.Impl
+namespace Build1.PostMVC.Extensions.ContextView.Contexts.Impl
 {
     internal sealed class ContextView : IContextView
     {

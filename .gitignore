@@ -1,5 +1,6 @@
 # Unity
 *.meta
+!/Extensions/Unity/Components/*.meta
 
 # JetBrains
 .idea/

@@ -1,6 +1,6 @@
 using System;
 using Build1.PostMVC.Extensions.ContextView;
-using Build1.PostMVC.Extensions.ContextView.Context;
+using Build1.PostMVC.Extensions.ContextView.Contexts;
 using Build1.PostMVC.Extensions.MVCS;
 using Build1.PostMVC.Extensions.Unity.Contexts;
 using Build1.PostMVC.Extensions.Unity.Mediation.Api;

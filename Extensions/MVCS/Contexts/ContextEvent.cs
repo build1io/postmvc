@@ -1,6 +1,6 @@
 using Build1.PostMVC.Extensions.MVCS.Events;
 
-namespace Build1.PostMVC.Extensions.MVCS.Context
+namespace Build1.PostMVC.Extensions.MVCS.Contexts
 {
     public abstract class ContextEvent
     {

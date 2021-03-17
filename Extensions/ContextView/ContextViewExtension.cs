@@ -1,4 +1,4 @@
-using Build1.PostMVC.Extensions.ContextView.Context;
+using Build1.PostMVC.Extensions.ContextView.Contexts;
 using Build1.PostMVC.Extensions.MVCS;
 
 namespace Build1.PostMVC.Extensions.ContextView
@@ -19,7 +19,7 @@ namespace Build1.PostMVC.Extensions.ContextView
         public override void Initialize()
         {
             var injectionBinder = GetDependentExtension<MVCSExtension>().InjectionBinder;
-            injectionBinder.Bind<IContextView>().ToValue(new Context.Impl.ContextView(View, Context));
+            injectionBinder.Bind<IContextView>().ToValue(new Contexts.Impl.ContextView(View, Context));
         }
 
         public override void Dispose()
