@@ -197,11 +197,8 @@ namespace Build1.PostMVC.Contexts
 
         public void Stop()
         {
-            if (IsStopping)
+            if (IsStopping || !IsStarted)
                 return;
-
-            if (!IsStarted)
-                throw new ContextException(ContextExceptionType.ContextNotStarted);
 
             IsStopping = true;
 

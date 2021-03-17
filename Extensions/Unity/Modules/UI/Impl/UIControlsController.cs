@@ -3,7 +3,7 @@ using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.MVCS.Mediation;
 using Build1.PostMVC.Extensions.Unity.Modules.Assets;
 using Build1.PostMVC.Extensions.Unity.Modules.Device;
-using Build1.PostMVC.Extensions.Unity.Utils;
+using Build1.PostMVC.Extensions.Unity.Utils.Extensions;
 using UnityEngine;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl

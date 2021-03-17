@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Build1.PostMVC.Extensions.MVCS.Injection;
-using Build1.PostMVC.Extensions.Unity.Modules.Display;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
+using Build1.PostMVC.Extensions.Unity.Utils;
 using UnityEngine;
 using Logger = Build1.PostMVC.Extensions.Unity.Modules.Logging.Logger;
 using ILogger = Build1.PostMVC.Extensions.Unity.Modules.Logging.ILogger;
@@ -11,8 +11,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Device.Impl
 {
     public sealed class DeviceController : IDeviceController
     {
-        [Logger(LogLevel.Verbose)] public ILogger            Logger            { get; set; }
-        [Inject]                   public IDisplayController DisplayController { get; set; }
+        [Logger(LogLevel.Verbose)] public ILogger Logger { get; set; }
 
         public DeviceType     CurrentDeviceType     { get; private set; }
         public DevicePlatform CurrentDevicePlatform { get; private set; }
@@ -69,7 +68,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Device.Impl
         private void UpdateDeviceInfo()
         {
             CurrentDevicePlatform = GetCurrentDevicePlatform();
-            CurrentDeviceType = GetCurrentDeviceType();
+            CurrentDeviceType = DeviceUtil.GetDeviceType(CurrentDevicePlatform);
 
             Logger.Debug(() => $"Platform: {CurrentDevicePlatform} DeviceType: {CurrentDeviceType}");
         }
@@ -123,13 +122,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Device.Impl
             #endif
 
             throw new Exception($"Unable to process getting current device platform.");
-        }
-
-        private DeviceType GetCurrentDeviceType()
-        {
-            if (IsMobile)
-                return DisplayController.DiagonalInches > 6.5f && DisplayController.AspectRatio < 2f ? DeviceType.Tablet : DeviceType.Phone;
-            return DeviceType.Desktop;
         }
     }
 }
