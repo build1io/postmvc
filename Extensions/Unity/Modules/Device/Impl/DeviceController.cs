@@ -110,9 +110,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Device.Impl
                     case UnityEditor.BuildTarget.iOS:     return DevicePlatform.iOS;
                     case UnityEditor.BuildTarget.Android: return DevicePlatform.Android;
 
-                    case UnityEditor.BuildTarget.WebGL:             return DevicePlatform.WebGL;
-                    case UnityEditor.BuildTarget.StandaloneOSX:     return DevicePlatform.OSX;
-                    case UnityEditor.BuildTarget.StandaloneWindows: return DevicePlatform.Windows;
+                    case UnityEditor.BuildTarget.WebGL:         return DevicePlatform.WebGL;
+                    case UnityEditor.BuildTarget.StandaloneOSX: return DevicePlatform.OSX;
+                    
+                    case UnityEditor.BuildTarget.StandaloneWindows:
+                    case UnityEditor.BuildTarget.StandaloneWindows64: return DevicePlatform.Windows;
 
                     default:
                         throw new Exception($"Unsupported build target: {target}");

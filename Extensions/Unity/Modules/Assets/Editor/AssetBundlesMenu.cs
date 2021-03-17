@@ -43,6 +43,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Editor
             AssetBundlesBuilder.Build(BuildTarget.StandaloneWindows, BuildAssetBundleOptions.StrictMode);
         }
         
+        [MenuItem("Asset Bundles/Build Windows 64", false, 102)]
+        public static void BuildWindows64()
+        {
+            AssetBundlesBuilder.Build(BuildTarget.StandaloneWindows64, BuildAssetBundleOptions.StrictMode);
+        }
+        
         [MenuItem("Asset Bundles/Build WebGL", false, 150)]
         public static void BuildWebGL()
         {
