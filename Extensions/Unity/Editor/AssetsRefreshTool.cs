@@ -12,7 +12,7 @@ namespace Build1.PostMVC.Extensions.Unity.Editor
         
         static AssetsRefreshTool()
         {
-            SetEnabled(GetEnabled());
+            SetEnabled(GetEnabled(), false);
         }
 
         public static bool GetEnabled()
@@ -20,7 +20,7 @@ namespace Build1.PostMVC.Extensions.Unity.Editor
             return EditorPrefs.GetBool(AutoRefreshOnPlayPrefsKey);
         }
         
-        public static void SetEnabled(bool enabled)
+        public static void SetEnabled(bool enabled, bool printToLog = true)
         {
             EditorPrefs.SetBool("kAutoRefresh", !enabled);
             EditorPrefs.SetBool("PostMVC_RefreshAssetsOnPlay", enabled);
@@ -29,6 +29,9 @@ namespace Build1.PostMVC.Extensions.Unity.Editor
                 EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             else
                 EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            
+            if (!printToLog)
+                return;
             
             Debug.Log(enabled
                           ? "Refresh Assets on Play Mode enabled. Auto Refresh turned off."
