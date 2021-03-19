@@ -39,7 +39,7 @@ namespace Build1.PostMVC.Extensions.Unity.Editor
         {
             if (state != PlayModeStateChange.ExitingEditMode) 
                 return;
-            Debug.Log("AssetsRefreshTool: Refreshing...");
+            Debug.Log("Refreshing assets...");
             AssetDatabase.Refresh(ImportAssetOptions.Default);
         }
     }
