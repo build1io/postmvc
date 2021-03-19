@@ -2,7 +2,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Build1.PostMVC.Extensions.Unity.Modules.FullScreen
+namespace Build1.PostMVC.Extensions.Unity.Components
 {
     public sealed class FullScreenButton : Button
     {

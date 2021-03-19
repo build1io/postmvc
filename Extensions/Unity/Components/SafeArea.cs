@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Build1.PostMVC.Extensions.Unity.Utils.UI
+namespace Build1.PostMVC.Extensions.Unity.Components
 {
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
