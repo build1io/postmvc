@@ -13,7 +13,24 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Device.Impl
     {
         [Logger(LogLevel.Verbose)] public ILogger Logger { get; set; }
 
-        public DeviceType     CurrentDeviceType     { get; private set; }
+        public DeviceType CurrentDeviceType
+        {
+            get
+            {
+                #if UNITY_EDITOR
+                    // This will make controller to recalculate this on every call.
+                    // It helps to work in editor while developer switches device in Simulator.
+                    _currentDeviceType = DeviceUtil.GetDeviceType(CurrentDevicePlatform);
+                #endif
+                
+                return _currentDeviceType;
+            }
+            private set
+            {
+                _currentDeviceType = value;
+            }
+        }
+
         public DevicePlatform CurrentDevicePlatform { get; private set; }
 
         public bool IsMobile => CurrentDevicePlatform == DevicePlatform.iOS ||
@@ -28,6 +45,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Device.Impl
 
         private RuntimePlatform _platform;
         private bool            _platformSet;
+
+        private DeviceType _currentDeviceType;
 
         [PostConstruct]
         public void PostConstruct()
