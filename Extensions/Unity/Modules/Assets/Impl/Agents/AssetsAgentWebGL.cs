@@ -24,17 +24,20 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
             
             yield return bundleLoadRequest.SendWebRequest();
             
-            if (bundleLoadRequest.isNetworkError)
+            switch (bundleLoadRequest.result)
             {
-                onError?.Invoke(new AssetsException(AssetsExceptionType.BundleLoadingNetworkError, bundleLoadRequest.error));
-            }
-            else if (bundleLoadRequest.isHttpError)
-            {
-                onError?.Invoke(new AssetsException(AssetsExceptionType.BundleLoadingHttpError, bundleLoadRequest.error));
-            }
-            else
-            {
-                onComplete?.Invoke(DownloadHandlerAssetBundle.GetContent(bundleLoadRequest));    
+                case UnityWebRequest.Result.ConnectionError:
+                    onError?.Invoke(new AssetsException(AssetsExceptionType.BundleLoadingNetworkError, bundleLoadRequest.error));
+                    break;
+                case UnityWebRequest.Result.ProtocolError:
+                    onError?.Invoke(new AssetsException(AssetsExceptionType.BundleLoadingHttpError, bundleLoadRequest.error));
+                    break;
+                case UnityWebRequest.Result.DataProcessingError:
+                    onError?.Invoke(new AssetsException(AssetsExceptionType.BundleLoadingProcessingError, bundleLoadRequest.error));
+                    break;
+                default:
+                    onComplete?.Invoke(DownloadHandlerAssetBundle.GetContent(bundleLoadRequest));
+                    break;
             }
         }
     }
