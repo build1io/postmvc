@@ -15,11 +15,8 @@ namespace Build1.PostMVC.Extensions.Unity.Components
         [Header("Unapplicable Offsets"), SerializeField] private Rect    unapplicableOffsetPercentage;
         [SerializeField]                                 private RectInt unapplicableOffsetPixels;
         
-        private RectTransform _rectTransform;
-
         private void Start()
         {
-            _rectTransform = GetComponent<RectTransform>();
             ApplySafeArea();
         }
 
@@ -95,8 +92,9 @@ namespace Build1.PostMVC.Extensions.Unity.Components
             else
                 rightUnits -= unapplicableOffsetPixels.width + screenResolution.width * unapplicableOffsetPercentage.width;;
             
-            _rectTransform.offsetMin = new Vector2(leftUnits, bottomUnits);
-            _rectTransform.offsetMax = new Vector2(rightUnits, -topUnits);
+            var rectTransform = GetComponent<RectTransform>();
+            rectTransform.offsetMin = new Vector2(leftUnits, bottomUnits);
+            rectTransform.offsetMax = new Vector2(rightUnits, -topUnits);
         }
     }
 }
