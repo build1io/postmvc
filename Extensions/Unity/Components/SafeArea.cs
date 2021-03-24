@@ -7,114 +7,96 @@ namespace Build1.PostMVC.Extensions.Unity.Components
     [RequireComponent(typeof(RectTransform))]
     public sealed class SafeArea : MonoBehaviour
     {
-        [Header("Applicable Offsets")]
-        [Tooltip("% of screen height that'll be added to top padding when save area applied.")]
-        [SerializeField]
-        private float applicableOffsetTopPercentage;
+        [Header("General"), SerializeField] private Vector2Int referenceResolution;
+        
+        [Header("Applicable Offsets"), SerializeField] private Rect    applicableOffsetPercentage;
+        [SerializeField]                               private RectInt applicableOffsetPixels;
 
-        [Tooltip("Offset that'll be added to top offset when save area applied.")]
-        [SerializeField]
-        private int applicableOffsetTopPixels;
-        
-        [Tooltip("% of screen height that'll be added to bottom padding when save area applied.")]
-        [SerializeField]
-        private float applicableOffsetBottomPercentage;
-
-        [Tooltip("Offset that'll be added to bottom offset when save area applied.")]
-        [SerializeField] 
-        private int applicableOffsetBottomPixels;
-        
-        [Header("Unapplicable Offsets")]
-        [Tooltip("% of screen height that'll be added to top padding when save area NOT applied.")]
-        [SerializeField]
-        private float unapplicableOffsetTopPercentage;
-        
-        [Tooltip("Offset that'll be added to top offset when save area NOT applied.")]
-        [SerializeField]
-        private int unapplicableOffsetTopPixels;
-        
-        [Tooltip("% of screen height that'll be added to bottom padding when save area NOT applied.")]
-        [SerializeField]
-        private float unapplicableOffsetBottomPercentage;
-        
-        [Tooltip("Offset that'll be added to bottom offset when save area NOT applied.")]
-        [SerializeField] 
-        private int unapplicableOffsetBottomPixels;
+        [Header("Unapplicable Offsets"), SerializeField] private Rect    unapplicableOffsetPercentage;
+        [SerializeField]                                 private RectInt unapplicableOffsetPixels;
         
         private RectTransform _rectTransform;
 
         private void Start()
         {
             _rectTransform = GetComponent<RectTransform>();
-
             ApplySafeArea();
         }
 
         #if UNITY_EDITOR
 
-        private Rect  _lastSafeArea;
+        private Rect       _lastSafeArea;
+        private Vector2Int _referenceResolution;
         
-        private float _appliedOffsetTopPercentage;
-        private int   _appliedOffsetTopPixels;
-        private float _appliedOffsetBottomPercentage;
-        private int   _appliedOffsetBottomPixels;
+        private Rect    _applicableOffsetPercentage;
+        private RectInt _applicableOffsetPixels;
         
-        private float _offsetTopPercentage;
-        private int   _offsetTopPixels;
-        private float _offsetBottomPercentage;
-        private int   _offsetBottomPixels;
+        private Rect    _unapplicableOffsetPercentage;
+        private RectInt _unapplicableOffsetPixels;
 
         private void Update()
         {
             if (_lastSafeArea == Screen.safeArea &&
-                _appliedOffsetTopPercentage == applicableOffsetTopPercentage &&
-                _appliedOffsetTopPixels == applicableOffsetTopPixels &&
-                _appliedOffsetBottomPercentage == applicableOffsetBottomPercentage &&
-                _appliedOffsetBottomPixels == applicableOffsetBottomPixels &&
-                _offsetTopPercentage == unapplicableOffsetTopPercentage && 
-                _offsetTopPixels == unapplicableOffsetTopPixels && 
-                _offsetBottomPercentage == unapplicableOffsetBottomPercentage && 
-                _offsetBottomPixels == unapplicableOffsetBottomPixels)
+                _referenceResolution == referenceResolution &&
+                _applicableOffsetPercentage == applicableOffsetPercentage &&
+                _applicableOffsetPixels.Equals(applicableOffsetPixels)  &&
+                _unapplicableOffsetPercentage == unapplicableOffsetPercentage &&
+                _unapplicableOffsetPixels.Equals(unapplicableOffsetPixels))
                 return;
 
             ApplySafeArea();
-            
-            _lastSafeArea = Screen.safeArea;
-            
-            _appliedOffsetTopPercentage = applicableOffsetTopPercentage;
-            _appliedOffsetTopPixels = applicableOffsetTopPixels;
-            _appliedOffsetBottomPercentage = applicableOffsetBottomPercentage;
-            _appliedOffsetBottomPixels = applicableOffsetBottomPixels;
 
-            _offsetTopPercentage = unapplicableOffsetTopPercentage;
-            _offsetTopPixels = unapplicableOffsetTopPixels;
-            _offsetBottomPercentage = unapplicableOffsetBottomPercentage;
-            _offsetBottomPixels = unapplicableOffsetBottomPixels;
+            _lastSafeArea = Screen.safeArea;
+            _referenceResolution = referenceResolution;
+
+            _applicableOffsetPercentage = applicableOffsetPercentage;
+            _applicableOffsetPixels = applicableOffsetPixels;
+
+            _unapplicableOffsetPercentage = unapplicableOffsetPercentage;
+            _unapplicableOffsetPixels = unapplicableOffsetPixels;
         }
 
         #endif
 
         private void ApplySafeArea()
         {
-            var safeAreaRect = Screen.safeArea;
+            var safeArea = Screen.safeArea;
+            var screenResolution = Screen.currentResolution;
+
+            var scaleHeight = (float)referenceResolution.y / screenResolution.height;
+            var scaleWidth = (float)referenceResolution.x / screenResolution.width;
             
-            var left = safeAreaRect.xMin;
-            var right = -(Screen.width - safeAreaRect.xMax);
-
-            var top = safeAreaRect.height + safeAreaRect.y - Screen.height;
-            if (top != 0)
-                top -= safeAreaRect.height * applicableOffsetTopPercentage + applicableOffsetTopPixels;
+            var topPixel = screenResolution.height - (safeArea.y + safeArea.height);
+            var bottomPixels = safeArea.y;
+            var leftPixels = safeArea.xMin;
+            var rightPixels = -(screenResolution.width - safeArea.xMax);
+            
+            var topUnits = topPixel * scaleHeight * 1.2f;
+            if (topPixel != 0)
+                topUnits += applicableOffsetPixels.y + screenResolution.height * applicableOffsetPercentage.y;
             else
-                top -= safeAreaRect.height * unapplicableOffsetTopPercentage + unapplicableOffsetTopPixels;
-
-            var bottom = safeAreaRect.y;
-            if (bottom != 0)
-                bottom += safeAreaRect.height * applicableOffsetBottomPercentage + applicableOffsetBottomPixels;
+                topUnits += unapplicableOffsetPixels.y + screenResolution.height * unapplicableOffsetPercentage.y;
+            
+            var bottomUnits = bottomPixels * scaleHeight * 1.2F;
+            if (bottomPixels != 0)
+                bottomUnits += applicableOffsetPixels.height + screenResolution.height * applicableOffsetPercentage.height;
             else
-                bottom = safeAreaRect.height * unapplicableOffsetBottomPercentage + unapplicableOffsetBottomPixels;
-                         
-            _rectTransform.offsetMin = new Vector2(left, bottom);
-            _rectTransform.offsetMax = new Vector2(right, top);
+                bottomUnits += unapplicableOffsetPixels.height + screenResolution.height * unapplicableOffsetPercentage.height;
+            
+            var leftUnits = leftPixels * scaleWidth;
+            if (leftPixels != 0)
+                leftUnits += applicableOffsetPixels.x + screenResolution.width * applicableOffsetPercentage.x;
+            else
+                leftUnits += unapplicableOffsetPixels.x + screenResolution.width * unapplicableOffsetPercentage.x;
+            
+            var rightUnits = rightPixels * scaleWidth;
+            if (rightPixels != 0)
+                rightUnits -= applicableOffsetPixels.width + screenResolution.width * applicableOffsetPercentage.width;
+            else
+                rightUnits -= unapplicableOffsetPixels.width + screenResolution.width * unapplicableOffsetPercentage.width;;
+            
+            _rectTransform.offsetMin = new Vector2(leftUnits, bottomUnits);
+            _rectTransform.offsetMax = new Vector2(rightUnits, -topUnits);
         }
     }
 }
