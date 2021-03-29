@@ -89,8 +89,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
             
             var configuration = DeviceController.GetConfiguration(control);
             var layer = UILayerController.GetLayerView(configuration.appLayerId);
-            var view = layer.GetFirstActiveChild();
-            if (view == null || view.name != control.name)
+            var view = layer.transform.Find(control.name);
+            if (view == null || !view.gameObject.activeSelf)
                 return false;
 
             if (control.ToDestroyOnDeactivation)
@@ -110,6 +110,17 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
             instance.name = control.name;
 
             return instance;
+        }
+
+        protected bool CheckControlIsActive(T control)
+        {
+            if (control == null)
+                return false;
+            
+            var configuration = DeviceController.GetConfiguration(control);
+            var layer = UILayerController.GetLayerView(configuration.appLayerId);
+            var view = layer.transform.Find(control.name);
+            return view != null && view.gameObject.activeSelf;
         }
 
         protected bool CheckConfigInstalled(C configuration)

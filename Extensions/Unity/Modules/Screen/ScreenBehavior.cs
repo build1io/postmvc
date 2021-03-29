@@ -6,6 +6,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen
         Default = 0,
 
         /// Screen will be open in background. Active screen will not be affected.
-        OpenInBackground = 1
+        OpenInBackground = 1,
+        
+        /// Screen will be open on top of the current one and will not affect current screen.
+        OpenOnTop = 2
     }
 }

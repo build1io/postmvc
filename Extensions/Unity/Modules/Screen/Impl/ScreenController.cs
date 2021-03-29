@@ -24,26 +24,40 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
 
         public void Show(Screen screen, ScreenBehavior behavior)
         {
-            if (behavior == ScreenBehavior.Default && _currentScreens.Count > 0)
-                Hide(_currentScreens[0]);
+            if (_currentScreens.Count > 0 && behavior == ScreenBehavior.Default)
+            {
+                // Hides all active screens if behavior is ScreenBehavior.Default.
+                for (var i = _currentScreens.Count - 1; i >= 0; i--)
+                    Hide(_currentScreens[i]);
+            }
 
             var instance = GetInstance(screen, UIControlOptions.Instantiate | UIControlOptions.Activate);
             if (instance == null)
                 return;
+
+            if (behavior == ScreenBehavior.OpenOnTop)
+            {
+                _currentScreens.Insert(0, screen);
+                
+                // We don't need to move object in hierarchy as it'll be added on top of everything on the layer.
+            }
+            else
+            {
+                _currentScreens.Add(screen);    
+            }
             
-            _currentScreens.Add(screen);
             Dispatcher.Dispatch(ScreenEvent.Open, screen);
         }
 
         public void Hide(Screen screen)
         {
-            if (_currentScreens.Remove(screen) && Deactivate(screen))
+            if (Deactivate(screen) && _currentScreens.Remove(screen))
                 Dispatcher.Dispatch(ScreenEvent.Closed, screen);
         }
 
         public bool ScreenIsActive(Screen screen)
         {
-            return _currentScreens.Contains(screen);
+            return _currentScreens.Contains(screen) && CheckControlIsActive(screen);
         }
     }
 }

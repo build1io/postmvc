@@ -96,7 +96,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
             
             if (!Deactivate(popup))
             {
-                Logger.Error(p => $"Closing dialog not found: {p}", popup);
+                Logger.Error(p => $"Closing dialog not found or already inactive: {p}", popup);
                 return;
             }
 
