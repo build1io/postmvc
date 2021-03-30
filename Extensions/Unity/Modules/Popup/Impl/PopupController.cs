@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
@@ -16,13 +17,15 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
         [Inject]                   public IEventDispatcher Dispatcher      { get; set; }
         [Inject]                   public IInjectionBinder InjectionBinder { get; set; }
 
+        public bool HasOpenPopups => _openPopups.Count > 0;
+
+        private readonly List<PopupBase>  _openPopups;
         private readonly Queue<PopupBase> _queue;
         private readonly Queue<object>    _queueData;
 
-        private PopupBase _currentPopup;
-
         public PopupController()
         {
+            _openPopups = new List<PopupBase>();
             _queue = new Queue<PopupBase>();
             _queueData = new Queue<object>();
         }
@@ -43,67 +46,61 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
          * Opening.
          */
 
-        public void Open(Popup popup)
-        {
-            Open(popup, PopupBehavior.Default);
-        }
+        public void Open(Popup popup)                         { OpenImpl(popup, null, PopupBehavior.Default); }
+        public void Open(Popup popup, PopupBehavior behavior) { OpenImpl(popup, null, behavior); }
 
-        public void Open(Popup popup, PopupBehavior behavior)
-        {
-            if (behavior != PopupBehavior.Default)
-                throw new Exception($"Unknown behavior: {behavior}");
-            
-            _queue.Enqueue(popup);
-            _queueData.Enqueue(null);
-            
-            if (_currentPopup == null)
-                ProcessQueue();
-        }
+        public void Open<T>(Popup<T> popup, T data)                         { OpenImpl(popup, data, PopupBehavior.Default); }
+        public void Open<T>(Popup<T> popup, T data, PopupBehavior behavior) { OpenImpl(popup, data, behavior); }
 
-        public void Open<T>(Popup<T> popup, T data)
+        private void OpenImpl(PopupBase popup, object data, PopupBehavior behavior)
         {
-            Open(popup, data, PopupBehavior.Default);
-        }
-        
-        public void Open<T>(Popup<T> popup, T data, PopupBehavior behavior)
-        {
-            if (behavior != PopupBehavior.Default)
-                throw new Exception($"Unknown behavior: {behavior}");
-            
-            _queue.Enqueue(popup);
-            _queueData.Enqueue(data);
-            
-            if (_currentPopup == null)
-                ProcessQueue();
+            switch (behavior)
+            {
+                case PopupBehavior.Default:
+                {
+                    _queue.Enqueue(popup);
+                    _queueData.Enqueue(data);
+                
+                    if (_openPopups.Count == 0)
+                        ProcessQueue();
+                
+                    return;
+                }
+                
+                case PopupBehavior.OpenOnTop:
+                    OpenPopup(popup, data);
+                    return;
+                
+                default:
+                    throw new Exception($"Unable to process behavior: {behavior}");
+            }
         }
 
         /*
          * Closing.
          */
 
-        public void Close()
-        {
-            Close(_currentPopup);
-        }
-        
         public void Close(PopupBase popup)
         {
-            if (_currentPopup != popup)
+            if (!_openPopups.Contains(popup))
             {
-                Logger.Error(p => $"Current popup doesn't match to closing popup: {_currentPopup} != {p}", popup);
-                return;
-            }
-            
-            if (!Deactivate(popup))
-            {
-                Logger.Error(p => $"Closing dialog not found or already inactive: {p}", popup);
+                Logger.Error(p => $"Specified popup is not open: {p}", popup);
                 return;
             }
 
-            var closedPopup = _currentPopup;
-            _currentPopup = null;
+            if (Deactivate(popup) && _openPopups.Remove(popup))
+            {
+                Dispatcher.Dispatch(PopupEvent.Closed, popup);
+                return;
+            }
 
-            Dispatcher.Dispatch(PopupEvent.Closed, closedPopup);
+            Logger.Error(p => $"Failed to deactivate popup: {p}", popup);
+        }
+
+        public void CloseAll()
+        {
+            for (var i = _openPopups.Count - 1; i >= 0; i--)
+                Close(_openPopups[i]);
         }
 
         /*
@@ -112,26 +109,26 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
 
         private void ProcessQueue()
         {
-            if (_currentPopup != null)
+            if (_openPopups.Count > 0)
             {
-                Logger.Error(() => $"Can't process queue. Current dialog isn't closed: {_currentPopup}");
+                Logger.Debug(op => $"Queue processing cancelled. There are open popups: {string.Join(",", op.Select(p => p.ToString()))}", _openPopups);
                 return;
             }
 
-            // Queue is empty, no dialogs to show.
-            if (_queue.Count == 0)
-                return;
+            // Checking if there are popups in the queue. 
+            if (_queue.Count > 0)
+                OpenPopup(_queue.Dequeue(), _queueData.Dequeue());
+        }
 
-            var popup = _queue.Dequeue();
-            var data = _queueData.Dequeue();
-
-            _currentPopup = popup;
+        private void OpenPopup(PopupBase popup, object data)
+        {
+            _openPopups.Add(popup);
 
             IInjectionBinding dataBinding = null;
 
             if (popup.dataType != null)
                 dataBinding = InjectionBinder.Bind(popup.dataType).ToValue(data).ToBinding();
-            
+
             var instance = GetInstance(popup, UIControlOptions.Instantiate);
             var view = instance.GetComponent<PopupView>();
             if (view == null)
