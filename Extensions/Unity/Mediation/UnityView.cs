@@ -14,8 +14,6 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
         public bool Initialized { get; private set; }
         public bool Enabled     => gameObject.activeInHierarchy;
 
-        private bool _setup;
-
         private IContext                 _context;
         private IMediationBinder         _mediationBinder;
         private IUnityViewEventProcessor _viewEventProcessor;
