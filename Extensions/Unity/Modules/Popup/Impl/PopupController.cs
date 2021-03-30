@@ -25,9 +25,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
 
         public PopupController()
         {
-            _openPopups = new List<PopupBase>();
-            _queue = new Queue<PopupBase>();
-            _queueData = new Queue<object>();
+            _openPopups = new List<PopupBase>(4);
+            _queue = new Queue<PopupBase>(4);
+            _queueData = new Queue<object>(4);
         }
 
         [PostConstruct]
