@@ -20,7 +20,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules
         {
             InjectionBinder.Bind<IDeviceController>().To<DeviceController>().AsSingleton();
             InjectionBinder.Bind<IPopupController>().To<PopupController>().AsSingleton();
-            InjectionBinder.Bind<IScreenController>().To<ScreenController>().AsSingleton();
+            InjectionBinder.Bind<IScreensController>().To<ScreensController>().AsSingleton();
             InjectionBinder.Bind<IUILayersController>().To<UILayersController>().AsSingleton();
         }
     }
