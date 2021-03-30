@@ -4,6 +4,7 @@ using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Agents;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using Logger = Build1.PostMVC.Extensions.Unity.Modules.Logging.Logger;
 using ILogger = Build1.PostMVC.Extensions.Unity.Modules.Logging.ILogger;
@@ -55,6 +56,25 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
          * Public.
          */
 
+        public void OpenUrl(string url)
+        {
+            Application.OpenURL(url);
+        }
+
+        public void MailTo(string email, string subject, string body)
+        {
+            static string Escape(string str)
+            {
+                return UnityWebRequest.EscapeURL(str).Replace("+","%20");
+            }
+            Application.OpenURL($"mailto:{email}?subject={Escape(subject)}&body={Escape(body)}");
+        }
+
+        public void CopyToClipboard(string content)
+        {
+            GUIUtility.systemCopyBuffer = content;
+        }
+        
         public void Restart()
         {
             // Signalling that app is about to restart.
