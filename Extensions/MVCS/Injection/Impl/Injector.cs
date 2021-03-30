@@ -251,7 +251,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 
         private void PreDestroy(object instance, IMVCSItemReflectionInfo info)
         {
-            if (info.PostConstructors.Count == 0)
+            if (info.PreDestroys.Count == 0)
                 return;
             foreach (var method in info.PreDestroys)
                 method.Invoke(instance, null);
