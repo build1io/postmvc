@@ -30,7 +30,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
                 DebugImpl(FormatException(exception));
             return this;
         }
-        
+
         public ILoggerDebug Debug(Func<string> callback)
         {
             if ((_level & LogLevel.Debug) == LogLevel.Debug)
@@ -58,7 +58,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
                 DebugImpl(FormatMessage(callback.Invoke(param01, param02, param03)));
             return this;
         }
-        
+
         public ILoggerDebug Debug(Action<ILoggerDebug> callback)
         {
             if ((_level & LogLevel.Debug) == LogLevel.Debug)
@@ -104,7 +104,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
                 WarningImpl(FormatException(exception));
             return this;
         }
-        
+
         public ILoggerWarn Warn(Func<string> callback)
         {
             if ((_level & LogLevel.Warning) == LogLevel.Warning)
@@ -112,21 +112,21 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             return this;
         }
 
-        public ILoggerDebug Warn<T1>(Func<T1, string> callback, T1 param01)
+        public ILoggerWarn Warn<T1>(Func<T1, string> callback, T1 param01)
         {
             if ((_level & LogLevel.Warning) == LogLevel.Warning)
                 WarningImpl(FormatMessage(callback.Invoke(param01)));
             return this;
         }
 
-        public ILoggerDebug Warn<T1, T2>(Func<T1, T2, string> callback, T1 param01, T2 param02)
+        public ILoggerWarn Warn<T1, T2>(Func<T1, T2, string> callback, T1 param01, T2 param02)
         {
             if ((_level & LogLevel.Warning) == LogLevel.Warning)
                 WarningImpl(FormatMessage(callback.Invoke(param01, param02)));
             return this;
         }
 
-        public ILoggerDebug Warn<T1, T2, T3>(Func<T1, T2, T3, string> callback, T1 param01, T2 param02, T3 param03)
+        public ILoggerWarn Warn<T1, T2, T3>(Func<T1, T2, T3, string> callback, T1 param01, T2 param02, T3 param03)
         {
             if ((_level & LogLevel.Warning) == LogLevel.Warning)
                 WarningImpl(FormatMessage(callback.Invoke(param01, param02, param03)));
@@ -140,21 +140,21 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             return this;
         }
 
-        public ILoggerDebug Warn<T1>(Action<ILoggerDebug, T1> callback, T1 param01)
+        public ILoggerWarn Warn<T1>(Action<ILoggerWarn, T1> callback, T1 param01)
         {
             if ((_level & LogLevel.Warning) == LogLevel.Warning)
                 callback.Invoke(this, param01);
             return this;
         }
 
-        public ILoggerDebug Warn<T1, T2>(Action<ILoggerDebug, T1, T2> callback, T1 param01, T2 param02)
+        public ILoggerWarn Warn<T1, T2>(Action<ILoggerWarn, T1, T2> callback, T1 param01, T2 param02)
         {
             if ((_level & LogLevel.Warning) == LogLevel.Warning)
                 callback.Invoke(this, param01, param02);
             return this;
         }
 
-        public ILoggerDebug Warn<T1, T2, T3>(Action<ILoggerDebug, T1, T2, T3> callback, T1 param01, T2 param02, T3 param03)
+        public ILoggerWarn Warn<T1, T2, T3>(Action<ILoggerWarn, T1, T2, T3> callback, T1 param01, T2 param02, T3 param03)
         {
             if ((_level & LogLevel.Warning) == LogLevel.Warning)
                 callback.Invoke(this, param01, param02, param03);
@@ -178,7 +178,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
                 ErrorImpl(FormatException(exception));
             return this;
         }
-        
+
         public ILoggerError Error(Func<string> callback)
         {
             if ((_level & LogLevel.Error) == LogLevel.Error)
@@ -186,21 +186,21 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             return this;
         }
 
-        public ILoggerDebug Error<T1>(Func<T1, string> callback, T1 param01)
+        public ILoggerError Error<T1>(Func<T1, string> callback, T1 param01)
         {
             if ((_level & LogLevel.Error) == LogLevel.Error)
                 ErrorImpl(FormatMessage(callback.Invoke(param01)));
             return this;
         }
 
-        public ILoggerDebug Error<T1, T2>(Func<T1, T2, string> callback, T1 param01, T2 param02)
+        public ILoggerError Error<T1, T2>(Func<T1, T2, string> callback, T1 param01, T2 param02)
         {
             if ((_level & LogLevel.Error) == LogLevel.Error)
                 ErrorImpl(FormatMessage(callback.Invoke(param01, param02)));
             return this;
         }
 
-        public ILoggerDebug Error<T1, T2, T3>(Func<T1, T2, T3, string> callback, T1 param01, T2 param02, T3 param03)
+        public ILoggerError Error<T1, T2, T3>(Func<T1, T2, T3, string> callback, T1 param01, T2 param02, T3 param03)
         {
             if ((_level & LogLevel.Error) == LogLevel.Error)
                 ErrorImpl(FormatMessage(callback.Invoke(param01, param02, param03)));
@@ -214,21 +214,21 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             return this;
         }
 
-        public ILoggerDebug Error<T1>(Action<ILoggerDebug, T1> callback, T1 param01)
+        public ILoggerError Error<T1>(Action<ILoggerError, T1> callback, T1 param01)
         {
             if ((_level & LogLevel.Error) == LogLevel.Error)
                 callback.Invoke(this, param01);
             return this;
         }
 
-        public ILoggerDebug Error<T1, T2>(Action<ILoggerDebug, T1, T2> callback, T1 param01, T2 param02)
+        public ILoggerError Error<T1, T2>(Action<ILoggerError, T1, T2> callback, T1 param01, T2 param02)
         {
             if ((_level & LogLevel.Error) == LogLevel.Error)
                 callback.Invoke(this, param01, param02);
             return this;
         }
 
-        public ILoggerDebug Error<T1, T2, T3>(Action<ILoggerDebug, T1, T2, T3> callback, T1 param01, T2 param02, T3 param03)
+        public ILoggerError Error<T1, T2, T3>(Action<ILoggerError, T1, T2, T3> callback, T1 param01, T2 param02, T3 param03)
         {
             if ((_level & LogLevel.Error) == LogLevel.Error)
                 callback.Invoke(this, param01, param02, param03);
