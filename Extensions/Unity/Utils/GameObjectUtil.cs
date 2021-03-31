@@ -1,6 +1,6 @@
-namespace Build1.PostMVC.Extensions.Unity.Utils.Extensions
+namespace Build1.PostMVC.Extensions.Unity.Utils
 {
-    public static class GameObjectExtensions
+    public static class GameObjectUtil
     {
         public static UnityEngine.GameObject GetFirstActiveChild(this UnityEngine.GameObject gameObject)
         {
