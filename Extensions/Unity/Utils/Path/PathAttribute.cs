@@ -1,9 +1,9 @@
 using System;
 
-namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
+namespace Build1.PostMVC.Extensions.Unity.Utils.Path
 {
     [Flags]
-    internal enum PathAttribute
+    public enum PathAttribute
     {
         Automatic = 0,
 
