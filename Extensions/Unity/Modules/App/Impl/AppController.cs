@@ -123,7 +123,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
             if ((pathAttribute & PathAttribute.External) == PathAttribute.External && (pathAttribute & PathAttribute.Cached) == PathAttribute.Cached)
                 return activity.Call<AndroidJavaObject>("getExternalCacheDir").Call<string>(endMethod);
             
-            throw new ArgumentOutOfRangeException(nameof(pathAttribute), pathAttribute, null);
+            throw new System.ArgumentOutOfRangeException(nameof(pathAttribute), pathAttribute, null);
             
             #else
             
