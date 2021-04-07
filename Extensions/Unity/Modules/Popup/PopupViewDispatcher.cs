@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
 {
-    public abstract class PopupView : UnityView, IPopupView
+    public abstract class PopupViewDispatcher : UnityViewDispatcher, IPopupView
     {
         [Inject] public IPopupController PopupController { get; set; }
 

@@ -1,0 +1,82 @@
+using System;
+using System.Collections.Generic;
+using Build1.PostMVC.Extensions.MVCS.Events;
+using Build1.PostMVC.Extensions.MVCS.Events.Impl;
+using Build1.PostMVC.Extensions.Unity.Mediation.Impl;
+using UnityEngine.Events;
+using Event = Build1.PostMVC.Extensions.MVCS.Events.Event;
+
+namespace Build1.PostMVC.Extensions.Unity.Mediation
+{
+    public abstract class UnityViewDispatcher : UnityView, IEventDispatcher
+    {
+        private readonly EventDispatcher                           _dispatcher;
+        private readonly Dictionary<UnityEvent, UnityEventBinding> _bindings;
+
+        protected UnityViewDispatcher()
+        {
+            _dispatcher = new EventDispatcher();
+            _bindings = new Dictionary<UnityEvent, UnityEventBinding>();
+        }
+
+        /*
+         * Event Dispatcher.
+         */
+
+        public void AddListener(Event @event, Action listener)                                     { _dispatcher.AddListener(@event, listener); }
+        public void AddListener<T1>(Event<T1> @event, Action<T1> listener)                         { _dispatcher.AddListener(@event, listener); }
+        public void AddListener<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)             { _dispatcher.AddListener(@event, listener); }
+        public void AddListener<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener) { _dispatcher.AddListener(@event, listener); }
+
+        public void AddListenerOnce(Event @event, Action listener)                                     { _dispatcher.AddListenerOnce(@event, listener); }
+        public void AddListenerOnce<T1>(Event<T1> @event, Action<T1> listener)                         { _dispatcher.AddListenerOnce(@event, listener); }
+        public void AddListenerOnce<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)             { _dispatcher.AddListenerOnce(@event, listener); }
+        public void AddListenerOnce<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener) { _dispatcher.AddListenerOnce(@event, listener); }
+
+        public void RemoveListener(Event @event, Action listener)                                     { _dispatcher.RemoveListener(@event, listener); }
+        public void RemoveListener<T1>(Event<T1> @event, Action<T1> listener)                         { _dispatcher.RemoveListener(@event, listener); }
+        public void RemoveListener<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)             { _dispatcher.RemoveListener(@event, listener); }
+        public void RemoveListener<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener) { _dispatcher.RemoveListener(@event, listener); }
+
+        public void RemoveAllListeners()                 { _dispatcher.RemoveAllListeners(); }
+        public void RemoveAllListeners(EventBase @event) { _dispatcher.RemoveAllListeners(@event); }
+
+        public void Dispatch(Event @event)                                                             { _dispatcher.Dispatch(@event); }
+        public void Dispatch<T1>(Event<T1> @event, T1 param01)                                         { _dispatcher.Dispatch(@event, param01); }
+        public void Dispatch<T1, T2>(Event<T1, T2> @event, T1 param01, T2 param02)                     { _dispatcher.Dispatch(@event, param01, param02); }
+        public void Dispatch<T1, T2, T3>(Event<T1, T2, T3> @event, T1 param01, T2 param02, T3 param03) { _dispatcher.Dispatch(@event, param01, param02, param03); }
+
+        /*
+         * Event Dispatcher Extension.
+         */
+
+        protected IUnityEventBindingTo BindUnityEvent(UnityEvent unityEvent)
+        {
+            if (_bindings.TryGetValue(unityEvent, out var binding)) 
+                return binding;
+            binding = new UnityEventBinding(unityEvent, _dispatcher);
+            _bindings.Add(unityEvent, binding);
+            return binding;
+        }
+
+        protected IUnityEventBindingFrom UnbindUnityEvent(UnityEvent unityEvent)
+        {
+            return _bindings[unityEvent];
+        }
+
+        protected void UnbindUnityEventCompletely(UnityEvent unityEvent)
+        {
+            if (!_bindings.TryGetValue(unityEvent, out var binding))
+                return;
+            binding.Destroy();
+            _bindings.Remove(unityEvent);
+        }
+
+        protected void UnbindAllUnityEvents()
+        {
+            foreach (var bridge in _bindings.Values)
+                bridge.Destroy();
+            _bindings.Clear();
+        }
+    }
+}

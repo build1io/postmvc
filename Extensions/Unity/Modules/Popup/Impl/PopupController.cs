@@ -130,7 +130,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
                 dataBinding = InjectionBinder.Bind(popup.dataType).ToValue(data).ToBinding();
 
             var instance = GetInstance(popup, UIControlOptions.Instantiate);
-            var view = instance.GetComponent<PopupView>();
+            
+            var view = instance.GetComponent<PopupView>() ?? (IPopupView)instance.GetComponent<PopupViewDispatcher>();
             if (view == null)
                 throw new Exception("Popup view doesn't inherit from PopupView.");
 
@@ -139,7 +140,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
             if (view.Initialized)
                 MediationBinder.UpdateViewInjections(view);
 
-            view.gameObject.SetActive(true);
+            view.GameObject.SetActive(true);
 
             if (dataBinding != null)
                 InjectionBinder.Unbind(dataBinding);
