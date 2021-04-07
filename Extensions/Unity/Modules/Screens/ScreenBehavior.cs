@@ -1,4 +1,4 @@
-namespace Build1.PostMVC.Extensions.Unity.Modules.Screen
+namespace Build1.PostMVC.Extensions.Unity.Modules.Screens
 {
     public enum ScreenBehavior
     {

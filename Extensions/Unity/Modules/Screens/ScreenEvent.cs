@@ -1,6 +1,6 @@
 using Build1.PostMVC.Extensions.MVCS.Events;
 
-namespace Build1.PostMVC.Extensions.Unity.Modules.Screen
+namespace Build1.PostMVC.Extensions.Unity.Modules.Screens
 {
     public static class ScreenEvent
     {

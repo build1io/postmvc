@@ -5,9 +5,9 @@ using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using Build1.PostMVC.Extensions.Unity.Modules.UI;
 using Build1.PostMVC.Extensions.Unity.Modules.UI.Impl;
 
-namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
+namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
 {
-    public sealed class ScreensController : UIControlsController<Screen, ScreenConfig>, IScreensController
+    internal sealed class ScreensController : UIControlsController<Screen, ScreenConfig>, IScreensController
     {
         [Logger(LogLevel.Verbose)] public ILogger          Logger     { get; set; }
         [Inject]                   public IEventDispatcher Dispatcher { get; set; }
@@ -43,7 +43,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screen.Impl
             {
                 _openScreens.Insert(0, screen);
 
-                // We don't need to move object in hierarchy as it'll be added on top of everything on the layer.
+                // No need to move object in hierarchy as it'll be added on top of everything on the layer.
             }
             else
             {
