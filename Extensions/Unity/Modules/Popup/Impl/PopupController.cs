@@ -133,7 +133,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
             
             var view = instance.GetComponent<PopupView>() ?? (IPopupView)instance.GetComponent<PopupViewDispatcher>();
             if (view == null)
-                throw new Exception("Popup view doesn't inherit from PopupView.");
+                throw new Exception("Popup view doesn't inherit from PopupView or PopupViewDispatcher.");
 
             view.SetUp(popup);
 

@@ -10,7 +10,7 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
 {
     public abstract class UnityViewDispatcher : UnityView, IEventDispatcher
     {
-        private readonly EventDispatcher                           _dispatcher;
+        private readonly IEventDispatcher                          _dispatcher;
         private readonly Dictionary<UnityEvent, UnityEventBinding> _bindings;
 
         protected UnityViewDispatcher()
@@ -52,7 +52,7 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
 
         protected IUnityEventBindingTo BindUnityEvent(UnityEvent unityEvent)
         {
-            if (_bindings.TryGetValue(unityEvent, out var binding)) 
+            if (_bindings.TryGetValue(unityEvent, out var binding))
                 return binding;
             binding = new UnityEventBinding(unityEvent, _dispatcher);
             _bindings.Add(unityEvent, binding);

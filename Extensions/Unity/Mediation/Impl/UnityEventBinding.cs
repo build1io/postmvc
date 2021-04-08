@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Build1.PostMVC.Extensions.MVCS.Events;
-using Build1.PostMVC.Extensions.Unity.Mediation.Api;
 using UnityEngine.Events;
+using Event = Build1.PostMVC.Extensions.MVCS.Events.Event;
 
 namespace Build1.PostMVC.Extensions.Unity.Mediation.Impl
 {
@@ -11,55 +11,48 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation.Impl
         private UnityEvent       _unityEvent;
         private IEventDispatcher _dispatcher;
 
-        private List<Event>  _events;
-        private List<Action> _actions;
+        private List<Event> _events;
+        private Action      _action;
 
         public UnityEventBinding(UnityEvent unityEvent, IEventDispatcher dispatcher)
         {
             _unityEvent = unityEvent;
             _unityEvent.AddListener(EventHandler);
-
             _dispatcher = dispatcher;
-
-            _events = new List<Event>();
-            _actions = new List<Action>();
         }
 
         public IUnityEventBindingTo ToEvent(Event @event)
         {
-            _events.Add(@event);
+            if (_events == null)
+                _events = new List<Event> { @event };
+            else
+                _events.Add(@event);
             return this;
         }
 
         public IUnityEventBindingTo ToAction(Action action)
         {
-            _actions.Add(action);
+            _action += action;
             return this;
         }
 
         public IUnityEventBindingFrom FromEvent(Event @event)
         {
-            _events.Remove(@event);
+            _events?.Remove(@event);
             return this;
         }
         
-        public IUnityEventBindingFrom FromAction(Action action) 
-        { 
-            _actions.Remove(action);
+        public IUnityEventBindingFrom FromAction(Action action)
+        {
+            _action -= action;
             return this;
         }
 
         public void Destroy()
         {
-            if (_unityEvent != null)
-            {
-                _unityEvent.RemoveListener(EventHandler);
-                _unityEvent = null;
-            }
-
+            _unityEvent?.RemoveListener(EventHandler);
+            _unityEvent = null;
             _dispatcher = null;
-            _events = null;
-            _actions = null;
         }
 
         /*
@@ -68,11 +61,13 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation.Impl
 
         private void EventHandler()
         {
-            foreach (var @event in _events)
-                _dispatcher.Dispatch(@event);
-
-            foreach (var action in _actions)
-                action.Invoke();
+            if (_events != null)
+            {
+                foreach (var @event in _events)
+                    _dispatcher.Dispatch(@event);    
+            }
+            
+            _action?.Invoke();
         }
     }
 }
