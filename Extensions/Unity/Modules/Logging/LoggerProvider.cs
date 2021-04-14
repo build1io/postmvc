@@ -7,6 +7,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 {
     public sealed class LoggerProvider : InjectionProvider<Logger>
     {
+        public static LogLevel GlobalLogLevelOverride = LogLevel.None;
+        
         public override object GetInstance(object parent, Logger attribute)
         {
             return GetLogger(parent.GetType(), attribute.logLevel);
@@ -32,8 +34,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 
         public static ILogger GetLogger(string prefix, LogLevel level)
         {
+            if (GlobalLogLevelOverride != LogLevel.None)
+                level = GlobalLogLevelOverride;
+            
             #if UNITY_WEBGL && !UNITY_EDITOR
-
+            
             return new LoggerWebGL(prefix, level);
             
             #else
