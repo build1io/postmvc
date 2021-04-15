@@ -1,27 +1,59 @@
-using System;
-
 #if UNITY_WEBGL
-    using System.Runtime.InteropServices;
-#endif
+
+using System;
+using System.Collections.Specialized;
+using System.Web;
+using System.Runtime.InteropServices;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 {
     internal sealed class LoggerWebGL : LoggerBase
     {
-        #if UNITY_WEBGL
-            [DllImport("__Internal")]
-            private static extern void LogDebug(string message);
+        [DllImport("__Internal")]
+        private static extern void LogDebug(string message);
 
-            [DllImport("__Internal")]
-            private static extern void LogWarning(string message);
-            
-            [DllImport("__Internal")]
-            private static extern void LogError(string message);
+        [DllImport("__Internal")]
+        private static extern void LogWarning(string message);
 
-        #endif
+        [DllImport("__Internal")]
+        private static extern void LogError(string message);
 
-        public LoggerWebGL(string prefix, LogLevel level) : base(prefix, level)
+        [DllImport("__Internal")]
+        private static extern string GetUrlParameters();
+
+        private static readonly NameValueCollection _urlParams;
+        private static readonly LogLevel            _logLevelOverride;
+
+        static LoggerWebGL()
         {
+            _urlParams = HttpUtility.ParseQueryString(GetUrlParameters().ToLower());
+
+            try
+            {
+                var logLevelString = _urlParams["loglevel"];
+                if (string.IsNullOrWhiteSpace(logLevelString))
+                    return;
+                
+                var logLevel = (LogLevel)Enum.Parse(typeof(LogLevel), logLevelString, true);
+                if (!Enum.IsDefined(typeof(LogLevel), logLevel))
+                    return;
+                
+                _logLevelOverride = logLevel;
+                LogDebug(FormatMessage("LoggerWebGL", $"Global log level overridden to {_logLevelOverride}"));
+            }
+            catch (Exception exception)
+            {
+                LogError(FormatException("LoggerWebGL", exception));
+            }
+        }
+
+        public LoggerWebGL(string prefix, LogLevel level) : base(prefix, ValidateLogLevel(level))
+        {
+        }
+
+        private static LogLevel ValidateLogLevel(LogLevel logLevel)
+        {
+            return _logLevelOverride != LogLevel.None ? _logLevelOverride : logLevel;
         }
 
         /*
@@ -90,9 +122,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
         private static void DebugImpl(string message)
         {
-            #if UNITY_WEBGL
-                LogDebug(message);
-            #endif
+            LogDebug(message);
         }
 
         /*
@@ -161,9 +191,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
         private static void WarningImpl(string message)
         {
-            #if UNITY_WEBGL
-                LogWarning(message);
-            #endif
+            LogWarning(message);
         }
 
         /*
@@ -232,9 +260,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
         private static void ErrorImpl(string message)
         {
-            #if UNITY_WEBGL
-                LogError(message);
-            #endif
+            LogError(message);
         }
     }
 }
+
+#endif

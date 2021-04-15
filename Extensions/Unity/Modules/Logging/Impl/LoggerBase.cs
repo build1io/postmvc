@@ -76,19 +76,22 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
          * Protected.
          */
         
-        protected bool CheckLevel(LogLevel level)
+        protected bool   CheckLevel(LogLevel level)           { return (_level & level) == level; }
+        protected string FormatMessage(object message)        { return FormatMessage(_prefix, message); }
+        protected string FormatException(Exception exception) { return FormatException(_prefix, exception); }
+        
+        /*
+         * Static.
+         */
+        
+        protected static string FormatMessage(string prefix, object message)
         {
-            return (_level & level) == level;
+            return $"{prefix}: {message}";
         }
 
-        protected string FormatMessage(object message)
+        protected static string FormatException(string prefix, Exception exception)
         {
-            return $"{_prefix}: {message}";
-        }
-
-        protected string FormatException(Exception exception)
-        {
-            return $"{_prefix}: {exception.GetType().Name}: {exception.Message}";
+            return $"{prefix}: {exception.GetType().Name}: {exception.Message}";
         }
     }
 }
