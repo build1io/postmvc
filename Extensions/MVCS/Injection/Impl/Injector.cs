@@ -156,7 +156,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
                         MarkConstructed(binding.Value);
                     }
 
-                    return instanceProvider.GetInstance(instance, injectionInfo.Attribute);
+                    return instanceProvider.TakeInstance(instance, injectionInfo.Attribute);
                 }
 
                 case InjectionBindingType.Value when binding.InjectionMode == InjectionMode.Singleton:
@@ -218,7 +218,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
                 case InjectionBindingType.InstanceProvider when binding.InjectionMode == InjectionMode.Factory:
                     // Provider constructed (if configured) on the first instance inject.
                     // Provider is destroyed when it's binding is destroyed.
-                    ((IInjectionProvider)binding.Value).ReturnInstance(instance);
+                    ((IInjectionProvider)binding.Value).ReturnInstance(value);
                     return;
                 case InjectionBindingType.Value when binding.InjectionMode == InjectionMode.Singleton:
                     // Value is constructed (if configured) on the first instance inject.

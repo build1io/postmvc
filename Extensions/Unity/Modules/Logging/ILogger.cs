@@ -58,7 +58,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
         /*
          * Instance.
          */
-        
+
+        void SetPrefix(string prefix);
         void SetLevel(LogLevel level);
         void Disable();
     }

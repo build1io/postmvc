@@ -2,10 +2,10 @@ using System;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 {
-    internal abstract class LoggerBase : ILogger, ILoggerDebug, ILoggerWarn, ILoggerError 
+    internal abstract class LoggerBase : ILogger, ILoggerDebug, ILoggerWarn, ILoggerError
     {
-        private readonly string   _prefix;
-        private          LogLevel _level;
+        private string   _prefix;
+        private LogLevel _level;
 
         protected LoggerBase(string prefix, LogLevel mode)
         {
@@ -62,6 +62,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
          * Public.
          */
 
+        public void SetPrefix(string prefix)
+        {
+            _prefix = prefix;
+        }
+
         public void SetLevel(LogLevel level)
         {
             _level = level;
@@ -75,15 +80,15 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
         /*
          * Protected.
          */
-        
+
         protected bool   CheckLevel(LogLevel level)           { return (_level & level) == level; }
         protected string FormatMessage(object message)        { return FormatMessage(_prefix, message); }
         protected string FormatException(Exception exception) { return FormatException(_prefix, exception); }
-        
+
         /*
          * Static.
          */
-        
+
         protected static string FormatMessage(string prefix, object message)
         {
             return $"{prefix}: {message}";
