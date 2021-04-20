@@ -11,10 +11,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         {
             get => _commandBinder;
             set => _commandBinder = (CommandBinder)value;
-        }  
+        }
 
-        private readonly IEventDispatcher _dispatcher;
-        private          CommandBinder    _commandBinder; // The end type must be specified to escape AOT issues.
+        private readonly EventDispatcher _dispatcher;    // The final type must be specified to escape AOT issues.
+        private          CommandBinder   _commandBinder; // The final type must be specified to escape AOT issues.
 
         public EventDispatcherWithCommandProcessing()
         {

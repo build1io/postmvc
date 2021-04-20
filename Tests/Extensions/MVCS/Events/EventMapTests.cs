@@ -1,3 +1,4 @@
+using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Events.Impl;
 using Build1.PostMVC.Tests.Extensions.MVCS.Events.Parts;
@@ -13,8 +14,13 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events
         [SetUp]
         public void SetUp()
         {
-            _dispatcher = new EventDispatcher();
-            _map = new EventMap(_dispatcher);
+            var dispatcher = new EventDispatcherWithCommandProcessing
+            {
+                CommandBinder = new CommandBinder()
+            };
+
+            _dispatcher = dispatcher;
+            _map = new EventMap(dispatcher);
         }
 
         [Test]
