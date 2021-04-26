@@ -2,7 +2,7 @@ using System;
 
 namespace Build1.PostMVC.Extensions.MVCS.Events
 {
-    public interface IEventMap
+    public interface IEventMapper
     {
         /*
          * Map.

@@ -4,12 +4,12 @@ using Build1.PostMVC.Extensions.MVCS.Events.Impl;
 
 namespace Build1.PostMVC.Extensions.MVCS.Events
 {
-    public sealed class EventMap : IEventMap
+    public sealed class EventMapper : IEventMapper
     {
         private readonly List<EventMapInfoBase>               _infos;
         private readonly EventDispatcherWithCommandProcessing _dispatcher; // The final type must be specified to escape AOT issues.
 
-        public EventMap(EventDispatcherWithCommandProcessing dispatcher)
+        public EventMapper(EventDispatcherWithCommandProcessing dispatcher)
         {
             _infos = new List<EventMapInfoBase>(8);
             _dispatcher = dispatcher;

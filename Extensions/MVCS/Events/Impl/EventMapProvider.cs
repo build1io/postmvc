@@ -3,43 +3,43 @@ using Build1.PostMVC.Extensions.MVCS.Injection;
 
 namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 {
-    public sealed class EventMapProvider : InjectionProvider<Inject, IEventMap>
+    public sealed class EventMapProvider : InjectionProvider<Inject, IEventMapper>
     {
         [Inject] public IEventDispatcher Dispatcher { get; set; }
 
-        private readonly Stack<IEventMap> _availableInstances;
-        private readonly List<IEventMap>  _usedInstances;
+        private readonly Stack<IEventMapper> _availableInstances;
+        private readonly List<IEventMapper>  _usedInstances;
 
         public EventMapProvider()
         {
-            _availableInstances = new Stack<IEventMap>();
-            _usedInstances = new List<IEventMap>();
+            _availableInstances = new Stack<IEventMapper>();
+            _usedInstances = new List<IEventMapper>();
         }
 
         /*
          * Public.
          */
 
-        public override IEventMap TakeInstance(object parent, Inject attribute)
+        public override IEventMapper TakeInstance(object parent, Inject attribute)
         {
-            IEventMap map;
+            IEventMapper mapper;
             
             if (_availableInstances.Count > 0)
             {
-                map = _availableInstances.Pop();
-                _usedInstances.Add(map);
+                mapper = _availableInstances.Pop();
+                _usedInstances.Add(mapper);
             }
             else
             {
                 // Specifying EventDispatcherWithCommandProcessing is bad but needed to escape AOT issues.
-                map = new EventMap((EventDispatcherWithCommandProcessing)Dispatcher); 
-                _usedInstances.Add(map);
+                mapper = new EventMapper((EventDispatcherWithCommandProcessing)Dispatcher); 
+                _usedInstances.Add(mapper);
             }
 
-            return map;
+            return mapper;
         }
 
-        public override void ReturnInstance(IEventMap instance)
+        public override void ReturnInstance(IEventMapper instance)
         {
             if (!_usedInstances.Remove(instance))
                 return;

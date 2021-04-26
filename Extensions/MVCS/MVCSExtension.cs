@@ -43,7 +43,7 @@ namespace Build1.PostMVC.Extensions.MVCS
 
             InjectionBinder.Bind<IContext>().ToValue(Context);
             InjectionBinder.Bind<IEventDispatcher>().ToValue(EventDispatcher).ConstructValue();
-            InjectionBinder.Bind<IEventMap>().ToProvider<EventMapProvider>();
+            InjectionBinder.Bind<IEventMapper>().ToProvider<EventMapProvider>();
             InjectionBinder.Bind<IInjectionBinder>().ToValue(InjectionBinder);
             InjectionBinder.Bind<ICommandBinder>().ToValue(CommandBinder).ConstructValue();
             InjectionBinder.Bind<IMediationBinder>().ToValue(MediationBinder);
