@@ -12,7 +12,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Async.Impl
 {
     public class AsyncResolverAgent : MonoBehaviour
     {
-        [Logger(LogLevel.Verbose)] public ILogger Logger { get; set; }
+        [Logger(LogLevel.Warning)] public ILogger Logger { get; set; }
 
         private const int PendingActionsCapacity = 8;
         private const int PendingCallsCapacity   = 8;

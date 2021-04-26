@@ -10,7 +10,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 {
     internal sealed class AssetsController : IAssetsController
     {
-        [Logger(LogLevel.Verbose)] public ILogger           Logger           { get; set; }
+        [Logger(LogLevel.Warning)] public ILogger           Logger           { get; set; }
         [Inject]                   public IAgentsController AgentsController { get; set; }
 
         public AssetsAtlasProcessingMode AtlasProcessingMode = AssetsAtlasProcessingMode.Strict;

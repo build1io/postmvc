@@ -13,7 +13,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Update.Impl
         private const int UpdatesCapacity      = 4;
         private const int LateUpdatesCapacity  = 4;
 
-        [Logger(LogLevel.Verbose)] public ILogger Logger { get; set; }
+        [Logger(LogLevel.Warning)] public ILogger Logger { get; set; }
 
         private readonly List<Action<float>> _updates          = new List<Action<float>>(UpdatesCapacity);
         private readonly List<Action<float>> _updatesFixed     = new List<Action<float>>(FixedUpdatesCapacity);

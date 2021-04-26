@@ -9,7 +9,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
 {
     internal sealed class ScreensController : UIControlsController<Screen, ScreenConfig>, IScreensController
     {
-        [Logger(LogLevel.Verbose)] public ILogger          Logger     { get; set; }
+        [Logger(LogLevel.Warning)] public ILogger          Logger     { get; set; }
         [Inject]                   public IEventDispatcher Dispatcher { get; set; }
 
         public bool HasShownScreens => _openScreens.Count > 0;

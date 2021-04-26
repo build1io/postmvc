@@ -13,7 +13,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
 {
     public sealed class PopupController : UIControlsController<PopupBase, PopupConfig>, IPopupController
     {
-        [Logger(LogLevel.Verbose)] public ILogger          Logger          { get; set; }
+        [Logger(LogLevel.Warning)] public ILogger          Logger          { get; set; }
         [Inject]                   public IEventDispatcher Dispatcher      { get; set; }
         [Inject]                   public IInjectionBinder InjectionBinder { get; set; }
 

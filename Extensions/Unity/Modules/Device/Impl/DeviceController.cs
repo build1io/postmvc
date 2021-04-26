@@ -11,7 +11,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Device.Impl
 {
     public sealed class DeviceController : IDeviceController
     {
-        [Logger(LogLevel.Verbose)] public ILogger Logger { get; set; }
+        [Logger(LogLevel.Warning)] public ILogger Logger { get; set; }
 
         public DeviceType CurrentDeviceType
         {

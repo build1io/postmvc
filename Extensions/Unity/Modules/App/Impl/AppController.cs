@@ -15,7 +15,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
     {
         public const string BuildNumberFileName = "build-number";
 
-        [Logger(LogLevel.Verbose)] public  ILogger           Logger           { get; set; }
+        [Logger(LogLevel.Warning)] public  ILogger           Logger           { get; set; }
         [Inject]                   public  IEventDispatcher  Dispatcher       { get; set; }
         [Inject]                   public  IContext          Context          { get; set; }
         [Inject]                   private IAgentsController AgentsController { get; set; }
