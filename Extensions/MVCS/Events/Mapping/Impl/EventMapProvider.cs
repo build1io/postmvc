@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using Build1.PostMVC.Extensions.MVCS.Events.Impl;
 using Build1.PostMVC.Extensions.MVCS.Injection;
 
-namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
+namespace Build1.PostMVC.Extensions.MVCS.Events.Mapping.Impl
 {
     internal class EventMapProvider : InjectionProvider<Inject, IEventMapper>
     {

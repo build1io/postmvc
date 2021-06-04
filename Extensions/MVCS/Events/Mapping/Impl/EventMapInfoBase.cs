@@ -1,4 +1,6 @@
-namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
+using Build1.PostMVC.Extensions.MVCS.Events.Impl;
+
+namespace Build1.PostMVC.Extensions.MVCS.Events.Mapping.Impl
 {
     internal abstract class EventMapInfoBase
     {

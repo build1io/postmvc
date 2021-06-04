@@ -1,6 +1,6 @@
 using System;
 
-namespace Build1.PostMVC.Extensions.MVCS.Events
+namespace Build1.PostMVC.Extensions.MVCS.Events.Mapping
 {
     public interface IEventMapper
     {

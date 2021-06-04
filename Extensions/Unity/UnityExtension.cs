@@ -3,6 +3,8 @@ using Build1.PostMVC.Extensions.ContextView;
 using Build1.PostMVC.Extensions.ContextView.Contexts;
 using Build1.PostMVC.Extensions.MVCS;
 using Build1.PostMVC.Extensions.Unity.Contexts;
+using Build1.PostMVC.Extensions.Unity.Events.Mapping;
+using Build1.PostMVC.Extensions.Unity.Events.Mapping.Impl;
 using Build1.PostMVC.Extensions.Unity.Mediation.Api;
 using Build1.PostMVC.Extensions.Unity.Mediation.Impl;
 using Build1.PostMVC.Extensions.Unity.Modules.Agents;
@@ -37,6 +39,12 @@ namespace Build1.PostMVC.Extensions.Unity
         {
             var injectionBinder = GetDependentExtension<MVCSExtension>().InjectionBinder;
             injectionBinder.Bind<IUnityViewEventProcessor>().To<UnityViewEventProcessor>().AsSingleton();
+            
+            // Unbinding default mapper and binding the one that comes with the Unity extension.
+            injectionBinder.Unbind<MVCS.Events.Mapping.IEventMapper>();
+            injectionBinder.Bind<IEventMapper>().ToProvider<EventMapProvider>();
+            
+            // TODO: move to PostMVCUnity module.
             injectionBinder.Bind<ILogger>().ToProvider<LoggerProvider>().ByAttribute<Logger>();
             injectionBinder.Bind<IAgentsController>().To<AgentsController>().AsSingleton();
             injectionBinder.Bind<IAppController>().To<AppController>().AsSingleton().ConstructOnStart();

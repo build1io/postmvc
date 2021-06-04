@@ -1,6 +1,7 @@
 using System;
+using Build1.PostMVC.Extensions.MVCS.Events.Impl;
 
-namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
+namespace Build1.PostMVC.Extensions.MVCS.Events.Mapping.Impl
 {
     internal sealed class EventMapInfo : EventMapInfoBase
     {

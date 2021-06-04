@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Build1.PostMVC.Extensions.MVCS.Events.Impl;
 
-namespace Build1.PostMVC.Extensions.MVCS.Events
+namespace Build1.PostMVC.Extensions.MVCS.Events.Mapping.Impl
 {
     public class EventMapper : IEventMapper
     {
