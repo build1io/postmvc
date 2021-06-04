@@ -3,7 +3,7 @@ using Build1.PostMVC.Extensions.MVCS.Injection;
 
 namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 {
-    public sealed class EventMapProvider : InjectionProvider<Inject, IEventMapper>
+    internal class EventMapProvider : InjectionProvider<Inject, IEventMapper>
     {
         [Inject] public IEventDispatcher Dispatcher { get; set; }
 
@@ -32,7 +32,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
             else
             {
                 // Specifying EventDispatcherWithCommandProcessing is bad but needed to escape AOT issues.
-                mapper = new EventMapper((EventDispatcherWithCommandProcessing)Dispatcher); 
+                mapper = CreateEventMapper(); 
                 _usedInstances.Add(mapper);
             }
 
@@ -46,6 +46,15 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
             
             instance.UnmapAll();
             _availableInstances.Push(instance);
+        }
+        
+        /*
+         * Protected.
+         */
+
+        protected virtual IEventMapper CreateEventMapper()
+        {
+            return new EventMapper((EventDispatcherWithCommandProcessing)Dispatcher);
         }
     }
 }
