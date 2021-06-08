@@ -10,13 +10,13 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
 {
     public abstract class UnityViewDispatcher : UnityView, IEventDispatcher
     {
-        private readonly IEventDispatcher                          _dispatcher;
-        private readonly Dictionary<UnityEvent, UnityEventBinding> _bindings;
+        private readonly IEventDispatcher                                  _dispatcher;
+        private readonly Dictionary<UnityEventBase, UnityEventBindingBase> _bindings;
 
         protected UnityViewDispatcher()
         {
             _dispatcher = new EventDispatcher();
-            _bindings = new Dictionary<UnityEvent, UnityEventBinding>();
+            _bindings = new Dictionary<UnityEventBase, UnityEventBindingBase>();
         }
 
         /*
@@ -53,25 +53,32 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
         protected IUnityEventBindingTo BindUnityEvent(UnityEvent unityEvent)
         {
             if (_bindings.TryGetValue(unityEvent, out var binding))
-                return binding;
+                return (IUnityEventBindingTo)binding;
             binding = new UnityEventBinding(unityEvent, _dispatcher);
             _bindings.Add(unityEvent, binding);
-            return binding;
+            return (IUnityEventBindingTo)binding;
         }
 
-        protected IUnityEventBindingFrom UnbindUnityEvent(UnityEvent unityEvent)
+        protected IUnityEventBindingTo<T1> BindUnityEvent<T1>(UnityEvent<T1> unityEvent)
         {
-            return _bindings[unityEvent];
+            if (_bindings.TryGetValue(unityEvent, out var binding))
+                return (IUnityEventBindingTo<T1>)binding;
+            binding = new UnityEventBinding<T1>(unityEvent, _dispatcher);
+            _bindings.Add(unityEvent, binding);
+            return (IUnityEventBindingTo<T1>)binding;
         }
 
-        protected void UnbindUnityEventCompletely(UnityEvent unityEvent)
+        protected IUnityEventBindingFrom     UnbindUnityEvent(UnityEvent unityEvent)         { return (IUnityEventBindingFrom)_bindings[unityEvent]; }
+        protected IUnityEventBindingFrom<T1> UnbindUnityEvent<T1>(UnityEvent<T1> unityEvent) { return (IUnityEventBindingFrom<T1>)_bindings[unityEvent]; }
+
+        protected void UnbindUnityEventCompletely(UnityEventBase unityEvent)
         {
             if (!_bindings.TryGetValue(unityEvent, out var binding))
                 return;
             binding.Destroy();
             _bindings.Remove(unityEvent);
         }
-
+        
         protected void UnbindAllUnityEvents()
         {
             foreach (var bridge in _bindings.Values)
