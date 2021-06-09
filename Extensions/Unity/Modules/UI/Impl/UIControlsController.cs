@@ -83,6 +83,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
 
         protected bool Deactivate(T control)
         {
+            return Deactivate(control, out var destroyed);
+        }
+        
+        protected bool Deactivate(T control, out bool destroyed)
+        {
+            destroyed = false;
+            
             if (control == null)
                 return false;
             
@@ -93,9 +100,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
                 return false;
 
             if (control.ToDestroyOnDeactivation)
+            {
                 Object.Destroy(view.gameObject);
+                destroyed = true;
+            }
             else
+            {
                 view.gameObject.SetActive(false);
+            }
 
             return true;
         }
