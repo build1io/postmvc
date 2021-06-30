@@ -52,6 +52,15 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
         {
             DisposeContextIntegration();
         }
+        
+        /*
+         * Public.
+         */
+
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
 
         /*
          * Context.
