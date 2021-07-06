@@ -26,9 +26,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection
         object GetInstance(Type key);
         object GetInstance(IInjectionBinding binding);
 
+        T      Construct<T>(bool triggerPostConstructors) where T : class, new();
         T      Construct<T>(T instance, bool triggerPostConstructors) where T : class;
         object Construct(object instance, bool triggerPostConstructors);
-        
+
         T      Destroy<T>(T instance, bool triggerPreDestroys) where T : class;
         object Destroy(object instance, bool triggerPreDestroys);
     }

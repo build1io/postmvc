@@ -127,6 +127,11 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
          * Construction / Deconstruction.
          */
 
+        public T Construct<T>(bool triggerPostConstructors) where T : class, new()
+        {
+            return Construct(new T(), triggerPostConstructors);
+        }
+        
         public T Construct<T>(T instance, bool triggerPostConstructors) where T : class
         {
             _injector.Construct(instance, triggerPostConstructors);
