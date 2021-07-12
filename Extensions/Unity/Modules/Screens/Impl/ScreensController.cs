@@ -7,7 +7,7 @@ using Build1.PostMVC.Extensions.Unity.Modules.UI.Impl;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
 {
-    internal sealed class ScreensController : UIControlsController<Screen, ScreenConfig>, IScreensController
+    public sealed class ScreensController : UIControlsController<Screen, ScreenConfig>, IScreensController
     {
         [Logger(LogLevel.Warning)] public ILogger          Logger     { get; set; }
         [Inject]                   public IEventDispatcher Dispatcher { get; set; }
