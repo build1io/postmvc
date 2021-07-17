@@ -88,7 +88,7 @@ namespace Build1.PostMVC.Tests.Extensions.Unity.Mediation
          * Test View.
          */
 
-        private sealed class UnityViewDispatcherTest : PostMVC.Extensions.Unity.Mediation.UnityViewDispatcher
+        private sealed class UnityViewDispatcherTest : Build1.PostMVC.Extensions.Unity.Mediation.UnityViewDispatcher
         {
             public readonly Event OnTestEvent = new Event();
 
