@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace Build1.PostMVC.Extensions.Unity.Mediation
 {
+    [DisallowMultipleComponent]
     public abstract class UnityView : MonoBehaviour, IUnityView
     {
         public IMediator Mediator { get; private set; }
