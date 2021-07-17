@@ -72,9 +72,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Async.Impl
             }
         }
 
-        public void Resolve<T>(Action<T> action, T value, bool unique)
+        public void Resolve<T1>(Action<T1> action, T1 value, bool unique)
         {
             Resolve(() => action.Invoke(value), unique);
+        }
+        
+        public void Resolve<T1, T2>(Action<T1, T2> action, T1 value01, T2 value02, bool unique)
+        {
+            Resolve(() => action.Invoke(value01, value02), unique);
         }
 
         /*

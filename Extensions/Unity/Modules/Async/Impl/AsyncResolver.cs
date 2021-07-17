@@ -9,7 +9,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Async.Impl
         [Inject] public IAgentsController AgentsController { get; set; }
 
         public int DefaultCallId => 0;
-        
+
         private AsyncResolverAgent _agent;
 
         [PostConstruct]
@@ -28,8 +28,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Async.Impl
          * Resolve.
          */
 
-        public void Resolve(Action action, bool unique = true)                { _agent.Resolve(action, unique); }
-        public void Resolve<T>(Action<T> action, T value, bool unique = true) { _agent.Resolve(action, value, unique); }
+        public void Resolve(Action action, bool unique = true)                                         { _agent.Resolve(action, unique); }
+        public void Resolve<T1>(Action<T1> action, T1 value, bool unique = true)                       { _agent.Resolve(action, value, unique); }
+        public void Resolve<T1, T2>(Action<T1, T2> action, T1 value01, T2 value02, bool unique = true) { _agent.Resolve(action, value01, value02, unique); }
 
         /*
          * Calls.
