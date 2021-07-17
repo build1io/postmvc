@@ -34,7 +34,27 @@ namespace Build1.PostMVC
         {
             return _rootContext.GetExtension<MVCSExtension>().InjectionBinder.GetInstance<T>();
         }
-        
+
+        public static T Construct<T>(bool triggerPostConstructors) where T : class, new()
+        {
+            return _rootContext.GetExtension<MVCSExtension>().InjectionBinder.Construct<T>(triggerPostConstructors);
+        }
+
+        public static T Construct<T>(T instance, bool triggerPostConstructors) where T : class
+        {
+            return _rootContext.GetExtension<MVCSExtension>().InjectionBinder.Construct(instance, triggerPostConstructors);
+        }
+
+        public static T Destroy<T>(T instance, bool triggerPreDestroys) where T : class
+        {
+            return _rootContext.GetExtension<MVCSExtension>().InjectionBinder.Destroy(instance, triggerPreDestroys);
+        }
+
+        public static object Destroy(object instance, bool triggerPreDestroys)
+        {
+            return _rootContext.GetExtension<MVCSExtension>().InjectionBinder.Destroy(instance, triggerPreDestroys);
+        }
+
         /*
          * Event Handlers.
          */
