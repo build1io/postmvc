@@ -129,7 +129,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             {
                 var binding = _binder.GetBinding(injection.PropertyInfo.PropertyType);
                 if (binding == null)
-                    throw new InjectionException(InjectionExceptionType.BindingIsMissing, injection);
+                    throw new InjectionException(InjectionExceptionType.BindingIsMissing, instance, injection);
 
                 var value = GetInstance(binding, instance, injection);
                 if (!injection.PropertyInfo.PropertyType.IsInstanceOfType(value))
