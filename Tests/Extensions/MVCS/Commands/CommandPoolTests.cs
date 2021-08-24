@@ -147,25 +147,5 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
             Assert.AreEqual(1, _pool.GetAvailableInstancesCount<Command02>());
             Assert.AreEqual(0, _pool.GetUsedInstancesCount<Command02>());
         }
-
-        [Test]
-        public void CleanableInstanceTest()
-        {
-            var cleared = false;
-            var instance = _pool.TakeCommand<CommandCleanable>();
-            instance.OnClearing += () => { cleared = true; };
-            _pool.ReturnCommand(instance);
-            Assert.IsTrue(cleared);
-        }
-        
-        [Test]
-        public void CleanableNotInstanceTest()
-        {
-            var cleared = false;
-            var instance = _pool.TakeCommand<CommandCleanableNot>();
-            instance.OnClearing += () => { cleared = true; };
-            _pool.ReturnCommand(instance);
-            Assert.IsFalse(cleared);
-        }
     }
 }

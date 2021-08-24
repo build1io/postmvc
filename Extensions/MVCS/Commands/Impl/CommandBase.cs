@@ -5,23 +5,26 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 {
     public abstract class CommandBase : ICommandBase
     {
-        public int  SequenceId     { get; protected set; }
-        public bool IsRetained     { get; protected set; }
-        public bool IsFailed       { get; protected set; }
-        public bool IsClean        { get; private set; }
-        public bool ClearOnRelease { get; protected set; }
+        private static int Id;
 
+        public    int            SequenceId    { get; protected set; }
         protected ICommandBinder CommandBinder { get; private set; }
+        public    bool           IsRetained    { get; protected set; }
+        public    bool           IsFailed      { get; protected set; }
 
+        private readonly int _id;
+        
         protected CommandBase()
         {
-            IsClean = true;
+            _id = ++Id;
         }
 
         public void SetCommandBinder(ICommandBinder commandBinder)
         {
             CommandBinder = commandBinder;
         }
+        
+        public abstract void Reset();
 
         protected void Retain()
         {
@@ -30,13 +33,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         protected abstract void Release();
         protected abstract void Fail(Exception exception);
-
-        public void Clear()
-        {
-            OnClear();
-            IsClean = true;
-        }
-
-        protected virtual void OnClear() { }
+        
+        /*
+         * Dictionary Optimizations.
+         */
+        
+        public override int  GetHashCode()           { return _id; }
+        public override bool Equals(object obj)      { return Equals(obj as CommandBase); }
+        public          bool Equals(CommandBase obj) { return obj != null && obj._id == _id; }
     }
 }

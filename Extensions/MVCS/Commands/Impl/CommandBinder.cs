@@ -17,6 +17,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         private readonly List<CommandBindingBase>                        _bindingsToUnbind;
 
         private readonly ICommandPool                                 _commandPool;
+        private readonly Dictionary<Type, bool>                       _commandsDestroyOnReleaseData;
         private readonly Dictionary<ICommandBase, CommandBindingBase> _activeCommands;
         private readonly Dictionary<ICommandBase, CommandBindingBase> _activeSequences;
 
@@ -26,6 +27,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             _bindingsToUnbind = new List<CommandBindingBase>(8);
 
             _commandPool = new CommandPool();
+            _commandsDestroyOnReleaseData = new Dictionary<Type, bool>(64);
             _activeCommands = new Dictionary<ICommandBase, CommandBindingBase>(16);
             _activeSequences = new Dictionary<ICommandBase, CommandBindingBase>(8);
         }
@@ -132,10 +134,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         public void ReleaseCommand(ICommand command)
         {
             var sequenceId = command.SequenceId + 1;
-            
-            if (!ReleaseCommandImpl(command, out var binding) || NextCommand(binding, sequenceId)) 
+
+            if (!ReleaseCommandImpl(command, out var binding) || NextCommand(binding, sequenceId))
                 return;
-            
+
             UnbindIfOnce(binding);
             ProcessOnCompleteEvent((CommandBinding)binding);
         }
@@ -144,23 +146,23 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         {
             var sequenceId = command.SequenceId + 1;
             var param01 = command.Param01;
-            
-            if (!ReleaseCommandImpl(command, out var binding) || NextCommand(binding, sequenceId, param01)) 
+
+            if (!ReleaseCommandImpl(command, out var binding) || NextCommand(binding, sequenceId, param01))
                 return;
-            
+
             UnbindIfOnce(binding);
             ProcessOnCompleteEvent((CommandBinding<T1>)binding, param01);
         }
-        
+
         public void ReleaseCommand<T1, T2>(ICommand<T1, T2> command)
         {
             var sequenceId = command.SequenceId + 1;
             var param01 = command.Param01;
             var param02 = command.Param02;
-            
-            if (!ReleaseCommandImpl(command, out var binding) || NextCommand(binding, sequenceId, param01, param02)) 
+
+            if (!ReleaseCommandImpl(command, out var binding) || NextCommand(binding, sequenceId, param01, param02))
                 return;
-            
+
             UnbindIfOnce(binding);
             ProcessOnCompleteEvent((CommandBinding<T1, T2>)binding, param01, param02);
         }
@@ -171,10 +173,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             var param01 = command.Param01;
             var param02 = command.Param02;
             var param03 = command.Param03;
-            
-            if (!ReleaseCommandImpl(command, out var binding) || NextCommand(binding, sequenceId, param01, param02, param03)) 
+
+            if (!ReleaseCommandImpl(command, out var binding) || NextCommand(binding, sequenceId, param01, param02, param03))
                 return;
-            
+
             UnbindIfOnce(binding);
             ProcessOnCompleteEvent((CommandBinding<T1, T2, T3>)binding, param01, param02, param03);
         }
@@ -185,28 +187,28 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             if (@event != null)
                 Dispatcher.Dispatch(@event);
         }
-        
+
         private void ProcessOnCompleteEvent<T1>(CommandBinding<T1> binding, T1 param01)
         {
             var @event = binding.CompleteEvent;
             if (@event != null)
                 Dispatcher.Dispatch(@event, param01);
         }
-        
+
         private void ProcessOnCompleteEvent<T1, T2>(CommandBinding<T1, T2> binding, T1 param01, T2 param02)
         {
             var @event = binding.CompleteEvent;
             if (@event != null)
                 Dispatcher.Dispatch(@event, param01, param02);
         }
-        
+
         private void ProcessOnCompleteEvent<T1, T2, T3>(CommandBinding<T1, T2, T3> binding, T1 param01, T2 param02, T3 param03)
         {
             var @event = binding.CompleteEvent;
             if (@event != null)
                 Dispatcher.Dispatch(@event, param01, param02, param03);
         }
-        
+
         private bool ReleaseCommandImpl(ICommandBase command, out CommandBindingBase binding)
         {
             if (command.IsRetained)
@@ -214,22 +216,22 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 binding = null;
                 return false;
             }
-            
-            _commandPool.ReturnCommand(command);
-            
+
+            ReturnCommand(command);
+
             if (_activeCommands.Remove(command))
             {
                 binding = null;
                 return false;
             }
-            
+
             if (!_activeSequences.TryGetValue(command, out binding))
                 return false;
-        
+
             _activeSequences.Remove(command);
             return true;
         }
-        
+
         /*
          * Stopping.
          */
@@ -257,14 +259,14 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             if (FailCommandImpl(command, out var binding))
                 ProcessOnFailEvent(binding, exception);
         }
-        
+
         private void ProcessOnFailEvent(CommandBindingBase binding, Exception exception)
         {
             var @event = binding.FailEvent;
             if (@event != null)
                 Dispatcher.Dispatch(@event, exception);
         }
-        
+
         /*
          * Releasing Implementation.
          */
@@ -276,15 +278,15 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 binding = null;
                 return false;
             }
-            
-            _commandPool.ReturnCommand(command);
+
+            ReturnCommand(command);
 
             if (_activeCommands.Remove(command))
             {
                 binding = null;
                 return false;
             }
-            
+
             if (!_activeSequences.TryGetValue(command, out binding))
                 return false;
 
@@ -494,12 +496,46 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         private ICommandBase GetCommand(Type commandType)
         {
-            var command = _commandPool.TakeCommand(commandType, out var isNewInstance);
+            ICommandBase command;
+            bool isNewInstance;
+
+            if (GetDestroyOnRelease(commandType))
+            {
+                command = _commandPool.InstantiateCommand(commandType);
+                isNewInstance = true;
+            }
+            else
+            {
+                command = _commandPool.TakeCommand(commandType, out isNewInstance);
+            }
+
             if (isNewInstance)
+            {
                 command.SetCommandBinder(this);
-            if (isNewInstance || command.IsClean)
                 InjectionBinder.Construct(command, true);
+            }
+
             return command;
+        }
+
+        private void ReturnCommand(ICommandBase command)
+        {
+            command.Reset();
+            
+            if (GetDestroyOnRelease(command.GetType()))
+                InjectionBinder.Destroy(command, true);
+            else
+                _commandPool.ReturnCommand(command);
+        }
+
+        private bool GetDestroyOnRelease(Type commandType)
+        {
+            if (!_commandsDestroyOnReleaseData.TryGetValue(commandType, out var destroyOnRelease))
+            {
+                destroyOnRelease = Attribute.IsDefined(commandType, typeof(DestroyOnReleaseAttribute));
+                _commandsDestroyOnReleaseData.Add(commandType, destroyOnRelease);
+            }
+            return destroyOnRelease;
         }
 
         private void TrackCommand(ICommandBase command, CommandBindingBase binding)

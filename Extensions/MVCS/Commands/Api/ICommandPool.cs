@@ -15,7 +15,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Api
 
         ICommandBase TakeCommand(Type commandType);
         ICommandBase TakeCommand(Type commandType, out bool isNewInstance);
-
+        
         void ReturnCommand(ICommandBase command);
+        
+        ICommandBase InstantiateCommand(Type commandType);
     }
 }

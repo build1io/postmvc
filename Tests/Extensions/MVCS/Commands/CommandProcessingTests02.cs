@@ -503,72 +503,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
             
             Assert.AreEqual(2, count);
         }
-        
-        /*
-         * Cleaning.
-         */
-        
-        [Test]
-        public void CleaningTest()
-        {
-            var count = 0;
-            var countCleaning = 0;
-            Command02Cleanable.OnExecute += (param01, param02) => { count++; };
-            Command02Cleanable.OnCleaning += () => { countCleaning++; };
-            
-            _binder.Bind(CommandTestEvent.Event02).To<Command02Cleanable>();
-            _dispatcher.Dispatch(CommandTestEvent.Event02, 10, " ");
-            
-            Assert.AreEqual(1, count);
-            Assert.AreEqual(1, countCleaning);
-            
-            _dispatcher.Dispatch(CommandTestEvent.Event02, 10, " ");
-            
-            Assert.AreEqual(2, count);
-            Assert.AreEqual(2, countCleaning);
-        }
-        
-        [Test]
-        public void MultipleCleaningTest()
-        {
-            var count = 0;
-            var countCleaning = 0;
-            Command02Cleanable.OnExecute += (param01, param02) => { count++; };
-            Command02Cleanable.OnCleaning += () => { countCleaning++; };
-            
-            _binder.Bind(CommandTestEvent.Event02).To<Command02Cleanable>();
-            _binder.Bind(CommandTestEvent.Event02).To<Command02Cleanable>();
-            _dispatcher.Dispatch(CommandTestEvent.Event02, 10, " ");
-            
-            Assert.AreEqual(2, count);
-            Assert.AreEqual(2, countCleaning);
-            
-            _dispatcher.Dispatch(CommandTestEvent.Event02, 10, " ");
-            
-            Assert.AreEqual(4, count);
-            Assert.AreEqual(4, countCleaning);
-        }
-        
-        [Test]
-        public void SequenceCleaningTest()
-        {
-            var count = 0;
-            var countCleaning = 0;
-            Command02Cleanable.OnExecute += (param01, param02) => { count++; };
-            Command02Cleanable.OnCleaning += () => { countCleaning++; };
-            
-            _binder.Bind(CommandTestEvent.Event02).To<Command02Cleanable>().To<Command02Cleanable>().To<Command02Cleanable>().InSequence();
-            _dispatcher.Dispatch(CommandTestEvent.Event02, 10, " ");
-            
-            Assert.AreEqual(3, count);
-            Assert.AreEqual(3, countCleaning);
-            
-            _dispatcher.Dispatch(CommandTestEvent.Event02, 10, " ");
-            
-            Assert.AreEqual(6, count);
-            Assert.AreEqual(6, countCleaning);
-        }
-        
+
         /*
          * Parameters.
          */

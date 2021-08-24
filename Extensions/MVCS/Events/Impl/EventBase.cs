@@ -3,24 +3,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
     public abstract class EventBase
     {
         private static int Id;
-        
-        private readonly int id;
-        
+
+        private readonly int _id;
+
         protected EventBase()
         {
-            id = Id++;
+            _id = ++Id;
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is EventBase eventBase)
-                return id == eventBase.id;
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return id;
-        }
+        public override int  GetHashCode()         { return _id; }
+        public override bool Equals(object obj)    { return Equals(obj as EventBase); }
+        public          bool Equals(EventBase obj) { return obj != null && obj._id == _id; }
     }
 }

@@ -14,6 +14,11 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             IsFailed = false;
         }
 
+        public override void Reset()
+        {
+            SequenceId = default;
+        }
+
         public abstract void Execute();
 
         protected override void Release()
@@ -42,6 +47,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             IsFailed = false;
             
             Param01 = param01;
+        }
+        
+        public override void Reset()
+        {
+            SequenceId = default;
+            
+            Param01 = default;
         }
         
         public abstract void Execute(T1 param01);
@@ -74,6 +86,14 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             
             Param01 = param01;
             Param02 = param02;
+        }
+        
+        public override void Reset()
+        {
+            SequenceId = default;
+            
+            Param01 = default;
+            Param02 = default;
         }
 
         public abstract void Execute(T1 param01, T2 param02);
@@ -108,6 +128,15 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             Param01 = param01;
             Param02 = param02;
             Param03 = param03;
+        }
+        
+        public override void Reset()
+        {
+            SequenceId = default;
+            
+            Param01 = default;
+            Param02 = default;
+            Param03 = default;
         }
 
         public abstract void Execute(T1 param01, T2 param02, T3 param03);

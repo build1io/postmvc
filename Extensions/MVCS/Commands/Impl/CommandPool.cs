@@ -73,7 +73,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             }
 
             isNewInstance = true;
-            command = (ICommandBase)Activator.CreateInstance(commandType);
+            command = InstantiateCommand(commandType);
             usedInstances.Add(command);
             return command;
         }
@@ -92,10 +92,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             if (usedInstances == null || !usedInstances.Remove(command))
                 return;
             
-            if (command.ClearOnRelease)
-                command.Clear();
-            
             GetCommandAvailableInstances(commandType, false).Push(command);
+        }
+        
+        /*
+         * Instantiate.
+         */
+
+        public ICommandBase InstantiateCommand(Type commandType)
+        {
+            return (ICommandBase)Activator.CreateInstance(commandType);
         }
 
         /*
