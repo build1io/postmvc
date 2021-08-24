@@ -1,8 +1,8 @@
 using System;
 
-namespace Build1.PostMVC.Extensions.MVCS.Events.Mapping
+namespace Build1.PostMVC.Extensions.MVCS.Events
 {
-    public interface IEventMapper
+    public partial interface IEventMapper
     {
         /*
          * Map.

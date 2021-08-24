@@ -1,10 +1,9 @@
 using System;
-using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.Unity.Mediation;
 
-namespace Build1.PostMVC.Extensions.Unity.Events.Mapping
+namespace Build1.PostMVC.Extensions.MVCS.Events
 {
-    public interface IEventMapper : MVCS.Events.Mapping.IEventMapper
+    public partial interface IEventMapper
     {
         /*
          * Map.

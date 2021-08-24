@@ -1,8 +1,6 @@
 using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Events.Impl;
-using Build1.PostMVC.Extensions.MVCS.Events.Mapping;
-using Build1.PostMVC.Extensions.MVCS.Events.Mapping.Impl;
 using Build1.PostMVC.Tests.Extensions.MVCS.Events.Parts;
 using NUnit.Framework;
 

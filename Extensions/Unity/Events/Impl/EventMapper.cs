@@ -1,16 +1,10 @@
 using System;
-using Build1.PostMVC.Extensions.MVCS.Events;
-using Build1.PostMVC.Extensions.MVCS.Events.Impl;
 using Build1.PostMVC.Extensions.Unity.Mediation;
 
-namespace Build1.PostMVC.Extensions.Unity.Events.Mapping.Impl
+namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 {
-    internal class EventMapper : MVCS.Events.Mapping.Impl.EventMapper, IEventMapper
+    public partial class EventMapper
     {
-        public EventMapper(EventDispatcherWithCommandProcessing dispatcher) : base(dispatcher)
-        {
-        }
-
         /*
          * Map.
          */

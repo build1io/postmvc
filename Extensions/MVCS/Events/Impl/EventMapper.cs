@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Build1.PostMVC.Extensions.MVCS.Events.Impl;
 
-namespace Build1.PostMVC.Extensions.MVCS.Events.Mapping.Impl
+namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 {
-    public class EventMapper : IEventMapper
+    public partial class EventMapper : IEventMapper
     {
         private readonly List<EventMapInfoBase>               _infos;
         private readonly EventDispatcherWithCommandProcessing _dispatcher; // The final type must be specified to escape AOT issues.
