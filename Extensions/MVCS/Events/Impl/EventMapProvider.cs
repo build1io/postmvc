@@ -3,43 +3,43 @@ using Build1.PostMVC.Extensions.MVCS.Injection;
 
 namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 {
-    internal class EventMapProvider : InjectionProvider<Inject, IEventMapper>
+    internal sealed class EventMapProvider : InjectionProvider<Inject, IEventMap>
     {
         [Inject] public IEventDispatcher Dispatcher { get; set; }
 
-        private readonly Stack<IEventMapper> _availableInstances;
-        private readonly List<IEventMapper>  _usedInstances;
+        private readonly Stack<IEventMap> _availableInstances;
+        private readonly List<IEventMap>  _usedInstances;
 
         public EventMapProvider()
         {
-            _availableInstances = new Stack<IEventMapper>();
-            _usedInstances = new List<IEventMapper>();
+            _availableInstances = new Stack<IEventMap>();
+            _usedInstances = new List<IEventMap>();
         }
 
         /*
          * Public.
          */
 
-        public override IEventMapper TakeInstance(object parent, Inject attribute)
+        public override IEventMap TakeInstance(object parent, Inject attribute)
         {
-            IEventMapper mapper;
+            IEventMap map;
             
             if (_availableInstances.Count > 0)
             {
-                mapper = _availableInstances.Pop();
-                _usedInstances.Add(mapper);
+                map = _availableInstances.Pop();
+                _usedInstances.Add(map);
             }
             else
             {
                 // Specifying EventDispatcherWithCommandProcessing is bad but needed to escape AOT issues.
-                mapper = CreateEventMapper(); 
-                _usedInstances.Add(mapper);
+                map = CreateEventMap(); 
+                _usedInstances.Add(map);
             }
 
-            return mapper;
+            return map;
         }
 
-        public override void ReturnInstance(IEventMapper instance)
+        public override void ReturnInstance(IEventMap instance)
         {
             if (!_usedInstances.Remove(instance))
                 return;
@@ -52,9 +52,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
          * Protected.
          */
 
-        protected virtual IEventMapper CreateEventMapper()
+        private IEventMap CreateEventMap()
         {
-            return new EventMapper((EventDispatcherWithCommandProcessing)Dispatcher);
+            return new EventMap((EventDispatcherWithCommandProcessing)Dispatcher);
         }
     }
 }

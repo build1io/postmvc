@@ -5,8 +5,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 {
     public partial class EventMapper : IEventMapper
     {
-        private readonly List<EventMapInfoBase>               _infos;
-        private readonly EventDispatcherWithCommandProcessing _dispatcher; // The final type must be specified to escape AOT issues.
+        private readonly   List<EventMapInfoBase>               _infos;
+        protected readonly EventDispatcherWithCommandProcessing _dispatcher; // The final type must be specified to escape AOT issues.
 
         public EventMapper(EventDispatcherWithCommandProcessing dispatcher)
         {
