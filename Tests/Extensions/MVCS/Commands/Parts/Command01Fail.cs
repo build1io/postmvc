@@ -10,7 +10,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands.Parts
         public override void Execute(int param01)
         {
             OnExecute?.Invoke(param01);
-            Fail();
+            Fail(new Exception("Test exception"));
         }
     }
 }

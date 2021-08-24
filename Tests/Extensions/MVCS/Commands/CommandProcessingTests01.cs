@@ -19,36 +19,90 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
         {
             Command01.OnExecute = null;
             Command01Copy.OnExecute = null;
+            Command01Fail.OnExecute = null;
+            CommandException.OnExecute = null;
 
-            var binder = new CommandBinder
-            {
-                InjectionBinder = new InjectionBinder()
-            };
+            var binder = new CommandBinder();
             
             _binder = binder;
-            _dispatcher = new EventDispatcherWithCommandProcessing
-            {
-                CommandBinder = binder
-            };
+            _dispatcher = new EventDispatcherWithCommandProcessing(binder);
+            
+            binder.InjectionBinder = new InjectionBinder();
+            binder.Dispatcher = _dispatcher;
         }
         
+        /*
+         * Single.
+         */
+        
         [Test]
-        public void CommandExecutionTest()
+        public void SingleCommandExecutionTest()
         {
-            var executed = false;
+            var count = 0;
             var param01Received = 0;
             Command01.OnExecute += param01 =>
             {
-                executed = true;
+                count++;
                 param01Received = param01;
             };
 
             _binder.Bind(CommandTestEvent.Event01).To<Command01>();
             _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
 
-            Assert.IsTrue(executed);
+            Assert.AreEqual(1, count);
             Assert.AreEqual(10, param01Received);
         }
+        
+        [Test]
+        public void SingleCommandsMultipleDispatchesTest()
+        {
+            var count = 0;
+            Command01.OnExecute += param01 => { count++; };
+
+            _binder.Bind(CommandTestEvent.Event01).To<Command01>();
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 5);
+
+            Assert.AreEqual(2, count);
+        }
+        
+        [Test]
+        public void SingleCommandOnCompleteEventTest()
+        {
+            var count = 0;
+            var countCopy = 0;
+            
+            Command01.OnExecute += param01 => { count++; };
+            Command01Copy.OnExecute += param01 => { countCopy++; };
+            
+            _binder.Bind(CommandTestEvent.Event01).To<Command01>().OnComplete(CommandTestEvent.Event01Complete);
+            _binder.Bind(CommandTestEvent.Event01Complete).To<Command01Copy>();
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 5);
+            
+            Assert.AreEqual(1, count);
+            Assert.AreEqual(0, countCopy);
+        }
+        
+        [Test]
+        public void SingleCommandOnFailEventTest()
+        {
+            var count = 0;
+            var countException = 0;
+            
+            Command01Fail.OnExecute += param01 => { count++; };
+            CommandException.OnExecute += e => { countException++; };
+            
+            _binder.Bind(CommandTestEvent.Event01).To<Command01Fail>().OnFail(CommandTestEvent.EventFail);
+            _binder.Bind(CommandTestEvent.EventFail).To<CommandException>();
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
+            
+            Assert.AreEqual(1, count);
+            Assert.AreEqual(0, countException);
+        }
+        
+        /*
+         * Multiple Bindings.
+         */
         
         [Test]
         public void MultipleBindingsExecutionTest()
@@ -70,6 +124,10 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
             Assert.AreEqual(10, param[1]);
         }
         
+        /*
+         * Multiple Commands.
+         */
+        
         [Test]
         public void MultipleCommandsExecutionTest()
         {
@@ -88,6 +146,78 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
             Assert.AreEqual(10, param[0]);
             Assert.AreEqual(10, param[1]);
         }
+        
+        [Test]
+        public void MultipleCommandsMultipleDispatchesTest()
+        {
+            var count = 0;
+            Command01.OnExecute += param01 => { count++; };
+            Command01Copy.OnExecute += param01 => { count++; };
+
+            _binder.Bind(CommandTestEvent.Event01).To<Command01>().To<Command01Copy>();
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 5);
+
+            Assert.AreEqual(4, count);
+        }
+
+        [Test]
+        public void MultipleOnCompleteEventTest()
+        {
+            var count = 0;
+            var countCopy = 0;
+            
+            Command01.OnExecute += param01 => { count++; };
+            Command01Copy.OnExecute += param01 => { countCopy++; };
+            
+            _binder.Bind(CommandTestEvent.Event01).To<Command01>().To<Command01>().OnComplete(CommandTestEvent.Event01Complete);
+            _binder.Bind(CommandTestEvent.Event01Complete).To<Command01Copy>();
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 5);
+            
+            Assert.AreEqual(2, count);
+            Assert.AreEqual(0, countCopy);
+        }
+        
+        [Test]
+        public void MultipleOnFailEventTest()
+        {
+            var count = 0;
+            var countFail = 0;
+            var countException = 0;
+            
+            Command01.OnExecute += param01 => { count++; };
+            Command01Fail.OnExecute += param01 => { countFail++; };
+            CommandException.OnExecute += e => { countException++; };
+            
+            _binder.Bind(CommandTestEvent.Event01).To<Command01>().To<Command01Fail>().OnFail(CommandTestEvent.EventFail);
+            _binder.Bind(CommandTestEvent.EventFail).To<CommandException>();
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
+            
+            Assert.AreEqual(1, count);
+            Assert.AreEqual(1, countFail);
+            Assert.AreEqual(0, countException);
+        }
+        
+        [Test]
+        public void MultipleFailingOnFailEventTest()
+        {
+            var countFail = 0;
+            var countException = 0;
+            
+            Command01Fail.OnExecute += param01 => { countFail++; };
+            CommandException.OnExecute += e => { countException++; };
+            
+            _binder.Bind(CommandTestEvent.Event01).To<Command01Fail>().To<Command01Fail>().OnFail(CommandTestEvent.EventFail);
+            _binder.Bind(CommandTestEvent.EventFail).To<CommandException>();
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
+            
+            Assert.AreEqual(2, countFail);
+            Assert.AreEqual(0, countException);
+        }
+        
+        /*
+         * Sequences.
+         */
         
         [Test]
         public void SequenceExecutionTest()
@@ -116,6 +246,61 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
         }
         
         [Test]
+        public void SequenceMultipleDispatchesTest()
+        {
+            var count = 0;
+            Command01.OnExecute += param01 => { count++; };
+            Command01Copy.OnExecute += param01 => { count++; };
+
+            _binder.Bind(CommandTestEvent.Event01).To<Command01>().To<Command01Copy>().InSequence();
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 5);
+
+            Assert.AreEqual(4, count);
+        }
+        
+        [Test]
+        public void SequenceOnCompleteEventTest()
+        {
+            var count = 0;
+            var countCopy = 0;
+            
+            Command01.OnExecute += param01 => { count++; };
+            Command01Copy.OnExecute += param01 => { countCopy++; };
+            
+            _binder.Bind(CommandTestEvent.Event01).To<Command01>().To<Command01>().OnComplete(CommandTestEvent.Event01Complete).InSequence();
+            _binder.Bind(CommandTestEvent.Event01Complete).To<Command01Copy>();
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 5);
+            
+            Assert.AreEqual(2, count);
+            Assert.AreEqual(1, countCopy);
+        }
+        
+        [Test]
+        public void SequenceOnFailEventTest()
+        {
+            var count = 0;
+            var countFail = 0;
+            var countException = 0;
+            
+            Command01.OnExecute += param01 => { count++; };
+            Command01Fail.OnExecute += param01 => { countFail++; };
+            CommandException.OnExecute += e => { countException++; };
+            
+            _binder.Bind(CommandTestEvent.Event01).To<Command01>().To<Command01Fail>().OnFail(CommandTestEvent.EventFail).InSequence();
+            _binder.Bind(CommandTestEvent.EventFail).To<CommandException>();
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 0);
+            
+            Assert.AreEqual(1, count);
+            Assert.AreEqual(1, countFail);
+            Assert.AreEqual(1, countException);
+        }
+        
+        /*
+         * Execution Order.
+         */
+        
+        [Test]
         public void MultipleCommandsExecutionOrderTest()
         {
             var indexes = new List<int>();
@@ -142,6 +327,10 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
             Assert.AreEqual(0, indexes[0]);
             Assert.AreEqual(1, indexes[1]);
         }
+        
+        /*
+         * Once.
+         */
         
         [Test]
         public void OnceTest()
@@ -189,47 +378,10 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
 
             Assert.AreEqual(2, count);
         }
-        
-        [Test]
-        public void MultipleExecutionTest()
-        {
-            var count = 0;
-            Command01.OnExecute += param01 => { count++; };
 
-            _binder.Bind(CommandTestEvent.Event01).To<Command01>();
-            _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
-            _dispatcher.Dispatch(CommandTestEvent.Event01, 5);
-
-            Assert.AreEqual(2, count);
-        }
-        
-        [Test]
-        public void MultipleMultipleExecutionTest()
-        {
-            var count = 0;
-            Command01.OnExecute += param01 => { count++; };
-            Command01Copy.OnExecute += param01 => { count++; };
-
-            _binder.Bind(CommandTestEvent.Event01).To<Command01>().To<Command01Copy>();
-            _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
-            _dispatcher.Dispatch(CommandTestEvent.Event01, 5);
-
-            Assert.AreEqual(4, count);
-        }
-        
-        [Test]
-        public void MultipleSequenceExecutionTest()
-        {
-            var count = 0;
-            Command01.OnExecute += param01 => { count++; };
-            Command01Copy.OnExecute += param01 => { count++; };
-
-            _binder.Bind(CommandTestEvent.Event01).To<Command01>().To<Command01Copy>().InSequence();
-            _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
-            _dispatcher.Dispatch(CommandTestEvent.Event01, 5);
-
-            Assert.AreEqual(4, count);
-        }
+        /*
+         * Retain.
+         */
         
         [Test]
         public void RetainTest()
@@ -303,6 +455,10 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
             Assert.AreEqual(2, indexes.Count);
         }
         
+        /*
+         * Fail.
+         */
+        
         [Test]
         public void FailTest()
         {
@@ -328,6 +484,10 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
             
             Assert.AreEqual(2, count);
         }
+        
+        /*
+         * Cleaning.
+         */
         
         [Test]
         public void CleaningTest()
@@ -389,6 +549,10 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
             Assert.AreEqual(6, count);
             Assert.AreEqual(6, countCleaning);
         }
+        
+        /*
+         * Parameters.
+         */
 
         [Test]
         public void ParametersTest()

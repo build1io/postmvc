@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Build1.PostMVC.Extensions.MVCS.Commands.Api;
 using Build1.PostMVC.Extensions.MVCS.Events;
@@ -24,7 +25,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         void ReleaseCommand<T1, T2>(ICommand<T1, T2> command);
         void ReleaseCommand<T1, T2, T3>(ICommand<T1, T2, T3> command);
 
-        void StopCommand(ICommandBase command);
+        void FailCommand(ICommand command, Exception exception);
+        void FailCommand<T1>(ICommand<T1> command, Exception exception);
+        void FailCommand<T1, T2>(ICommand<T1, T2> command, Exception exception);
+        void FailCommand<T1, T2, T3>(ICommand<T1, T2, T3> command, Exception exception);
 
         void ProcessEvent(Event type);
         void ProcessEvent<T1>(Event<T1> type, T1 param01);

@@ -1,24 +1,17 @@
 using System;
-using Build1.PostMVC.Extensions.MVCS.Commands;
 using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
-using Build1.PostMVC.Extensions.MVCS.Injection;
 
 namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 {
     public sealed class EventDispatcherWithCommandProcessing : IEventDispatcher
     {
-        [Inject] public ICommandBinder CommandBinder
-        {
-            get => _commandBinder;
-            set => _commandBinder = (CommandBinder)value;
-        }
-
         private readonly EventDispatcher _dispatcher;    // The final type must be specified to escape AOT issues.
-        private          CommandBinder   _commandBinder; // The final type must be specified to escape AOT issues.
+        private readonly CommandBinder   _commandBinder; // The final type must be specified to escape AOT issues.
 
-        public EventDispatcherWithCommandProcessing()
+        public EventDispatcherWithCommandProcessing(CommandBinder commandBinder)
         {
             _dispatcher = new EventDispatcher();
+            _commandBinder = commandBinder;
         }
 
         /*

@@ -25,9 +25,9 @@ namespace Build1.PostMVC.Extensions.MVCS
 
         public MVCSExtension(MediationMode mediationMode)
         {
-            EventDispatcher = new EventDispatcherWithCommandProcessing();
-            InjectionBinder = new InjectionBinder();
             CommandBinder = new CommandBinder();
+            EventDispatcher = new EventDispatcherWithCommandProcessing((CommandBinder)CommandBinder);
+            InjectionBinder = new InjectionBinder();
             MediationBinder = new MediationBinder(mediationMode, InjectionBinder);
         }
 

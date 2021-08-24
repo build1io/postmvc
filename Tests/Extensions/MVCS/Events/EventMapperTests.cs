@@ -14,10 +14,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events
         [SetUp]
         public void SetUp()
         {
-            var dispatcher = new EventDispatcherWithCommandProcessing
-            {
-                CommandBinder = new CommandBinder()
-            };
+            var dispatcher = new EventDispatcherWithCommandProcessing(new CommandBinder());
 
             _dispatcher = dispatcher;
             _mapper = new EventMapper(dispatcher);
