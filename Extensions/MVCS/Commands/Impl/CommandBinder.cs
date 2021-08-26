@@ -17,7 +17,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         private readonly List<CommandBindingBase>                        _bindingsToUnbind;
 
         private readonly ICommandPool                                 _commandPool;
-        private readonly Dictionary<Type, bool>                       _commandsDestroyOnReleaseData;
+        private readonly Dictionary<Type, bool>                       _commandsPoolableData;
         private readonly Dictionary<ICommandBase, CommandBindingBase> _activeCommands;
         private readonly Dictionary<ICommandBase, CommandBindingBase> _activeSequences;
 
@@ -27,7 +27,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             _bindingsToUnbind = new List<CommandBindingBase>(8);
 
             _commandPool = new CommandPool();
-            _commandsDestroyOnReleaseData = new Dictionary<Type, bool>(64);
+            _commandsPoolableData = new Dictionary<Type, bool>(64);
             _activeCommands = new Dictionary<ICommandBase, CommandBindingBase>(16);
             _activeSequences = new Dictionary<ICommandBase, CommandBindingBase>(8);
         }
@@ -499,14 +499,14 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             ICommandBase command;
             bool isNewInstance;
 
-            if (GetDestroyOnRelease(commandType))
+            if (CheckCommandIsPoolable(commandType))
             {
-                command = _commandPool.InstantiateCommand(commandType);
-                isNewInstance = true;
+                command = _commandPool.TakeCommand(commandType, out isNewInstance);
             }
             else
             {
-                command = _commandPool.TakeCommand(commandType, out isNewInstance);
+                command = _commandPool.InstantiateCommand(commandType);
+                isNewInstance = true;
             }
 
             if (isNewInstance)
@@ -522,20 +522,20 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         {
             command.Reset();
             
-            if (GetDestroyOnRelease(command.GetType()))
-                InjectionBinder.Destroy(command, true);
-            else
+            if (CheckCommandIsPoolable(command.GetType()))
                 _commandPool.ReturnCommand(command);
+            else
+                InjectionBinder.Destroy(command, true);
         }
 
-        private bool GetDestroyOnRelease(Type commandType)
+        private bool CheckCommandIsPoolable(Type commandType)
         {
-            if (!_commandsDestroyOnReleaseData.TryGetValue(commandType, out var destroyOnRelease))
+            if (!_commandsPoolableData.TryGetValue(commandType, out var poolable))
             {
-                destroyOnRelease = Attribute.IsDefined(commandType, typeof(DestroyOnReleaseAttribute));
-                _commandsDestroyOnReleaseData.Add(commandType, destroyOnRelease);
+                poolable = Attribute.IsDefined(commandType, typeof(PoolableAttribute));
+                _commandsPoolableData.Add(commandType, poolable);
             }
-            return destroyOnRelease;
+            return poolable;
         }
 
         private void TrackCommand(ICommandBase command, CommandBindingBase binding)
