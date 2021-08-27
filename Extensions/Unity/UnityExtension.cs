@@ -25,7 +25,7 @@ namespace Build1.PostMVC.Extensions.Unity
 {
     public sealed class UnityExtension : Extension
     {
-        public const string RootGameObjectName = "PostMVC";
+        public const string RootGameObjectName = "[PostMVC]";
 
         private GameObject _contextViewGameObject;
         
