@@ -19,10 +19,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             Event = type;
             Commands = new List<Type>();
         }
-        
+
         public CommandBindingBase OnFail(Event<Exception> @event)
         {
             FailEvent = @event;
+            return this;
+        }
+
+        public CommandBindingBase InParallel()
+        {
+            IsSequence = false;
             return this;
         }
 
@@ -31,7 +37,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             IsSequence = true;
             return this;
         }
-        
+
         public CommandBindingBase Once()
         {
             IsOnce = true;

@@ -312,6 +312,19 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
             Assert.AreEqual(1, countException);
         }
         
+        [Test]
+        public void ParallelSequencesTest()
+        {
+            var count = 0;
+            Command02.OnExecute += (param01, param02) => { count++; };
+
+            _binder.Bind(CommandTestEvent.Event02).To<Command02>().To<Command02>().InSequence();
+            _binder.Bind(CommandTestEvent.Event02).To<Command02>().To<Command02>().InSequence();
+            _dispatcher.Dispatch(CommandTestEvent.Event02, 0, string.Empty);
+
+            Assert.AreEqual(4, count);
+        }
+        
         /*
          * Execution Order.
          */

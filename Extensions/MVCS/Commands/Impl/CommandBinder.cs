@@ -18,6 +18,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         private readonly ICommandPool                                 _commandPool;
         private readonly Dictionary<Type, bool>                       _commandsPoolableData;
+        private          int                                          _commandsExecutionIterationTokens;
         private readonly Dictionary<ICommandBase, CommandBindingBase> _activeCommands;
         private readonly Dictionary<ICommandBase, CommandBindingBase> _activeSequences;
 
@@ -93,22 +94,33 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             foreach (var binding in bindingsList)
                 if (binding.IsUnbindOnQuit)
                     _bindingsToUnbind.Add(binding);
-            UnbindImpl();
+            UnbindScheduled();
         }
 
-        private void UnbindIfOnce(CommandBindingBase binding)
+        private void UnbindOrScheduleIfOnce(CommandBindingBase binding)
         {
-            if (binding.IsOnce)
+            if (!binding.IsOnce)
+                return;
+            
+            if (_commandsExecutionIterationTokens > 0)
+                _bindingsToUnbind.Add(binding);
+            else
                 Unbind(binding);
         }
-
-        private void UnbindLaterIfOnce(CommandBindingBase binding)
+        
+        private void ScheduleUnbindIfOnce(CommandBindingBase binding)
         {
             if (binding.IsOnce)
                 _bindingsToUnbind.Add(binding);
         }
 
-        private void UnbindImpl()
+        private void TryUnbindScheduled()
+        {
+            if (_commandsExecutionIterationTokens == 0)
+                UnbindScheduled();
+        }
+
+        private void UnbindScheduled()
         {
             if (_bindingsToUnbind.Count == 0)
                 return;
@@ -133,51 +145,51 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         public void ReleaseCommand(ICommand command)
         {
-            var sequenceId = command.SequenceId + 1;
+            var index = command.Index + 1;
 
-            if (!ReleaseCommandImpl(command, out var binding) || NextCommand(binding, sequenceId))
+            if (!TryReleaseCommand(command, out var binding) || TryExecuteBindingCommand(binding, index))
                 return;
 
-            UnbindIfOnce(binding);
+            UnbindOrScheduleIfOnce(binding);
             ProcessOnCompleteEvent((CommandBinding)binding);
         }
 
         public void ReleaseCommand<T1>(ICommand<T1> command)
         {
-            var sequenceId = command.SequenceId + 1;
+            var index = command.Index + 1;
             var param01 = command.Param01;
 
-            if (!ReleaseCommandImpl(command, out var binding) || NextCommand(binding, sequenceId, param01))
+            if (!TryReleaseCommand(command, out var binding) || TryExecuteBindingCommand(binding, index, param01))
                 return;
 
-            UnbindIfOnce(binding);
+            UnbindOrScheduleIfOnce(binding);
             ProcessOnCompleteEvent((CommandBinding<T1>)binding, param01);
         }
 
         public void ReleaseCommand<T1, T2>(ICommand<T1, T2> command)
         {
-            var sequenceId = command.SequenceId + 1;
+            var index = command.Index + 1;
             var param01 = command.Param01;
             var param02 = command.Param02;
 
-            if (!ReleaseCommandImpl(command, out var binding) || NextCommand(binding, sequenceId, param01, param02))
+            if (!TryReleaseCommand(command, out var binding) || TryExecuteBindingCommand(binding, index, param01, param02))
                 return;
 
-            UnbindIfOnce(binding);
+            UnbindOrScheduleIfOnce(binding);
             ProcessOnCompleteEvent((CommandBinding<T1, T2>)binding, param01, param02);
         }
 
         public void ReleaseCommand<T1, T2, T3>(ICommand<T1, T2, T3> command)
         {
-            var sequenceId = command.SequenceId + 1;
+            var index = command.Index + 1;
             var param01 = command.Param01;
             var param02 = command.Param02;
             var param03 = command.Param03;
 
-            if (!ReleaseCommandImpl(command, out var binding) || NextCommand(binding, sequenceId, param01, param02, param03))
+            if (!TryReleaseCommand(command, out var binding) || TryExecuteBindingCommand(binding, index, param01, param02, param03))
                 return;
 
-            UnbindIfOnce(binding);
+            UnbindOrScheduleIfOnce(binding);
             ProcessOnCompleteEvent((CommandBinding<T1, T2, T3>)binding, param01, param02, param03);
         }
 
@@ -209,7 +221,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 Dispatcher.Dispatch(@event, param01, param02, param03);
         }
 
-        private bool ReleaseCommandImpl(ICommandBase command, out CommandBindingBase binding)
+        private bool TryReleaseCommand(ICommandBase command, out CommandBindingBase binding)
         {
             if (command.IsRetained)
             {
@@ -238,25 +250,25 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         public void FailCommand(ICommand command, Exception exception)
         {
-            if (FailCommandImpl(command, out var binding))
+            if (TryReleaseFailedCommand(command, out var binding))
                 ProcessOnFailEvent(binding, exception);
         }
 
         public void FailCommand<T1>(ICommand<T1> command, Exception exception)
         {
-            if (FailCommandImpl(command, out var binding))
+            if (TryReleaseFailedCommand(command, out var binding))
                 ProcessOnFailEvent(binding, exception);
         }
 
         public void FailCommand<T1, T2>(ICommand<T1, T2> command, Exception exception)
         {
-            if (FailCommandImpl(command, out var binding))
+            if (TryReleaseFailedCommand(command, out var binding))
                 ProcessOnFailEvent(binding, exception);
         }
 
         public void FailCommand<T1, T2, T3>(ICommand<T1, T2, T3> command, Exception exception)
         {
-            if (FailCommandImpl(command, out var binding))
+            if (TryReleaseFailedCommand(command, out var binding))
                 ProcessOnFailEvent(binding, exception);
         }
 
@@ -271,7 +283,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
          * Releasing Implementation.
          */
 
-        private bool FailCommandImpl(ICommandBase command, out CommandBindingBase binding)
+        private bool TryReleaseFailedCommand(ICommandBase command, out CommandBindingBase binding)
         {
             if (command.IsRetained)
             {
@@ -304,24 +316,30 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             if (bindings == null)
                 return;
 
+            // TODO: if there will be an exception then we're screwed
+            
+            _commandsExecutionIterationTokens++;
+            
             foreach (var binding in bindings)
             {
                 if (binding.IsSequence)
                 {
-                    if (!NextCommand(binding, 0))
-                        UnbindLaterIfOnce(binding);
-                    return;
+                    if (!TryExecuteBindingCommand(binding, 0))
+                        ScheduleUnbindIfOnce(binding);
+                    continue;
                 }
-
+                
                 var length = binding.Commands.Count + 1;
                 for (var i = 0; i < length; i++)
                 {
-                    if (!NextCommand(binding, i))
-                        UnbindLaterIfOnce(binding);
+                    if (!TryExecuteBindingCommand(binding, i))
+                        ScheduleUnbindIfOnce(binding);
                 }
             }
 
-            UnbindImpl();
+            _commandsExecutionIterationTokens--;
+
+            TryUnbindScheduled();
         }
 
         public void ProcessEvent<T1>(Event<T1> type, T1 param01)
@@ -329,25 +347,29 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             var bindings = GetBindings(type);
             if (bindings == null)
                 return;
+            
+            _commandsExecutionIterationTokens++;
 
             foreach (var binding in bindings)
             {
                 if (binding.IsSequence)
                 {
-                    if (!NextCommand(binding, 0, param01))
-                        UnbindLaterIfOnce(binding);
-                    return;
+                    if (!TryExecuteBindingCommand(binding, 0, param01))
+                        ScheduleUnbindIfOnce(binding);
+                    continue;
                 }
-
+                
                 var length = binding.Commands.Count + 1;
                 for (var i = 0; i < length; i++)
                 {
-                    if (!NextCommand(binding, i, param01))
-                        UnbindLaterIfOnce(binding);
+                    if (!TryExecuteBindingCommand(binding, i, param01))
+                        ScheduleUnbindIfOnce(binding);
                 }
             }
+            
+            _commandsExecutionIterationTokens--;
 
-            UnbindImpl();
+            TryUnbindScheduled();
         }
 
         public void ProcessEvent<T1, T2>(Event<T1, T2> type, T1 param01, T2 param02)
@@ -355,25 +377,29 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             var bindings = GetBindings(type);
             if (bindings == null)
                 return;
+            
+            _commandsExecutionIterationTokens++;
 
             foreach (var binding in bindings)
             {
                 if (binding.IsSequence)
                 {
-                    if (!NextCommand(binding, 0, param01, param02))
-                        UnbindLaterIfOnce(binding);
-                    return;
+                    if (!TryExecuteBindingCommand(binding, 0, param01, param02))
+                        ScheduleUnbindIfOnce(binding);
+                    continue;
                 }
-
+                
                 var length = binding.Commands.Count + 1;
                 for (var i = 0; i < length; i++)
                 {
-                    if (!NextCommand(binding, i, param01, param02))
-                        UnbindLaterIfOnce(binding);
+                    if (!TryExecuteBindingCommand(binding, i, param01, param02))
+                        ScheduleUnbindIfOnce(binding);
                 }
             }
+            
+            _commandsExecutionIterationTokens--;
 
-            UnbindImpl();
+            TryUnbindScheduled();
         }
 
         public void ProcessEvent<T1, T2, T3>(Event<T1, T2, T3> type, T1 param01, T2 param02, T3 param03)
@@ -381,120 +407,103 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             var bindings = GetBindings(type);
             if (bindings == null)
                 return;
+            
+            _commandsExecutionIterationTokens++;
 
             foreach (var binding in bindings)
             {
                 if (binding.IsSequence)
                 {
-                    if (!NextCommand(binding, 0, param01, param02, param03))
-                        UnbindLaterIfOnce(binding);
-                    return;
+                    if (!TryExecuteBindingCommand(binding, 0, param01, param02, param03))
+                        ScheduleUnbindIfOnce(binding);
+                    continue;
                 }
-
+                
                 var length = binding.Commands.Count + 1;
                 for (var i = 0; i < length; i++)
                 {
-                    if (!NextCommand(binding, i, param01, param02, param03))
-                        UnbindLaterIfOnce(binding);
+                    if (!TryExecuteBindingCommand(binding, i, param01, param02, param03))
+                        ScheduleUnbindIfOnce(binding);
                 }
             }
+            
+            _commandsExecutionIterationTokens--;
 
-            UnbindImpl();
+            TryUnbindScheduled();
         }
 
         /*
          * Next Command.
          */
 
-        private bool NextCommand(CommandBindingBase binding, int depth)
+        private bool TryExecuteBindingCommand(CommandBindingBase binding, int index)
         {
-            var commands = binding.Commands;
-            if (depth >= commands.Count)
+            if (index >= binding.Commands.Count)
                 return false;
-            var command = InvokeCommand(commands[depth], binding, depth);
-            if (!command.IsRetained && !command.IsFailed)
-                ReleaseCommand(command);
-            return true;
-        }
-
-        private bool NextCommand<T1>(CommandBindingBase binding, int depth, T1 param01)
-        {
-            var commands = binding.Commands;
-            if (depth >= commands.Count)
-                return false;
-            var command = InvokeCommand(commands[depth], binding, depth, param01);
-            if (!command.IsRetained && !command.IsFailed)
-                ReleaseCommand(command);
-            return true;
-        }
-
-        private bool NextCommand<T1, T2>(CommandBindingBase binding, int depth, T1 param01, T2 param02)
-        {
-            var commands = binding.Commands;
-            if (depth >= commands.Count)
-                return false;
-            var command = InvokeCommand(commands[depth], binding, depth, param01, param02);
-            if (!command.IsRetained && !command.IsFailed)
-                ReleaseCommand(command);
-            return true;
-        }
-
-        private bool NextCommand<T1, T2, T3>(CommandBindingBase binding, int depth, T1 param01, T2 param02, T3 param03)
-        {
-            var commands = binding.Commands;
-            if (depth >= commands.Count)
-                return false;
-            var command = InvokeCommand(commands[depth], binding, depth, param01, param02, param03);
-            if (!command.IsRetained && !command.IsFailed)
-                ReleaseCommand(command);
-            return true;
-        }
-
-        /*
-         * Invocation.
-         */
-
-        private ICommand InvokeCommand(Type commandType, CommandBindingBase binding, int sequenceId)
-        {
-            var command = (ICommand)GetCommand(commandType);
-            TrackCommand(command, binding);
-            command.Setup(sequenceId);
+            
+            var command = (ICommand)GetCommand(binding.Commands[index], binding);
+            command.Setup(index);
             command.Execute();
-            return command;
+            
+            if (!command.IsRetained && !command.IsFailed)
+                ReleaseCommand(command);
+            
+            return true;
         }
 
-        private ICommand<T1> InvokeCommand<T1>(Type commandType, CommandBindingBase binding, int sequenceId, T1 param01)
+        private bool TryExecuteBindingCommand<T1>(CommandBindingBase binding, int index, T1 param01)
         {
-            var command = (ICommand<T1>)GetCommand(commandType);
-            TrackCommand(command, binding);
-            command.Setup(sequenceId, param01);
+            var commands = binding.Commands;
+            if (index >= commands.Count)
+                return false;
+            
+            var command = (ICommand<T1>)GetCommand(commands[index], binding);
+            command.Setup(index, param01);
             command.Execute(param01);
-            return command;
+
+            if (!command.IsRetained && !command.IsFailed)
+                ReleaseCommand(command);
+            
+            return true;
         }
 
-        private ICommand<T1, T2> InvokeCommand<T1, T2>(Type commandType, CommandBindingBase binding, int sequenceId, T1 param01, T2 param02)
+        private bool TryExecuteBindingCommand<T1, T2>(CommandBindingBase binding, int index, T1 param01, T2 param02)
         {
-            var command = (ICommand<T1, T2>)GetCommand(commandType);
-            TrackCommand(command, binding);
-            command.Setup(sequenceId, param01, param02);
+            var commands = binding.Commands;
+            if (index >= commands.Count)
+                return false;
+            
+            var command = (ICommand<T1, T2>)GetCommand(commands[index], binding);
+            command.Setup(index, param01, param02);
             command.Execute(param01, param02);
-            return command;
+            
+            if (!command.IsRetained && !command.IsFailed)
+                ReleaseCommand(command);
+            
+            return true;
         }
 
-        private ICommand<T1, T2, T3> InvokeCommand<T1, T2, T3>(Type commandType, CommandBindingBase binding, int sequenceId, T1 param01, T2 param02, T3 param03)
+        private bool TryExecuteBindingCommand<T1, T2, T3>(CommandBindingBase binding, int index, T1 param01, T2 param02, T3 param03)
         {
-            var command = (ICommand<T1, T2, T3>)GetCommand(commandType);
-            TrackCommand(command, binding);
-            command.Setup(sequenceId, param01, param02, param03);
+            var commands = binding.Commands;
+            if (index >= commands.Count)
+                return false;
+            
+            var command = (ICommand<T1, T2, T3>)GetCommand(commands[index], binding);
+            command.Setup(index, param01, param02, param03);
             command.Execute(param01, param02, param03);
-            return command;
+            
+            if (!command.IsRetained && !command.IsFailed)
+                ReleaseCommand(command);
+            
+            return true;
         }
 
         /*
          * Command Generic.
          */
 
-        private ICommandBase GetCommand(Type commandType)
+        private ICommandBase GetCommand(Type commandType, CommandBindingBase binding)
         {
             ICommandBase command;
             bool isNewInstance;
@@ -515,6 +524,11 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 InjectionBinder.Construct(command, true);
             }
 
+            if (binding.IsSequence)
+                _activeSequences.Add(command, binding);
+            else
+                _activeCommands.Add(command, binding);
+            
             return command;
         }
 
@@ -536,14 +550,6 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 _commandsPoolableData.Add(commandType, poolable);
             }
             return poolable;
-        }
-
-        private void TrackCommand(ICommandBase command, CommandBindingBase binding)
-        {
-            if (binding.IsSequence)
-                _activeSequences.Add(command, binding);
-            else
-                _activeCommands.Add(command, binding);
         }
     }
 }

@@ -6,9 +6,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 {
     public abstract class Command : CommandBase, ICommand
     {
-        public void Setup(int sequenceId)
+        public void Setup(int index)
         {
-            SequenceId = sequenceId;
+            Index = index;
             
             IsRetained = false;
             IsFailed = false;
@@ -16,7 +16,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 
         public override void Reset()
         {
-            SequenceId = default;
+            Index = default;
         }
 
         public abstract void Execute();
@@ -39,9 +39,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
     {
         public T1 Param01 { get; protected set; }
 
-        public void Setup(int sequenceId, T1 param01)
+        public void Setup(int index, T1 param01)
         {
-            SequenceId = sequenceId;
+            Index = index;
             
             IsRetained = false;
             IsFailed = false;
@@ -51,7 +51,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         
         public override void Reset()
         {
-            SequenceId = default;
+            Index = default;
             
             Param01 = default;
         }
@@ -77,9 +77,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         public T1 Param01 { get; protected set; }
         public T2 Param02 { get; protected set; }
 
-        public void Setup(int sequenceId, T1 param01, T2 param02)
+        public void Setup(int index, T1 param01, T2 param02)
         {
-            SequenceId = sequenceId;
+            Index = index;
             
             IsRetained = false;
             IsFailed = false;
@@ -90,7 +90,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         
         public override void Reset()
         {
-            SequenceId = default;
+            Index = default;
             
             Param01 = default;
             Param02 = default;
@@ -118,9 +118,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         public T2 Param02 { get; protected set; }
         public T3 Param03 { get; protected set; }
 
-        public void Setup(int sequenceId, T1 param01, T2 param02, T3 param03)
+        public void Setup(int index, T1 param01, T2 param02, T3 param03)
         {
-            SequenceId = sequenceId;
+            Index = index;
             
             IsRetained = false;
             IsFailed = false;
@@ -132,7 +132,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         
         public override void Reset()
         {
-            SequenceId = default;
+            Index = default;
             
             Param01 = default;
             Param02 = default;
