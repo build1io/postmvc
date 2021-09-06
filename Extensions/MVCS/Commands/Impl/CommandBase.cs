@@ -5,12 +5,15 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 {
     public abstract class CommandBase : ICommandBase
     {
+        protected const int DefaultIndex = -1;
+
         private static int Id;
 
-        public    int            Index         { get; protected set; }
+        public    int            Index         { get; protected set; } = DefaultIndex;
         protected ICommandBinder CommandBinder { get; private set; }
         public    bool           IsRetained    { get; protected set; }
         public    bool           IsFailed      { get; protected set; }
+        public    bool           IsClean       => Index == DefaultIndex;
 
         private readonly int _id;
 

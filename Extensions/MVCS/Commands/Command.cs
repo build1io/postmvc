@@ -16,7 +16,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 
         public override void Reset()
         {
-            Index = default;
+            Index = DefaultIndex;
         }
 
         public abstract void Execute();
@@ -51,7 +51,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         
         public override void Reset()
         {
-            Index = default;
+            Index = DefaultIndex;
             
             Param01 = default;
         }
@@ -90,7 +90,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         
         public override void Reset()
         {
-            Index = default;
+            Index = DefaultIndex;
             
             Param01 = default;
             Param02 = default;
@@ -132,7 +132,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         
         public override void Reset()
         {
-            Index = default;
+            Index = DefaultIndex;
             
             Param01 = default;
             Param02 = default;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Build1.PostMVC.Extensions.MVCS.Commands;
 using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
@@ -6,6 +7,7 @@ using Build1.PostMVC.Extensions.MVCS.Events.Impl;
 using Build1.PostMVC.Extensions.MVCS.Injection.Impl;
 using Build1.PostMVC.Tests.Extensions.MVCS.Commands.Parts;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
 {
@@ -444,7 +446,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
             
             Assert.AreEqual(3, count);
         }
-        
+
         [Test]
         public void FailSequenceTest()
         {
@@ -456,6 +458,65 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
             _dispatcher.Dispatch(CommandTestEvent.Event00);
             
             Assert.AreEqual(2, count);
+        }
+
+        [Test]
+        public void ExecutionExceptionTest()
+        {
+            var count = 0;
+            var countException = 0;
+            var @catch = 0;
+            
+            Command00.OnExecute += () => { count++; };
+            Command00Exception.OnExecute += () => { countException++; };
+            
+            _binder.Bind(CommandTestEvent.Event00).To<Command00>().To<Command00Exception>().To<Command00>().InSequence();
+
+            try
+            {
+                _dispatcher.Dispatch(CommandTestEvent.Event00);
+            }
+            catch
+            {
+                @catch++;
+            }
+            
+            Assert.AreEqual(1, count);
+            Assert.AreEqual(1, countException);
+            Assert.AreEqual(1, @catch);
+        }
+
+        [Test]
+        public void DoubleDeinitTest()
+        {
+            var count = 0;
+            var postConstructs = 0;
+            var preDestroys = 0;
+            var executes = 0;
+            var @catch = 0;
+
+            Command00.OnExecute += () => { count++; };
+            Command00DoubleDeinit.OnPostConstruct += () => { postConstructs++; };
+            Command00DoubleDeinit.OnExecute += () => { executes++; };
+            Command00DoubleDeinit.OnPreDestroy += () => { preDestroys++; };
+            
+            _binder.Bind(CommandTestEvent.Event00).To<Command00>().To<Command00DoubleDeinit>().To<Command00>().To<Command00>().InSequence();
+            
+            try
+            {
+                _dispatcher.Dispatch(CommandTestEvent.Event00);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+                @catch++;
+            }
+            
+            Assert.AreEqual(0, @catch);
+            Assert.AreEqual(3, count);
+            Assert.AreEqual(1, postConstructs);
+            Assert.AreEqual(1, executes);
+            Assert.AreEqual(1, preDestroys);
         }
     }
 }

@@ -534,6 +534,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         private void ReturnCommand(ICommandBase command)
         {
+            if (command.IsClean)
+                return;
+            
             command.Reset();
             
             if (CheckCommandIsPoolable(command.GetType()))
