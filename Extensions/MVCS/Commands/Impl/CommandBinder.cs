@@ -19,8 +19,6 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         private readonly ICommandPool                                 _commandPool;
         private readonly Dictionary<Type, bool>                       _commandsPoolableData;
         private          int                                          _commandsExecutionIterationTokens;
-        private readonly Dictionary<ICommandBase, CommandBindingBase> _activeCommands;
-        private readonly Dictionary<ICommandBase, CommandBindingBase> _activeSequences;
 
         public CommandBinder()
         {
@@ -29,8 +27,6 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
             _commandPool = new CommandPool();
             _commandsPoolableData = new Dictionary<Type, bool>(64);
-            _activeCommands = new Dictionary<ICommandBase, CommandBindingBase>(16);
-            _activeSequences = new Dictionary<ICommandBase, CommandBindingBase>(8);
         }
 
         /*
@@ -108,12 +104,6 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 Unbind(binding);
         }
         
-        private void ScheduleUnbindIfOnce(CommandBindingBase binding)
-        {
-            if (binding.IsOnce)
-                _bindingsToUnbind.Add(binding);
-        }
-
         private void TryUnbindScheduled()
         {
             if (_commandsExecutionIterationTokens == 0)
@@ -140,172 +130,259 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         }
 
         /*
-         * Releasing.
+         * On Command Finished.
          */
-
-        public void ReleaseCommand(ICommand command)
+        
+        public void OnCommandFinished(ICommand command)
         {
-            var index = command.Index + 1;
+            if (command.IsExecuted)
+                OnCommandFinishedImpl(command);
+        }
+        public void OnCommandFinished<T1>(ICommand<T1> command)
+        {
+            if (command.IsExecuted)
+                OnCommandFinishedImpl(command);
+        }
+        public void OnCommandFinished<T1, T2>(ICommand<T1, T2> command)
+        {
+            if (command.IsExecuted)
+                OnCommandFinishedImpl(command);
+        }
+        public void OnCommandFinished<T1, T2, T3>(ICommand<T1, T2, T3> command)
+        {
+            if (command.IsExecuted)
+                OnCommandFinishedImpl(command);
+        }
+        
+        private void OnCommandFinishedImpl(ICommand command)
+        {
+            var index = command.Index;
+            var binding = command.Binding;
+            
+            binding.RegisterCommandRelease();
+            
+            ReturnCommand(command);
 
-            if (!TryReleaseCommand(command, out var binding) || TryExecuteBindingCommand(binding, index))
+            if (binding.IsSequence)
+            {
+                ProcessBindingCommand(binding, index + 1);
                 return;
-
-            UnbindOrScheduleIfOnce(binding);
-            ProcessOnCompleteEvent((CommandBinding)binding);
+            }
+            
+            if (binding.CheckAllReleased())
+            {
+                FinishBindingExecution(binding);
+                return;
+            }
+            
+            ProcessBindingCommand(binding, index + 1);
         }
 
-        public void ReleaseCommand<T1>(ICommand<T1> command)
+        private void OnCommandFinishedImpl<T1>(ICommand<T1> command)
         {
-            var index = command.Index + 1;
+            var index = command.Index;
             var param01 = command.Param01;
+            var binding = command.Binding;
+            
+            binding.RegisterCommandRelease();
+            
+            ReturnCommand(command);
 
-            if (!TryReleaseCommand(command, out var binding) || TryExecuteBindingCommand(binding, index, param01))
+            if (binding.IsSequence)
+            {
+                ProcessBindingCommand(binding, index + 1, param01);
                 return;
-
-            UnbindOrScheduleIfOnce(binding);
-            ProcessOnCompleteEvent((CommandBinding<T1>)binding, param01);
+            }
+            
+            if (binding.CheckAllReleased())
+            {
+                FinishBindingExecution(binding, param01);
+                return;
+            }
+            
+            ProcessBindingCommand(binding, index + 1, param01);
         }
-
-        public void ReleaseCommand<T1, T2>(ICommand<T1, T2> command)
+        
+        private void OnCommandFinishedImpl<T1, T2>(ICommand<T1, T2> command)
         {
-            var index = command.Index + 1;
+            var index = command.Index;
             var param01 = command.Param01;
             var param02 = command.Param02;
+            var binding = command.Binding;
+            
+            binding.RegisterCommandRelease();
+            
+            ReturnCommand(command);
 
-            if (!TryReleaseCommand(command, out var binding) || TryExecuteBindingCommand(binding, index, param01, param02))
+            if (binding.IsSequence)
+            {
+                ProcessBindingCommand(binding, index + 1, param01, param02);
                 return;
-
-            UnbindOrScheduleIfOnce(binding);
-            ProcessOnCompleteEvent((CommandBinding<T1, T2>)binding, param01, param02);
+            }
+            
+            if (binding.CheckAllReleased())
+            {
+                FinishBindingExecution(binding, param01, param02);
+                return;
+            }
+            
+            ProcessBindingCommand(binding, index + 1, param01, param02);
         }
-
-        public void ReleaseCommand<T1, T2, T3>(ICommand<T1, T2, T3> command)
+        
+        private void OnCommandFinishedImpl<T1, T2, T3>(ICommand<T1, T2, T3> command)
         {
-            var index = command.Index + 1;
+            var index = command.Index;
             var param01 = command.Param01;
             var param02 = command.Param02;
             var param03 = command.Param03;
+            var binding = command.Binding;
+            
+            binding.RegisterCommandRelease();
+            
+            ReturnCommand(command);
 
-            if (!TryReleaseCommand(command, out var binding) || TryExecuteBindingCommand(binding, index, param01, param02, param03))
+            if (binding.IsSequence)
+            {
+                ProcessBindingCommand(binding, index + 1, param01, param02, param03);
                 return;
-
-            UnbindOrScheduleIfOnce(binding);
-            ProcessOnCompleteEvent((CommandBinding<T1, T2, T3>)binding, param01, param02, param03);
-        }
-
-        private void ProcessOnCompleteEvent(CommandBinding binding)
-        {
-            var @event = binding.CompleteEvent;
-            if (@event != null)
-                Dispatcher.Dispatch(@event);
-        }
-
-        private void ProcessOnCompleteEvent<T1>(CommandBinding<T1> binding, T1 param01)
-        {
-            var @event = binding.CompleteEvent;
-            if (@event != null)
-                Dispatcher.Dispatch(@event, param01);
-        }
-
-        private void ProcessOnCompleteEvent<T1, T2>(CommandBinding<T1, T2> binding, T1 param01, T2 param02)
-        {
-            var @event = binding.CompleteEvent;
-            if (@event != null)
-                Dispatcher.Dispatch(@event, param01, param02);
-        }
-
-        private void ProcessOnCompleteEvent<T1, T2, T3>(CommandBinding<T1, T2, T3> binding, T1 param01, T2 param02, T3 param03)
-        {
-            var @event = binding.CompleteEvent;
-            if (@event != null)
-                Dispatcher.Dispatch(@event, param01, param02, param03);
-        }
-
-        private bool TryReleaseCommand(ICommandBase command, out CommandBindingBase binding)
-        {
-            if (command.IsRetained)
-            {
-                binding = null;
-                return false;
             }
-
+            
+            if (binding.CheckAllReleased())
+            {
+                FinishBindingExecution(binding, param01, param02, param03);
+                return;
+            }
+            
+            ProcessBindingCommand(binding, index + 1, param01, param02, param03);
+        }
+        
+        /*
+         * On Command Failed.
+         */
+        
+        public void OnCommandFailed(ICommand command, Exception exception)
+        {
+            if (command.IsExecuted)
+                OnCommandFailedImpl(command, exception);
+        }
+        public void OnCommandFailed<T1>(ICommand<T1> command, Exception exception)
+        {
+            if (command.IsExecuted)
+                OnCommandFailedImpl(command, exception);
+        }
+        public void OnCommandFailed<T1, T2>(ICommand<T1, T2> command, Exception exception)
+        {
+            if (command.IsExecuted)
+                OnCommandFailedImpl(command, exception);
+        }
+        public void OnCommandFailed<T1, T2, T3>(ICommand<T1, T2, T3> command, Exception exception)
+        {
+            if (command.IsExecuted)
+                OnCommandFailedImpl(command, exception);
+        }
+        
+        private void OnCommandFailedImpl(ICommand command, Exception exception)
+        {
+            var index = command.Index;
+            var binding = command.Binding;
+            
+            binding.RegisterCommandException(exception);
+            
             ReturnCommand(command);
 
-            if (_activeCommands.Remove(command))
+            if (binding.IsSequence)
             {
-                binding = null;
-                return false;
+                FinishBindingExecution(binding);
+                return;
+            }
+            
+            if (binding.CheckAllReleased())
+            {
+                FinishBindingExecution(binding);
+                return;
             }
 
-            if (!_activeSequences.TryGetValue(command, out binding))
-                return false;
-
-            _activeSequences.Remove(command);
-            return true;
+            ProcessBindingCommand(binding, index + 1);
         }
-
-        /*
-         * Stopping.
-         */
-
-        public void FailCommand(ICommand command, Exception exception)
+        
+        private void OnCommandFailedImpl<T1>(ICommand<T1> command, Exception exception)
         {
-            if (TryReleaseFailedCommand(command, out var binding))
-                ProcessOnFailEvent(binding, exception);
-        }
-
-        public void FailCommand<T1>(ICommand<T1> command, Exception exception)
-        {
-            if (TryReleaseFailedCommand(command, out var binding))
-                ProcessOnFailEvent(binding, exception);
-        }
-
-        public void FailCommand<T1, T2>(ICommand<T1, T2> command, Exception exception)
-        {
-            if (TryReleaseFailedCommand(command, out var binding))
-                ProcessOnFailEvent(binding, exception);
-        }
-
-        public void FailCommand<T1, T2, T3>(ICommand<T1, T2, T3> command, Exception exception)
-        {
-            if (TryReleaseFailedCommand(command, out var binding))
-                ProcessOnFailEvent(binding, exception);
-        }
-
-        private void ProcessOnFailEvent(CommandBindingBase binding, Exception exception)
-        {
-            var @event = binding.FailEvent;
-            if (@event != null)
-                Dispatcher.Dispatch(@event, exception);
-        }
-
-        /*
-         * Releasing Implementation.
-         */
-
-        private bool TryReleaseFailedCommand(ICommandBase command, out CommandBindingBase binding)
-        {
-            if (command.IsRetained)
-            {
-                binding = null;
-                return false;
-            }
-
+            var index = command.Index;
+            var param01 = command.Param01;
+            var binding = command.Binding;
+            
+            binding.RegisterCommandException(exception);
+            
             ReturnCommand(command);
 
-            if (_activeCommands.Remove(command))
+            if (binding.IsSequence)
             {
-                binding = null;
-                return false;
+                FinishBindingExecution(binding, default);
+                return;
+            }
+            
+            if (binding.CheckAllReleased())
+            {
+                FinishBindingExecution(binding, default);
+                return;
             }
 
-            if (!_activeSequences.TryGetValue(command, out binding))
-                return false;
-
-            _activeSequences.Remove(command);
-            return true;
+            ProcessBindingCommand(binding, index + 1, param01);
         }
+        
+        private void OnCommandFailedImpl<T1, T2>(ICommand<T1, T2> command, Exception exception)
+        {
+            var index = command.Index;
+            var param01 = command.Param01;
+            var param02 = command.Param02;
+            var binding = command.Binding;
+            
+            binding.RegisterCommandException(exception);
+            
+            ReturnCommand(command);
 
+            if (binding.IsSequence)
+            {
+                FinishBindingExecution(binding, default, default);
+                return;
+            }
+            
+            if (binding.CheckAllReleased())
+            {
+                FinishBindingExecution(binding, default, default);
+                return;
+            }
+
+            ProcessBindingCommand(binding, index + 1, param01, param02);
+        }
+        
+        private void OnCommandFailedImpl<T1, T2, T3>(ICommand<T1, T2, T3> command, Exception exception)
+        {
+            var index = command.Index;
+            var param01 = command.Param01;
+            var param02 = command.Param02;
+            var param03 = command.Param03;
+            var binding = command.Binding;
+            
+            binding.RegisterCommandException(exception);
+            
+            ReturnCommand(command);
+
+            if (binding.IsSequence)
+            {
+                FinishBindingExecution(binding, default, default, default);
+                return;
+            }
+            
+            if (binding.CheckAllReleased())
+            {
+                FinishBindingExecution(binding, default, default, default);
+                return;
+            }
+
+            ProcessBindingCommand(binding, index + 1, param01, param02, param03);
+        }
+        
         /*
          * Event Processing.
          */
@@ -315,33 +392,22 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             var bindings = GetBindings(type);
             if (bindings == null)
                 return;
-
-            // TODO: if there will be an exception then we're screwed
             
             _commandsExecutionIterationTokens++;
-            
+
             foreach (var binding in bindings)
             {
-                if (binding.IsSequence)
-                {
-                    if (!TryExecuteBindingCommand(binding, 0))
-                        ScheduleUnbindIfOnce(binding);
-                    continue;
-                }
+                if (binding.IsExecuting)
+                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
                 
-                var length = binding.Commands.Count + 1;
-                for (var i = 0; i < length; i++)
-                {
-                    if (!TryExecuteBindingCommand(binding, i))
-                        ScheduleUnbindIfOnce(binding);
-                }
+                binding.StartExecution();
+                ProcessBindingCommand((CommandBinding)binding, 0);
             }
 
             _commandsExecutionIterationTokens--;
-
             TryUnbindScheduled();
         }
-
+        
         public void ProcessEvent<T1>(Event<T1> type, T1 param01)
         {
             var bindings = GetBindings(type);
@@ -352,26 +418,17 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
             foreach (var binding in bindings)
             {
-                if (binding.IsSequence)
-                {
-                    if (!TryExecuteBindingCommand(binding, 0, param01))
-                        ScheduleUnbindIfOnce(binding);
-                    continue;
-                }
+                if (binding.IsExecuting)
+                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
                 
-                var length = binding.Commands.Count + 1;
-                for (var i = 0; i < length; i++)
-                {
-                    if (!TryExecuteBindingCommand(binding, i, param01))
-                        ScheduleUnbindIfOnce(binding);
-                }
+                binding.StartExecution();
+                ProcessBindingCommand((CommandBinding<T1>)binding, 0, param01);
             }
-            
-            _commandsExecutionIterationTokens--;
 
+            _commandsExecutionIterationTokens--;
             TryUnbindScheduled();
         }
-
+        
         public void ProcessEvent<T1, T2>(Event<T1, T2> type, T1 param01, T2 param02)
         {
             var bindings = GetBindings(type);
@@ -382,26 +439,17 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
             foreach (var binding in bindings)
             {
-                if (binding.IsSequence)
-                {
-                    if (!TryExecuteBindingCommand(binding, 0, param01, param02))
-                        ScheduleUnbindIfOnce(binding);
-                    continue;
-                }
+                if (binding.IsExecuting)
+                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
                 
-                var length = binding.Commands.Count + 1;
-                for (var i = 0; i < length; i++)
-                {
-                    if (!TryExecuteBindingCommand(binding, i, param01, param02))
-                        ScheduleUnbindIfOnce(binding);
-                }
+                binding.StartExecution();
+                ProcessBindingCommand((CommandBinding<T1, T2>)binding, 0, param01, param02);
             }
-            
-            _commandsExecutionIterationTokens--;
 
+            _commandsExecutionIterationTokens--;
             TryUnbindScheduled();
         }
-
+        
         public void ProcessEvent<T1, T2, T3>(Event<T1, T2, T3> type, T1 param01, T2 param02, T3 param03)
         {
             var bindings = GetBindings(type);
@@ -412,98 +460,261 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
             foreach (var binding in bindings)
             {
-                if (binding.IsSequence)
-                {
-                    if (!TryExecuteBindingCommand(binding, 0, param01, param02, param03))
-                        ScheduleUnbindIfOnce(binding);
-                    continue;
-                }
+                if (binding.IsExecuting)
+                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
                 
-                var length = binding.Commands.Count + 1;
-                for (var i = 0; i < length; i++)
-                {
-                    if (!TryExecuteBindingCommand(binding, i, param01, param02, param03))
-                        ScheduleUnbindIfOnce(binding);
-                }
+                binding.StartExecution();
+                ProcessBindingCommand((CommandBinding<T1, T2, T3>)binding, 0, param01, param02, param03);
             }
-            
-            _commandsExecutionIterationTokens--;
 
+            _commandsExecutionIterationTokens--;
             TryUnbindScheduled();
         }
-
+        
         /*
-         * Next Command.
+         * Command Processing.
          */
-
-        private bool TryExecuteBindingCommand(CommandBindingBase binding, int index)
+        
+        private void ProcessBindingCommand(CommandBinding binding, int index)
         {
+            if (binding.CheckAllReleased())
+            {
+                if (binding.CheckAllReleased())
+                    FinishBindingExecution(binding);
+                return;
+            }
+            
             if (index >= binding.Commands.Count)
-                return false;
+                return;
             
-            var command = (ICommand)GetCommand(binding.Commands[index], binding);
+            var command = (ICommand)GetCommand(binding.Commands[index]);
             command.Setup(index);
-            command.Execute();
-            
-            if (!command.IsRetained && !command.IsFailed)
-                ReleaseCommand(command);
-            
-            return true;
+            command.PreExecute(binding);
+
+            try
+            {
+                command.Execute();
+                command.SetExecuted();
+            }
+            catch (Exception exception)
+            {
+                OnCommandFailedImpl(command, exception);
+                return;
+            }
+
+            if (!command.IsRetained)
+            {
+                if (command.IsFailed)
+                    OnCommandFailedImpl(command, command.Exception);    
+                else
+                    OnCommandFinishedImpl(command);
+                return;
+            }
+                
+            if (!binding.IsSequence)
+                ProcessBindingCommand(binding, index + 1);
         }
 
-        private bool TryExecuteBindingCommand<T1>(CommandBindingBase binding, int index, T1 param01)
+        private void ProcessBindingCommand<T1>(CommandBinding<T1> binding, int index, T1 param01)
         {
-            var commands = binding.Commands;
-            if (index >= commands.Count)
+            if (binding.CheckAllReleased())
+            {
+                if (binding.CheckAllReleased())
+                    FinishBindingExecution(binding, param01);
+                return;
+            }
+            
+            if (index >= binding.Commands.Count)
+                return;
+            
+            var command = (ICommand<T1>)GetCommand(binding.Commands[index]);
+            command.Setup(index);
+            command.PreExecute(binding, param01);
+
+            try
+            {
+                command.Execute(param01);
+                command.SetExecuted();
+            }
+            catch (Exception exception)
+            {
+                OnCommandFailedImpl(command, exception);
+                return;
+            }
+
+            if (!command.IsRetained)
+            {
+                if (command.IsFailed)
+                    OnCommandFailedImpl(command, command.Exception);    
+                else
+                    OnCommandFinishedImpl(command);
+                return;
+            }
+                
+            if (!binding.IsSequence)
+                ProcessBindingCommand(binding, index + 1, param01);
+        }
+        
+        private void ProcessBindingCommand<T1, T2>(CommandBinding<T1, T2> binding, int index, T1 param01, T2 param02)
+        {
+            if (binding.CheckAllReleased())
+            {
+                if (binding.CheckAllReleased())
+                    FinishBindingExecution(binding, param01, param02);
+                return;
+            }
+            
+            if (index >= binding.Commands.Count)
+                return;
+            
+            var command = (ICommand<T1, T2>)GetCommand(binding.Commands[index]);
+            command.Setup(index);
+            command.PreExecute(binding, param01, param02);
+
+            try
+            {
+                command.Execute(param01, param02);
+                command.SetExecuted();
+            }
+            catch (Exception exception)
+            {
+                OnCommandFailedImpl(command, exception);
+                return;
+            }
+
+            if (!command.IsRetained)
+            {
+                if (command.IsFailed)
+                    OnCommandFailedImpl(command, command.Exception);    
+                else
+                    OnCommandFinishedImpl(command);
+                return;
+            }
+                
+            if (!binding.IsSequence)
+                ProcessBindingCommand(binding, index + 1, param01, param02);
+        }
+
+        private void ProcessBindingCommand<T1, T2, T3>(CommandBinding<T1, T2, T3> binding, int index, T1 param01, T2 param02, T3 param03)
+        {
+            if (binding.CheckAllReleased())
+            {
+                if (binding.CheckAllReleased())
+                    FinishBindingExecution(binding, param01, param02, param03);
+                return;
+            }
+            
+            if (index >= binding.Commands.Count)
+                return;
+            
+            var command = (ICommand<T1, T2, T3>)GetCommand(binding.Commands[index]);
+            command.Setup(index);
+            command.PreExecute(binding, param01, param02, param03);
+
+            try
+            {
+                command.Execute(param01, param02, param03);
+                command.SetExecuted();
+            }
+            catch (Exception exception)
+            {
+                OnCommandFailedImpl(command, exception);
+                return;
+            }
+
+            if (!command.IsRetained)
+            {
+                if (command.IsFailed)
+                    OnCommandFailedImpl(command, command.Exception);    
+                else
+                    OnCommandFinishedImpl(command);
+                return;
+            }
+                
+            if (!binding.IsSequence)
+                ProcessBindingCommand(binding, index + 1, param01, param02, param03);
+        }
+        
+        /*
+         * Finishing.
+         */
+        
+        private void FinishBindingExecution(CommandBinding binding)
+        {
+            if (TryHandleBindingFail(binding))
+                return;
+            
+            binding.FinishExecution();
+            UnbindOrScheduleIfOnce(binding);
+            
+            var @event = binding.CompleteEvent;
+            if (@event != null)
+                Dispatcher.Dispatch(@event);
+        }
+
+        private void FinishBindingExecution<T1>(CommandBinding<T1> binding, T1 param01)
+        {
+            if (TryHandleBindingFail(binding))
+                return;
+            
+            binding.FinishExecution();
+            UnbindOrScheduleIfOnce(binding);
+            
+            var @event = binding.CompleteEvent;
+            if (@event != null)
+                Dispatcher.Dispatch(@event, param01);
+        }
+        
+        private void FinishBindingExecution<T1, T2>(CommandBinding<T1, T2> binding, T1 param01, T2 param02)
+        {
+            if (TryHandleBindingFail(binding))
+                return;
+            
+            binding.FinishExecution();
+            UnbindOrScheduleIfOnce(binding);
+            
+            var @event = binding.CompleteEvent;
+            if (@event != null)
+                Dispatcher.Dispatch(@event, param01, param02);
+        }
+        
+        private void FinishBindingExecution<T1, T2, T3>(CommandBinding<T1, T2, T3> binding, T1 param01, T2 param02, T3 param03)
+        {
+            if (TryHandleBindingFail(binding))
+                return;
+            
+            binding.FinishExecution();
+            UnbindOrScheduleIfOnce(binding);
+            
+            var @event = binding.CompleteEvent;
+            if (@event != null)
+                Dispatcher.Dispatch(@event, param01, param02, param03);
+        }
+
+        private bool TryHandleBindingFail(CommandBindingBase binding)
+        {
+            if (!binding.HasFails) 
                 return false;
             
-            var command = (ICommand<T1>)GetCommand(commands[index], binding);
-            command.Setup(index, param01);
-            command.Execute(param01);
-
-            if (!command.IsRetained && !command.IsFailed)
-                ReleaseCommand(command);
-            
+            var exception = binding.CommandsFailed[0];
+                
+            binding.FinishExecution();
+                
+            var @event = binding.FailEvent;
+            if (@event == null)
+                throw exception;
+                
+            UnbindOrScheduleIfOnce(binding);
+                
+            Dispatcher.Dispatch(@event, exception);
             return true;
         }
-
-        private bool TryExecuteBindingCommand<T1, T2>(CommandBindingBase binding, int index, T1 param01, T2 param02)
-        {
-            var commands = binding.Commands;
-            if (index >= commands.Count)
-                return false;
-            
-            var command = (ICommand<T1, T2>)GetCommand(commands[index], binding);
-            command.Setup(index, param01, param02);
-            command.Execute(param01, param02);
-            
-            if (!command.IsRetained && !command.IsFailed)
-                ReleaseCommand(command);
-            
-            return true;
-        }
-
-        private bool TryExecuteBindingCommand<T1, T2, T3>(CommandBindingBase binding, int index, T1 param01, T2 param02, T3 param03)
-        {
-            var commands = binding.Commands;
-            if (index >= commands.Count)
-                return false;
-            
-            var command = (ICommand<T1, T2, T3>)GetCommand(commands[index], binding);
-            command.Setup(index, param01, param02, param03);
-            command.Execute(param01, param02, param03);
-            
-            if (!command.IsRetained && !command.IsFailed)
-                ReleaseCommand(command);
-            
-            return true;
-        }
-
+        
         /*
          * Command Generic.
          */
 
-        private ICommandBase GetCommand(Type commandType, CommandBindingBase binding)
+        private ICommandBase GetCommand(Type commandType)
         {
             ICommandBase command;
             bool isNewInstance;
@@ -524,11 +735,6 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 InjectionBinder.Construct(command, true);
             }
 
-            if (binding.IsSequence)
-                _activeSequences.Add(command, binding);
-            else
-                _activeCommands.Add(command, binding);
-            
             return command;
         }
 

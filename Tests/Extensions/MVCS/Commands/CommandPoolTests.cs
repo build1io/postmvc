@@ -1,6 +1,7 @@
 using Build1.PostMVC.Extensions.MVCS.Commands.Api;
 using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
-using Build1.PostMVC.Tests.Extensions.MVCS.Commands.Parts;
+using Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command01Tests.Commands;
+using Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command02Tests.Commands;
 using NUnit.Framework;
 
 namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
