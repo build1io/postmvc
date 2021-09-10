@@ -1,5 +1,5 @@
 using System;
-using Build1.PostMVC.Extensions.MVCS.Injection;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.U2D;
 
@@ -8,6 +8,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
     internal abstract class AssetsAgentBase : MonoBehaviour
     {
         public event Func<string, SpriteAtlas> AtlasRequested;
+
+        #if UNITY_EDITOR
+
+        private bool _safeMode;
+
+        #endif
 
         /*
          * Public.
@@ -21,17 +27,40 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
          * Unity Events.
          */
 
-        [PostConstruct]
-        public void PostConstruct()
+        public void OnEnable()
         {
+            #if UNITY_EDITOR
+
+            StartCoroutine(HandleSafeModeForEditor());
+
+            #endif
+
             SpriteAtlasManager.atlasRequested += RequestAtlas;
         }
 
-        [PreDestroy]
-        public void PreDestroy()
+        public void OnDisable()
         {
+            #if UNITY_EDITOR
+
+            StopAllCoroutines();
+
+            #endif
+
             SpriteAtlasManager.atlasRequested -= RequestAtlas;
         }
+
+        #if UNITY_EDITOR
+
+        IEnumerator HandleSafeModeForEditor()
+        {
+            _safeMode = true;
+
+            yield return 0;
+
+            _safeMode = false;
+        }
+
+        #endif
 
         /*
          * Event Handlers.
@@ -39,6 +68,24 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
 
         private void RequestAtlas(string atlasId, Action<SpriteAtlas> onComplete)
         {
+            #if UNITY_EDITOR
+
+            if (_safeMode)
+            {
+                try
+                {
+                    onComplete(AtlasRequested?.Invoke(atlasId));
+                }
+                catch
+                {
+                    onComplete(null);
+                }
+
+                return;
+            }
+
+            #endif
+
             onComplete(AtlasRequested?.Invoke(atlasId));
         }
     }
