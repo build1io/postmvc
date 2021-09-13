@@ -17,6 +17,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         public bool      IsClean    => Index == DefaultIndex;
 
         protected ICommandBinder CommandBinder { get; private set; }
+        protected bool           IsResolved    { get; set; }
 
         private readonly int _id;
 
@@ -37,11 +38,15 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         public void Setup(int index)
         {
             Index = index;
+            IsResolved = false;
         }
 
-        public void SetExecuted()
+        public void PostExecute()
         {
             IsExecuted = true;
+
+            if (!IsRetained)
+                IsResolved = true;
         }
 
         public virtual void Reset()

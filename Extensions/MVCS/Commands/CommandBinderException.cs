@@ -1,8 +1,8 @@
 using System;
 
-namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
+namespace Build1.PostMVC.Extensions.MVCS.Commands
 {
-    internal class CommandBinderException : Exception
+    public sealed class CommandBinderException : Exception
     {
         public CommandBinderException(CommandBinderExceptionType type) : base(type.ToString())
         {

@@ -494,13 +494,14 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             try
             {
                 command.Execute();
-                command.SetExecuted();
             }
             catch (Exception exception)
             {
                 OnCommandFailedImpl(command, exception);
                 return;
             }
+            
+            command.PostExecute();
 
             if (!command.IsRetained)
             {
@@ -534,13 +535,14 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             try
             {
                 command.Execute(param01);
-                command.SetExecuted();
             }
             catch (Exception exception)
             {
                 OnCommandFailedImpl(command, exception);
                 return;
             }
+            
+            command.PostExecute();
 
             if (!command.IsRetained)
             {
@@ -574,13 +576,14 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             try
             {
                 command.Execute(param01, param02);
-                command.SetExecuted();
             }
             catch (Exception exception)
             {
                 OnCommandFailedImpl(command, exception);
                 return;
             }
+            
+            command.PostExecute();
 
             if (!command.IsRetained)
             {
@@ -614,13 +617,14 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             try
             {
                 command.Execute(param01, param02, param03);
-                command.SetExecuted();
             }
             catch (Exception exception)
             {
                 OnCommandFailedImpl(command, exception);
                 return;
             }
+            
+            command.PostExecute();
 
             if (!command.IsRetained)
             {

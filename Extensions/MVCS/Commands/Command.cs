@@ -17,12 +17,20 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 
         protected override void Release()
         {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToReleaseResolvedCommand);
+            
+            IsResolved = true;
             IsRetained = false;
             CommandBinder.OnCommandFinished(this);
         }
 
         protected override void Fail(Exception exception)
         {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToFailResolvedCommand);
+            
+            IsResolved = true;
             Exception = exception;
             IsRetained = false;
             IsFailed = true;
@@ -52,12 +60,20 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 
         protected sealed override void Release()
         {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToReleaseResolvedCommand);
+            
+            IsResolved = true;
             IsRetained = false;
             CommandBinder.OnCommandFinished(this);
         }
 
         protected override void Fail(Exception exception)
         {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToFailResolvedCommand);
+            
+            IsResolved = true;
             Exception = exception;
             IsRetained = false;
             IsFailed = true;
@@ -90,12 +106,20 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 
         protected sealed override void Release()
         {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToReleaseResolvedCommand);
+            
+            IsResolved = true;
             IsRetained = false;
             CommandBinder.OnCommandFinished(this);
         }
 
         protected override void Fail(Exception exception)
         {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToFailResolvedCommand);
+            
+            IsResolved = true;
             Exception = exception;
             IsRetained = false;
             IsFailed = true;
@@ -131,12 +155,20 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 
         protected sealed override void Release()
         {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToReleaseResolvedCommand);
+            
+            IsResolved = true;
             IsRetained = false;
             CommandBinder.OnCommandFinished(this);
         }
 
         protected override void Fail(Exception exception)
         {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToFailResolvedCommand);
+            
+            IsResolved = true;
             Exception = exception;
             IsRetained = false;
             IsFailed = true;

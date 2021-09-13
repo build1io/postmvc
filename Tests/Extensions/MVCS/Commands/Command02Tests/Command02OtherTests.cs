@@ -42,8 +42,12 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command02Tests
             binder.Dispatcher = _dispatcher;
         }
         
+        /*
+         * Double Deinit.
+         */
+        
         [Test]
-        public void DoubleDeinitTest()
+        public void DoubleDeinitSequenceTest()
         {
             var count = 0;
             var postConstructs = 0;
@@ -73,6 +77,138 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command02Tests
             Assert.AreEqual(1, postConstructs);
             Assert.AreEqual(1, executes);
             Assert.AreEqual(1, preDestroys);
+        }
+        
+        [Test]
+        public void DoubleDeinitGroupTest()
+        {
+            var count = 0;
+            var postConstructs = 0;
+            var preDestroys = 0;
+            var executes = 0;
+            var @catch = 0;
+
+            Command02.OnExecute += (param01, param02) => { count++; };
+            Command02DoubleDeinit.OnPostConstruct += () => { postConstructs++; };
+            Command02DoubleDeinit.OnExecute += (param01, param02) => { executes++; };
+            Command02DoubleDeinit.OnPreDestroy += () => { preDestroys++; };
+            
+            _binder.Bind(CommandTestEvent.Event02).To<Command02>().To<Command02DoubleDeinit>().To<Command02>().To<Command02>();
+            
+            try
+            {
+                _dispatcher.Dispatch(CommandTestEvent.Event02, 0, null);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+                @catch++;
+            }
+            
+            Assert.AreEqual(0, @catch);
+            Assert.AreEqual(3, count);
+            Assert.AreEqual(1, postConstructs);
+            Assert.AreEqual(1, executes);
+            Assert.AreEqual(1, preDestroys);
+        }
+        
+        /*
+         * Double Resolve.
+         */
+        
+        [Test]
+        public void DoubleResolveTest()
+        {
+            var @catch = 0;
+            
+            _binder.Bind(CommandTestEvent.Event02).To<Command02DoubleResolve>();
+         
+            try
+            {
+                _dispatcher.Dispatch(CommandTestEvent.Event02, 0, string.Empty);
+            }
+            catch (Exception exception)
+            {
+                Assert.IsInstanceOf<CommandException>(exception);
+                @catch++;
+            }
+            
+            Assert.AreEqual(1, @catch);
+        }
+        
+        [Test]
+        public void DoubleResolveAfterRetainTest()
+        {
+            var @catch = 0;
+            
+            _binder.Bind(CommandTestEvent.Event02).To<Command02Retain>();
+            _dispatcher.Dispatch(CommandTestEvent.Event02, 0, string.Empty);
+            
+            try
+            {
+                Command02Retain.Instance.ReleaseImpl();
+                Command02Retain.Instance.ReleaseImpl();
+            }
+            catch (Exception exception)
+            {
+                Assert.IsInstanceOf<CommandException>(exception);
+                @catch++;
+            }
+            
+            Assert.AreEqual(1, @catch);
+        }
+        
+        [Test]
+        public void DoubleFailTest()
+        {
+            var @catch = 0;
+            
+            _binder.Bind(CommandTestEvent.Event02).To<Command02DoubleFail>();
+         
+            try
+            {
+                _dispatcher.Dispatch(CommandTestEvent.Event02, 0, string.Empty);
+            }
+            catch (Exception exception)
+            {
+                Assert.IsInstanceOf<CommandException>(exception);
+                @catch++;
+            }
+            
+            Assert.AreEqual(1, @catch);
+        }
+
+        [Test]
+        public void DoubleFailAfterRetainTest()
+        {
+            var @catch = 0;
+            
+            _binder.Bind(CommandTestEvent.Event02).To<Command02Retain>();
+            _dispatcher.Dispatch(CommandTestEvent.Event02, 0, string.Empty);
+            
+            try
+            {
+                Command02Retain.Instance.FailImpl();
+                
+            }
+            catch (Exception exception)
+            {
+                Assert.IsInstanceOf<Exception>(exception);
+                Assert.IsNotInstanceOf<CommandException>(exception);
+                @catch++;
+            }
+
+            try
+            {
+                Command02Retain.Instance.FailImpl();
+            }
+            catch (Exception exception)
+            {
+                Assert.IsInstanceOf<CommandException>(exception);
+                @catch++;
+            }
+            
+            Assert.AreEqual(2, @catch);
         }
     }
 }

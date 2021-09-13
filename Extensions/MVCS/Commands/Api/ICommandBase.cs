@@ -13,7 +13,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Api
 
         void SetCommandBinder(ICommandBinder commandBinder);
         void Setup(int index);
-        void SetExecuted();
+        void PostExecute();
         void Reset();
     }
 }
