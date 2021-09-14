@@ -31,8 +31,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
             }
             else
             {
-                // Specifying EventDispatcherWithCommandProcessing is bad but needed to escape AOT issues.
-                map = CreateEventMap(); 
+                map = CreateEventMapper(); 
                 _usedInstances.Add(map);
             }
 
@@ -52,8 +51,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
          * Protected.
          */
 
-        private IEventMap CreateEventMap()
+        private IEventMap CreateEventMapper()
         {
+            // Specifying EventDispatcherWithCommandProcessing is bad but needed to escape AOT issues.
             return new EventMap((EventDispatcherWithCommandProcessing)Dispatcher);
         }
     }

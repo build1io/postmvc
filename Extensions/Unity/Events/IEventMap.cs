@@ -3,7 +3,7 @@ using Build1.PostMVC.Extensions.Unity.Mediation;
 
 namespace Build1.PostMVC.Extensions.MVCS.Events
 {
-    public partial interface IEventMapper
+    public partial interface IEventMap
     {
         /*
          * Map.

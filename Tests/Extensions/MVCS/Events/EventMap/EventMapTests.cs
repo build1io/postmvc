@@ -4,11 +4,11 @@ using Build1.PostMVC.Extensions.MVCS.Events.Impl;
 using Build1.PostMVC.Tests.Extensions.MVCS.Events.Common;
 using NUnit.Framework;
 
-namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
+namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMap
 {
-    public sealed class EventMapperTests
+    public sealed class EventMapTests
     {
-        private IEventMapper     _mapper;
+        private IEventMap        map;
         private IEventDispatcher _dispatcher;
 
         [SetUp]
@@ -17,7 +17,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
             var dispatcher = new EventDispatcherWithCommandProcessing(new CommandBinder());
 
             _dispatcher = dispatcher;
-            _mapper = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventMapper(dispatcher);
+            map = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventMap(dispatcher);
         }
 
         [Test]
@@ -33,15 +33,15 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
             void Listener02(int p1, string p2)          => count02++;
             void Listener03(int p1, string p2, bool p3) => count03++;
 
-            _mapper.Map(TestEvent.Event00, Listener00);
-            _mapper.Map(TestEvent.Event01, Listener01);
-            _mapper.Map(TestEvent.Event02, Listener02);
-            _mapper.Map(TestEvent.Event03, Listener03);
+            map.Map(TestEvent.Event00, Listener00);
+            map.Map(TestEvent.Event01, Listener01);
+            map.Map(TestEvent.Event02, Listener02);
+            map.Map(TestEvent.Event03, Listener03);
 
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event00, Listener00));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event01, Listener01));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event02, Listener02));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event03, Listener03));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event00, Listener00));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event01, Listener01));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event02, Listener02));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event03, Listener03));
 
             _dispatcher.Dispatch(TestEvent.Event00);
             Assert.AreEqual(count00, 1);
@@ -67,12 +67,12 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
             Assert.AreEqual(count02, 1);
             Assert.AreEqual(count03, 1);
         }
-        
+
         [Test]
         public void MapWithSideDispatcherTest()
         {
             var dispatcher = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventDispatcher();
-            
+
             var count00 = 0;
             var count01 = 0;
             var count02 = 0;
@@ -83,15 +83,15 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
             void Listener02(int p1, string p2)          => count02++;
             void Listener03(int p1, string p2, bool p3) => count03++;
 
-            _mapper.Map(dispatcher, TestEvent.Event00, Listener00);
-            _mapper.Map(dispatcher, TestEvent.Event01, Listener01);
-            _mapper.Map(dispatcher, TestEvent.Event02, Listener02);
-            _mapper.Map(dispatcher, TestEvent.Event03, Listener03);
+            map.Map(dispatcher, TestEvent.Event00, Listener00);
+            map.Map(dispatcher, TestEvent.Event01, Listener01);
+            map.Map(dispatcher, TestEvent.Event02, Listener02);
+            map.Map(dispatcher, TestEvent.Event03, Listener03);
 
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
 
             dispatcher.Dispatch(TestEvent.Event00);
             Assert.AreEqual(count00, 1);
@@ -131,30 +131,15 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
             void Listener02(int p1, string p2)          => count02++;
             void Listener03(int p1, string p2, bool p3) => count03++;
 
-            _mapper.MapOnce(TestEvent.Event00, Listener00);
-            _mapper.MapOnce(TestEvent.Event01, Listener01);
-            _mapper.MapOnce(TestEvent.Event02, Listener02);
-            _mapper.MapOnce(TestEvent.Event03, Listener03);
+            map.MapOnce(TestEvent.Event00, Listener00);
+            map.MapOnce(TestEvent.Event01, Listener01);
+            map.MapOnce(TestEvent.Event02, Listener02);
+            map.MapOnce(TestEvent.Event03, Listener03);
 
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event00, Listener00));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event01, Listener01));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event02, Listener02));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event03, Listener03));
-
-            _dispatcher.Dispatch(TestEvent.Event00);
-            _dispatcher.Dispatch(TestEvent.Event01, int.MinValue);
-            _dispatcher.Dispatch(TestEvent.Event02, int.MinValue, string.Empty);
-            _dispatcher.Dispatch(TestEvent.Event03, int.MinValue, string.Empty, false);
-
-            Assert.AreEqual(count00, 1);
-            Assert.AreEqual(count01, 1);
-            Assert.AreEqual(count02, 1);
-            Assert.AreEqual(count03, 1);
-
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event00, Listener00));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event01, Listener01));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event02, Listener02));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event03, Listener03));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event00, Listener00));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event01, Listener01));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event02, Listener02));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event03, Listener03));
 
             _dispatcher.Dispatch(TestEvent.Event00);
             _dispatcher.Dispatch(TestEvent.Event01, int.MinValue);
@@ -166,17 +151,32 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
             Assert.AreEqual(count02, 1);
             Assert.AreEqual(count03, 1);
 
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event00, Listener00));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event01, Listener01));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event02, Listener02));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event03, Listener03));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event00, Listener00));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event01, Listener01));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event02, Listener02));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event03, Listener03));
+
+            _dispatcher.Dispatch(TestEvent.Event00);
+            _dispatcher.Dispatch(TestEvent.Event01, int.MinValue);
+            _dispatcher.Dispatch(TestEvent.Event02, int.MinValue, string.Empty);
+            _dispatcher.Dispatch(TestEvent.Event03, int.MinValue, string.Empty, false);
+
+            Assert.AreEqual(count00, 1);
+            Assert.AreEqual(count01, 1);
+            Assert.AreEqual(count02, 1);
+            Assert.AreEqual(count03, 1);
+
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event00, Listener00));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event01, Listener01));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event02, Listener02));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event03, Listener03));
         }
-        
+
         [Test]
         public void MapOnceWithSideDispatcherTest()
         {
             var dispatcher = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventDispatcher();
-            
+
             var count00 = 0;
             var count01 = 0;
             var count02 = 0;
@@ -187,30 +187,15 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
             void Listener02(int p1, string p2)          => count02++;
             void Listener03(int p1, string p2, bool p3) => count03++;
 
-            _mapper.MapOnce(dispatcher, TestEvent.Event00, Listener00);
-            _mapper.MapOnce(dispatcher, TestEvent.Event01, Listener01);
-            _mapper.MapOnce(dispatcher, TestEvent.Event02, Listener02);
-            _mapper.MapOnce(dispatcher, TestEvent.Event03, Listener03);
+            map.MapOnce(dispatcher, TestEvent.Event00, Listener00);
+            map.MapOnce(dispatcher, TestEvent.Event01, Listener01);
+            map.MapOnce(dispatcher, TestEvent.Event02, Listener02);
+            map.MapOnce(dispatcher, TestEvent.Event03, Listener03);
 
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
-
-            dispatcher.Dispatch(TestEvent.Event00);
-            dispatcher.Dispatch(TestEvent.Event01, int.MinValue);
-            dispatcher.Dispatch(TestEvent.Event02, int.MinValue, string.Empty);
-            dispatcher.Dispatch(TestEvent.Event03, int.MinValue, string.Empty, false);
-
-            Assert.AreEqual(count00, 1);
-            Assert.AreEqual(count01, 1);
-            Assert.AreEqual(count02, 1);
-            Assert.AreEqual(count03, 1);
-
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
 
             dispatcher.Dispatch(TestEvent.Event00);
             dispatcher.Dispatch(TestEvent.Event01, int.MinValue);
@@ -222,10 +207,25 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
             Assert.AreEqual(count02, 1);
             Assert.AreEqual(count03, 1);
 
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
+
+            dispatcher.Dispatch(TestEvent.Event00);
+            dispatcher.Dispatch(TestEvent.Event01, int.MinValue);
+            dispatcher.Dispatch(TestEvent.Event02, int.MinValue, string.Empty);
+            dispatcher.Dispatch(TestEvent.Event03, int.MinValue, string.Empty, false);
+
+            Assert.AreEqual(count00, 1);
+            Assert.AreEqual(count01, 1);
+            Assert.AreEqual(count02, 1);
+            Assert.AreEqual(count03, 1);
+
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
         }
 
         [Test]
@@ -241,25 +241,25 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
             void Listener02(int p1, string p2)          => count02++;
             void Listener03(int p1, string p2, bool p3) => count03++;
 
-            _mapper.Map(TestEvent.Event00, Listener00);
-            _mapper.Map(TestEvent.Event01, Listener01);
-            _mapper.Map(TestEvent.Event02, Listener02);
-            _mapper.Map(TestEvent.Event03, Listener03);
+            map.Map(TestEvent.Event00, Listener00);
+            map.Map(TestEvent.Event01, Listener01);
+            map.Map(TestEvent.Event02, Listener02);
+            map.Map(TestEvent.Event03, Listener03);
 
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event00, Listener00));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event01, Listener01));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event02, Listener02));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event03, Listener03));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event00, Listener00));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event01, Listener01));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event02, Listener02));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event03, Listener03));
 
-            _mapper.Unmap(TestEvent.Event00, Listener00);
-            _mapper.Unmap(TestEvent.Event01, Listener01);
-            _mapper.Unmap(TestEvent.Event02, Listener02);
-            _mapper.Unmap(TestEvent.Event03, Listener03);
+            map.Unmap(TestEvent.Event00, Listener00);
+            map.Unmap(TestEvent.Event01, Listener01);
+            map.Unmap(TestEvent.Event02, Listener02);
+            map.Unmap(TestEvent.Event03, Listener03);
 
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event00, Listener00));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event01, Listener01));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event02, Listener02));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event03, Listener03));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event00, Listener00));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event01, Listener01));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event02, Listener02));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event03, Listener03));
 
             _dispatcher.Dispatch(TestEvent.Event00);
 
@@ -268,12 +268,12 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
             Assert.AreEqual(count02, 0);
             Assert.AreEqual(count03, 0);
         }
-        
+
         [Test]
         public void UnmapWithSideDispatcherTest()
         {
             var dispatcher = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventDispatcher();
-            
+
             var count00 = 0;
             var count01 = 0;
             var count02 = 0;
@@ -284,25 +284,25 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
             void Listener02(int p1, string p2)          => count02++;
             void Listener03(int p1, string p2, bool p3) => count03++;
 
-            _mapper.Map(dispatcher, TestEvent.Event00, Listener00);
-            _mapper.Map(dispatcher, TestEvent.Event01, Listener01);
-            _mapper.Map(dispatcher, TestEvent.Event02, Listener02);
-            _mapper.Map(dispatcher, TestEvent.Event03, Listener03);
+            map.Map(dispatcher, TestEvent.Event00, Listener00);
+            map.Map(dispatcher, TestEvent.Event01, Listener01);
+            map.Map(dispatcher, TestEvent.Event02, Listener02);
+            map.Map(dispatcher, TestEvent.Event03, Listener03);
 
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
 
-            _mapper.Unmap(dispatcher, TestEvent.Event00, Listener00);
-            _mapper.Unmap(dispatcher, TestEvent.Event01, Listener01);
-            _mapper.Unmap(dispatcher, TestEvent.Event02, Listener02);
-            _mapper.Unmap(dispatcher, TestEvent.Event03, Listener03);
+            map.Unmap(dispatcher, TestEvent.Event00, Listener00);
+            map.Unmap(dispatcher, TestEvent.Event01, Listener01);
+            map.Unmap(dispatcher, TestEvent.Event02, Listener02);
+            map.Unmap(dispatcher, TestEvent.Event03, Listener03);
 
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
 
             dispatcher.Dispatch(TestEvent.Event00);
 
@@ -325,22 +325,22 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
             void Listener02(int p1, string p2)          => count02++;
             void Listener03(int p1, string p2, bool p3) => count03++;
 
-            _mapper.Map(TestEvent.Event00, Listener00);
-            _mapper.Map(TestEvent.Event01, Listener01);
-            _mapper.Map(TestEvent.Event02, Listener02);
-            _mapper.Map(TestEvent.Event03, Listener03);
+            map.Map(TestEvent.Event00, Listener00);
+            map.Map(TestEvent.Event01, Listener01);
+            map.Map(TestEvent.Event02, Listener02);
+            map.Map(TestEvent.Event03, Listener03);
 
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event00, Listener00));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event01, Listener01));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event02, Listener02));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(TestEvent.Event03, Listener03));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event00, Listener00));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event01, Listener01));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event02, Listener02));
+            Assert.AreEqual(true, map.ContainsMapInfo(TestEvent.Event03, Listener03));
 
-            _mapper.UnmapAll();
+            map.UnmapAll();
 
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event00, Listener00));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event01, Listener01));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event02, Listener02));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(TestEvent.Event03, Listener03));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event00, Listener00));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event01, Listener01));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event02, Listener02));
+            Assert.AreEqual(false, map.ContainsMapInfo(TestEvent.Event03, Listener03));
 
             _dispatcher.Dispatch(TestEvent.Event00);
 
@@ -354,7 +354,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
         public void UnmapAllWithSideDispatcherTest()
         {
             var dispatcher = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventDispatcher();
-            
+
             var count00 = 0;
             var count01 = 0;
             var count02 = 0;
@@ -365,22 +365,22 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
             void Listener02(int p1, string p2)          => count02++;
             void Listener03(int p1, string p2, bool p3) => count03++;
 
-            _mapper.Map(dispatcher, TestEvent.Event00, Listener00);
-            _mapper.Map(dispatcher, TestEvent.Event01, Listener01);
-            _mapper.Map(dispatcher, TestEvent.Event02, Listener02);
-            _mapper.Map(dispatcher, TestEvent.Event03, Listener03);
+            map.Map(dispatcher, TestEvent.Event00, Listener00);
+            map.Map(dispatcher, TestEvent.Event01, Listener01);
+            map.Map(dispatcher, TestEvent.Event02, Listener02);
+            map.Map(dispatcher, TestEvent.Event03, Listener03);
 
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
-            Assert.AreEqual(true, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
+            Assert.AreEqual(true, map.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
 
-            _mapper.UnmapAll();
+            map.UnmapAll();
 
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
-            Assert.AreEqual(false, _mapper.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
+            Assert.AreEqual(false, map.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
 
             dispatcher.Dispatch(TestEvent.Event00);
 
