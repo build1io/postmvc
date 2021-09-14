@@ -2,25 +2,27 @@ using System;
 
 namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 {
-    internal sealed class EventMapInfo : EventMapInfoBase
+    internal sealed class EventMapInfo : IEventMapInfo
     {
-        private readonly Event                 _event;
-        private readonly Action                _listener;
-        private readonly Action<Event, Action> _unbindHandler;
+        private IEventDispatcher      _dispatcher;
+        private Event                 _event;
+        private Action                _listener;
+        private Action<Event, Action> _unbindHandler;
 
-        public EventMapInfo(IEventDispatcher dispatcher, Event @event, Action listener, Action<Event, Action> unbindHandler) : base(dispatcher)
+        public void Setup(IEventDispatcher dispatcher, Event @event, Action listener, Action<Event, Action> unbindHandler)
         {
+            _dispatcher = dispatcher;
             _event = @event;
             _listener = listener;
             _unbindHandler = unbindHandler;
         }
 
-        public override void Unbind()
+        public void Unbind()
         {
             _unbindHandler.Invoke(_event, _listener);
         }
 
-        public override bool Match(IEventDispatcher dispatcher, EventBase @event, object listener)
+        public bool Match(IEventDispatcher dispatcher, EventBase @event, object listener)
         {
             return ReferenceEquals(_dispatcher, dispatcher) &&
                    ReferenceEquals(_event, @event) &&
@@ -28,25 +30,27 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         }
     }
 
-    internal sealed class EventMapInfo<T1> : EventMapInfoBase
+    internal sealed class EventMapInfo<T1> : IEventMapInfo
     {
-        private readonly Event<T1>                     _event;
-        private readonly Action<T1>                    _listener;
-        private readonly Action<Event<T1>, Action<T1>> _unbindHandler;
+        private IEventDispatcher              _dispatcher;
+        private Event<T1>                     _event;
+        private Action<T1>                    _listener;
+        private Action<Event<T1>, Action<T1>> _unbindHandler;
 
-        public EventMapInfo(IEventDispatcher dispatcher, Event<T1> @event, Action<T1> listener, Action<Event<T1>, Action<T1>> unbindHandler) : base(dispatcher)
+        public void Setup(IEventDispatcher dispatcher, Event<T1> @event, Action<T1> listener, Action<Event<T1>, Action<T1>> unbindHandler)
         {
+            _dispatcher = dispatcher;
             _event = @event;
             _listener = listener;
             _unbindHandler = unbindHandler;
         }
 
-        public override void Unbind()
+        public void Unbind()
         {
             _unbindHandler.Invoke(_event, _listener);
         }
 
-        public override bool Match(IEventDispatcher dispatcher, EventBase @event, object listener)
+        public bool Match(IEventDispatcher dispatcher, EventBase @event, object listener)
         {
             return ReferenceEquals(_dispatcher, dispatcher) &&
                    ReferenceEquals(_event, @event) &&
@@ -54,25 +58,27 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         }
     }
 
-    internal sealed class EventMapInfo<T1, T2> : EventMapInfoBase
+    internal sealed class EventMapInfo<T1, T2> : IEventMapInfo
     {
-        private readonly Event<T1, T2>                         _event;
-        private readonly Action<T1, T2>                        _listener;
-        private readonly Action<Event<T1, T2>, Action<T1, T2>> _unbindHandler;
+        private IEventDispatcher                      _dispatcher;
+        private Event<T1, T2>                         _event;
+        private Action<T1, T2>                        _listener;
+        private Action<Event<T1, T2>, Action<T1, T2>> _unbindHandler;
 
-        public EventMapInfo(IEventDispatcher dispatcher, Event<T1, T2> @event, Action<T1, T2> listener, Action<Event<T1, T2>, Action<T1, T2>> unbindHandler) : base(dispatcher)
+        public void Setup(IEventDispatcher dispatcher, Event<T1, T2> @event, Action<T1, T2> listener, Action<Event<T1, T2>, Action<T1, T2>> unbindHandler)
         {
+            _dispatcher = dispatcher;
             _event = @event;
             _listener = listener;
             _unbindHandler = unbindHandler;
         }
 
-        public override void Unbind()
+        public void Unbind()
         {
             _unbindHandler.Invoke(_event, _listener);
         }
 
-        public override bool Match(IEventDispatcher dispatcher, EventBase @event, object listener)
+        public bool Match(IEventDispatcher dispatcher, EventBase @event, object listener)
         {
             return ReferenceEquals(_dispatcher, dispatcher) &&
                    ReferenceEquals(_event, @event) &&
@@ -80,25 +86,27 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         }
     }
 
-    internal sealed class EventMapInfo<T1, T2, T3> : EventMapInfoBase
+    internal sealed class EventMapInfo<T1, T2, T3> : IEventMapInfo
     {
-        private readonly Event<T1, T2, T3>                             _event;
-        private readonly Action<T1, T2, T3>                            _listener;
-        private readonly Action<Event<T1, T2, T3>, Action<T1, T2, T3>> _unbindHandler;
+        private IEventDispatcher                              _dispatcher;
+        private Event<T1, T2, T3>                             _event;
+        private Action<T1, T2, T3>                            _listener;
+        private Action<Event<T1, T2, T3>, Action<T1, T2, T3>> _unbindHandler;
 
-        public EventMapInfo(IEventDispatcher dispatcher, Event<T1, T2, T3> @event, Action<T1, T2, T3> listener, Action<Event<T1, T2, T3>, Action<T1, T2, T3>> unbindHandler) : base(dispatcher)
+        public void Setup(IEventDispatcher dispatcher, Event<T1, T2, T3> @event, Action<T1, T2, T3> listener, Action<Event<T1, T2, T3>, Action<T1, T2, T3>> unbindHandler)
         {
+            _dispatcher = dispatcher;
             _event = @event;
             _listener = listener;
             _unbindHandler = unbindHandler;
         }
 
-        public override void Unbind()
+        public void Unbind()
         {
             _unbindHandler.Invoke(_event, _listener);
         }
 
-        public override bool Match(IEventDispatcher dispatcher, EventBase @event, object listener)
+        public bool Match(IEventDispatcher dispatcher, EventBase @event, object listener)
         {
             return ReferenceEquals(_dispatcher, dispatcher) &&
                    ReferenceEquals(_event, @event) &&

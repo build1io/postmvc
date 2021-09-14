@@ -5,12 +5,14 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 {
     public partial class EventMap : IEventMap
     {
-        private readonly   List<EventMapInfoBase>               _infos;
-        protected readonly EventDispatcherWithCommandProcessing _dispatcher; // The final type must be specified to escape AOT issues.
+        private readonly List<IEventMapInfo>                  _infos;
+        private readonly EventMapInfoPool                     _infosPool;
+        private readonly EventDispatcherWithCommandProcessing _dispatcher; // The final type must be specified to escape AOT issues.
 
-        public EventMap(EventDispatcherWithCommandProcessing dispatcher)
+        public EventMap(EventDispatcherWithCommandProcessing dispatcher, EventMapInfoPool infosPool)
         {
-            _infos = new List<EventMapInfoBase>(8);
+            _infos = new List<IEventMapInfo>(8);
+            _infosPool = infosPool;
             _dispatcher = dispatcher;
         }
 
@@ -181,14 +183,18 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         public void UnmapAll()
         {
             foreach (var info in _infos)
+            {
                 info.Unbind();
+                _infosPool.Return(info);
+            }
+
             _infos.Clear();
         }
-        
+
         /*
          * Dispatch.
          */
-        
+
         public void Dispatch(Event @event)                                                             { _dispatcher.Dispatch(@event); }
         public void Dispatch<T1>(Event<T1> @event, T1 param01)                                         { _dispatcher.Dispatch(@event, param01); }
         public void Dispatch<T1, T2>(Event<T1, T2> @event, T1 param01, T2 param02)                     { _dispatcher.Dispatch(@event, param01, param02); }
@@ -209,40 +215,49 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         public bool ContainsMapInfo<T1, T2, T3>(IEventDispatcher dispatcher, Event<T1, T2, T3> @event, Action<T1, T2, T3> listener) { return ContainsMapInfoImpl(dispatcher, @event, listener); }
 
         /*
-         * Private.
+         * Add Map Info.
          */
 
-        internal EventMapInfoBase AddMapInfo(IEventDispatcher dispatcher, Event @event, Action listener, Action<Event, Action> unbindHandler)
+        internal IEventMapInfo AddMapInfo(IEventDispatcher dispatcher, Event @event, Action listener, Action<Event, Action> unbindHandler)
         {
-            var info = new EventMapInfo(dispatcher, @event, listener, unbindHandler);
+            var info = _infosPool.Take();
+            info.Setup(dispatcher, @event, listener, unbindHandler);
             _infos.Add(info);
             return info;
         }
 
-        internal EventMapInfoBase AddMapInfo<T1>(IEventDispatcher dispatcher, Event<T1> @event, Action<T1> listener, Action<Event<T1>, Action<T1>> unbindHandler)
+        internal IEventMapInfo AddMapInfo<T1>(IEventDispatcher dispatcher, Event<T1> @event, Action<T1> listener, Action<Event<T1>, Action<T1>> unbindHandler)
         {
-            var info = new EventMapInfo<T1>(dispatcher, @event, listener, unbindHandler);
+            var info = _infosPool.Take<T1>();
+            info.Setup(dispatcher, @event, listener, unbindHandler);
             _infos.Add(info);
             return info;
         }
 
-        internal EventMapInfoBase AddMapInfo<T1, T2>(IEventDispatcher dispatcher, Event<T1, T2> @event, Action<T1, T2> listener, Action<Event<T1, T2>, Action<T1, T2>> unbindHandler)
+        internal IEventMapInfo AddMapInfo<T1, T2>(IEventDispatcher dispatcher, Event<T1, T2> @event, Action<T1, T2> listener, Action<Event<T1, T2>, Action<T1, T2>> unbindHandler)
         {
-            var info = new EventMapInfo<T1, T2>(dispatcher, @event, listener, unbindHandler);
+            var info = _infosPool.Take<T1, T2>();
+            info.Setup(dispatcher, @event, listener, unbindHandler);
             _infos.Add(info);
             return info;
         }
 
-        internal EventMapInfoBase AddMapInfo<T1, T2, T3>(IEventDispatcher dispatcher, Event<T1, T2, T3> @event, Action<T1, T2, T3> listener, Action<Event<T1, T2, T3>, Action<T1, T2, T3>> unbindHandler)
+        internal IEventMapInfo AddMapInfo<T1, T2, T3>(IEventDispatcher dispatcher, Event<T1, T2, T3> @event, Action<T1, T2, T3> listener, Action<Event<T1, T2, T3>, Action<T1, T2, T3>> unbindHandler)
         {
-            var info = new EventMapInfo<T1, T2, T3>(dispatcher, @event, listener, unbindHandler);
+            var info = _infosPool.Take<T1, T2, T3>();
+            info.Setup(dispatcher, @event, listener, unbindHandler);
             _infos.Add(info);
             return info;
         }
+        
+        /*
+         * Remove Map Info.
+         */
 
-        internal void RemoveMapInfo(EventMapInfoBase info)
+        internal void RemoveMapInfo(IEventMapInfo info)
         {
             _infos.Remove(info);
+            _infosPool.Return(info);
         }
 
         internal void RemoveMapInfo(IEventDispatcher dispatcher, EventBase @event, object listener)
@@ -250,10 +265,17 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
             for (var i = _infos.Count - 1; i >= 0; i--)
             {
                 var info = _infos[i];
-                if (info.Match(dispatcher, @event, listener))
-                    _infos.RemoveAt(i);
+                if (!info.Match(dispatcher, @event, listener))
+                    continue;
+
+                _infos.RemoveAt(i);
+                _infosPool.Return(info);
             }
         }
+        
+        /*
+         * Other.
+         */
 
         internal bool ContainsMapInfoImpl(IEventDispatcher dispatcher, EventBase @event, object listener)
         {

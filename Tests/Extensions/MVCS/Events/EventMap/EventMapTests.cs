@@ -17,7 +17,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMap
             var dispatcher = new EventDispatcherWithCommandProcessing(new CommandBinder());
 
             _dispatcher = dispatcher;
-            map = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventMap(dispatcher);
+            map = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventMap(dispatcher, new EventMapInfoPool());
         }
 
         [Test]

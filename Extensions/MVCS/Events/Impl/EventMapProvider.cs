@@ -9,11 +9,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 
         private readonly Stack<IEventMap> _availableInstances;
         private readonly List<IEventMap>  _usedInstances;
+        private readonly EventMapInfoPool _infoPools;
 
         public EventMapProvider()
         {
             _availableInstances = new Stack<IEventMap>();
             _usedInstances = new List<IEventMap>();
+            _infoPools = new EventMapInfoPool();
         }
 
         /*
@@ -54,7 +56,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         private IEventMap CreateEventMapper()
         {
             // Specifying EventDispatcherWithCommandProcessing is bad but needed to escape AOT issues.
-            return new EventMap((EventDispatcherWithCommandProcessing)Dispatcher);
+            return new EventMap((EventDispatcherWithCommandProcessing)Dispatcher, _infoPools);
         }
     }
 }
