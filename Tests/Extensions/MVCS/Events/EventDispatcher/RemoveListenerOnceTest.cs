@@ -1,11 +1,10 @@
 using Build1.PostMVC.Extensions.MVCS.Events;
-using Build1.PostMVC.Extensions.MVCS.Events.Impl;
-using Build1.PostMVC.Tests.Extensions.MVCS.Events.Parts;
+using Build1.PostMVC.Tests.Extensions.MVCS.Events.Common;
 using NUnit.Framework;
 
-namespace Build1.PostMVC.Tests.Extensions.MVCS.Events
+namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventDispatcher
 {
-    public sealed class OnceListenerTests
+    public sealed class RemoveListenerOnceTest
     {
         private IEventDispatcher _dispatcher;
         private int              _counter;
@@ -13,56 +12,48 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events
         [SetUp]
         public void SetUp()
         {
-            _dispatcher = new EventDispatcher();
+            _dispatcher = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventDispatcher();
             _counter = 0;
         }
 
         [Test]
-        public void OnceListenerTest00()
+        public void RemoveListenerOnceTest00()
         {
             void Listener() => _counter++;
-
             _dispatcher.AddListenerOnce(TestEvent.Event00, Listener);
+            _dispatcher.RemoveListener(TestEvent.Event00, Listener);
             _dispatcher.Dispatch(TestEvent.Event00);
-            _dispatcher.Dispatch(TestEvent.Event00);
-
-            Assert.AreEqual(1, _counter);
+            Assert.AreEqual(0, _counter);
         }
 
         [Test]
-        public void OnceListenerTest01()
+        public void RemoveListenerOnceTest01()
         {
             void Listener(int param01) => _counter++;
-
             _dispatcher.AddListenerOnce(TestEvent.Event01, Listener);
+            _dispatcher.RemoveListener(TestEvent.Event01, Listener);
             _dispatcher.Dispatch(TestEvent.Event01, int.MinValue);
-            _dispatcher.Dispatch(TestEvent.Event01, int.MinValue);
-
-            Assert.AreEqual(1, _counter);
+            Assert.AreEqual(0, _counter);
         }
 
         [Test]
-        public void OnceListenerTest02()
+        public void RemoveListenerOnceTest02()
         {
             void Listener(int param01, string param02) => _counter++;
-
             _dispatcher.AddListenerOnce(TestEvent.Event02, Listener);
+            _dispatcher.RemoveListener(TestEvent.Event02, Listener);
             _dispatcher.Dispatch(TestEvent.Event02, int.MinValue, string.Empty);
-            _dispatcher.Dispatch(TestEvent.Event02, int.MinValue, string.Empty);
-
-            Assert.AreEqual(1, _counter);
+            Assert.AreEqual(0, _counter);
         }
 
         [Test]
-        public void OnceListenerTest03()
+        public void RemoveListenerOnceTest03()
         {
             void Listener(int param01, string param02, bool param03) => _counter++;
-
             _dispatcher.AddListenerOnce(TestEvent.Event03, Listener);
+            _dispatcher.RemoveListener(TestEvent.Event03, Listener);
             _dispatcher.Dispatch(TestEvent.Event03, int.MinValue, string.Empty, false);
-            _dispatcher.Dispatch(TestEvent.Event03, int.MinValue, string.Empty, false);
-
-            Assert.AreEqual(1, _counter);
+            Assert.AreEqual(0, _counter);
         }
     }
 }

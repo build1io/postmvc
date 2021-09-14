@@ -1,10 +1,10 @@
 using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Events.Impl;
-using Build1.PostMVC.Tests.Extensions.MVCS.Events.Parts;
+using Build1.PostMVC.Tests.Extensions.MVCS.Events.Common;
 using NUnit.Framework;
 
-namespace Build1.PostMVC.Tests.Extensions.MVCS.Events
+namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMapper
 {
     public sealed class EventMapperTests
     {
@@ -17,7 +17,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events
             var dispatcher = new EventDispatcherWithCommandProcessing(new CommandBinder());
 
             _dispatcher = dispatcher;
-            _mapper = new EventMapper(dispatcher);
+            _mapper = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventMapper(dispatcher);
         }
 
         [Test]
@@ -71,7 +71,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events
         [Test]
         public void MapWithSideDispatcherTest()
         {
-            var dispatcher = new EventDispatcher();
+            var dispatcher = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventDispatcher();
             
             var count00 = 0;
             var count01 = 0;
@@ -175,7 +175,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events
         [Test]
         public void MapOnceWithSideDispatcherTest()
         {
-            var dispatcher = new EventDispatcher();
+            var dispatcher = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventDispatcher();
             
             var count00 = 0;
             var count01 = 0;
@@ -272,7 +272,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events
         [Test]
         public void UnmapWithSideDispatcherTest()
         {
-            var dispatcher = new EventDispatcher();
+            var dispatcher = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventDispatcher();
             
             var count00 = 0;
             var count01 = 0;
@@ -353,7 +353,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events
         [Test]
         public void UnmapAllWithSideDispatcherTest()
         {
-            var dispatcher = new EventDispatcher();
+            var dispatcher = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventDispatcher();
             
             var count00 = 0;
             var count01 = 0;

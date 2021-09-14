@@ -1,6 +1,6 @@
 using Build1.PostMVC.Extensions.MVCS.Events;
 
-namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.Parts
+namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.Common
 {
     public abstract class TestEvent
     {

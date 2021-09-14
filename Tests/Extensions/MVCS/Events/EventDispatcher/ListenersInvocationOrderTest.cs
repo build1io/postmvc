@@ -1,9 +1,8 @@
 using Build1.PostMVC.Extensions.MVCS.Events;
-using Build1.PostMVC.Extensions.MVCS.Events.Impl;
-using Build1.PostMVC.Tests.Extensions.MVCS.Events.Parts;
+using Build1.PostMVC.Tests.Extensions.MVCS.Events.Common;
 using NUnit.Framework;
 
-namespace Build1.PostMVC.Tests.Extensions.MVCS.Events
+namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventDispatcher
 {
     public sealed class ListenersInvocationOrderTest
     {
@@ -13,7 +12,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events
         [SetUp]
         public void SetUp()
         {
-            _dispatcher = new EventDispatcher();
+            _dispatcher = new Build1.PostMVC.Extensions.MVCS.Events.Impl.EventDispatcher();
             _counter = 0;
         }
 
