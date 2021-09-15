@@ -42,6 +42,7 @@ namespace Build1.PostMVC.Extensions.MVCS
             Context.OnModuleDisposing += OnModuleDisposing;
 
             InjectionBinder.Bind<IContext>().ToValue(Context);
+            InjectionBinder.Bind<IEventBus>().To<EventBus>().AsSingleton();
             InjectionBinder.Bind<IEventDispatcher>().ToValue(EventDispatcher).ConstructValue();
             InjectionBinder.Bind<IEventMap>().ToProvider<EventMapProvider>();
             InjectionBinder.Bind<IInjectionBinder>().ToValue(InjectionBinder);

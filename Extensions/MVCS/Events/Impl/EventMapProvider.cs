@@ -3,9 +3,10 @@ using Build1.PostMVC.Extensions.MVCS.Injection;
 
 namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 {
-    internal sealed class EventMapProvider : InjectionProvider<Inject, IEventMap>
+    public sealed class EventMapProvider : InjectionProvider<Inject, IEventMap>
     {
         [Inject] public IEventDispatcher Dispatcher { get; set; }
+        [Inject] public IEventBus        EventBus   { get; set; }
 
         private readonly Stack<IEventMap> _availableInstances;
         private readonly List<IEventMap>  _usedInstances;
@@ -25,7 +26,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         public override IEventMap TakeInstance(object parent, Inject attribute)
         {
             IEventMap map;
-            
+
             if (_availableInstances.Count > 0)
             {
                 map = _availableInstances.Pop();
@@ -33,7 +34,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
             }
             else
             {
-                map = CreateEventMapper(); 
+                map = CreateEventMapper();
                 _usedInstances.Add(map);
             }
 
@@ -44,19 +45,18 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         {
             if (!_usedInstances.Remove(instance))
                 return;
-            
+
             instance.UnmapAll();
             _availableInstances.Push(instance);
         }
-        
+
         /*
          * Protected.
          */
 
         private IEventMap CreateEventMapper()
         {
-            // Specifying EventDispatcherWithCommandProcessing is bad but needed to escape AOT issues.
-            return new EventMap((EventDispatcherWithCommandProcessing)Dispatcher, _infoPools);
+            return new EventMap(Dispatcher, EventBus, _infoPools);
         }
     }
 }

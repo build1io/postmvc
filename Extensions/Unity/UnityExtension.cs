@@ -2,7 +2,9 @@ using System;
 using Build1.PostMVC.Extensions.ContextView;
 using Build1.PostMVC.Extensions.ContextView.Contexts;
 using Build1.PostMVC.Extensions.MVCS;
+using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.Unity.Contexts;
+using Build1.PostMVC.Extensions.Unity.Events.Impl;
 using Build1.PostMVC.Extensions.Unity.Mediation.Api;
 using Build1.PostMVC.Extensions.Unity.Mediation.Impl;
 using Build1.PostMVC.Extensions.Unity.Modules.Agents;
@@ -45,6 +47,7 @@ namespace Build1.PostMVC.Extensions.Unity
             injectionBinder.Bind<IAssetsController>().To<AssetsController>().AsSingleton();
             injectionBinder.Bind<IAsyncResolver>().To<AsyncResolver>().AsSingleton();
             injectionBinder.Bind<IUpdateController>().To<UpdateController>().AsSingleton();
+            injectionBinder.Rebind<IEventBus>().To<EventBusUnity>().AsSingleton();
         }
 
         public override void Setup()

@@ -3,17 +3,22 @@ using System.Collections.Generic;
 
 namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 {
-    public partial class EventMap : IEventMap
+    internal partial class EventMap : IEventMap
     {
-        private readonly List<IEventMapInfo>                  _infos;
-        private readonly EventMapInfoPool                     _infosPool;
         private readonly EventDispatcherWithCommandProcessing _dispatcher; // The final type must be specified to escape AOT issues.
+        private readonly IEventBus                            _bus;
 
-        public EventMap(EventDispatcherWithCommandProcessing dispatcher, EventMapInfoPool infosPool)
+        private readonly List<IEventMapInfo> _infos;
+        private readonly EventMapInfoPool    _infosPool;
+
+
+        public EventMap(IEventDispatcher dispatcher, IEventBus bus, EventMapInfoPool infosPool)
         {
+            _dispatcher = (EventDispatcherWithCommandProcessing)dispatcher;
+            _bus = bus;
+
             _infos = new List<IEventMapInfo>(8);
             _infosPool = infosPool;
-            _dispatcher = dispatcher;
         }
 
         /*
@@ -200,6 +205,11 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         public void Dispatch<T1, T2>(Event<T1, T2> @event, T1 param01, T2 param02)                     { _dispatcher.Dispatch(@event, param01, param02); }
         public void Dispatch<T1, T2, T3>(Event<T1, T2, T3> @event, T1 param01, T2 param02, T3 param03) { _dispatcher.Dispatch(@event, param01, param02, param03); }
 
+        public void DispatchLater(Event @event)                                                             { _bus.Add(@event); }
+        public void DispatchLater<T1>(Event<T1> @event, T1 param01)                                         { _bus.Add(@event, param01); }
+        public void DispatchLater<T1, T2>(Event<T1, T2> @event, T1 param01, T2 param02)                     { _bus.Add(@event, param01, param02); }
+        public void DispatchLater<T1, T2, T3>(Event<T1, T2, T3> @event, T1 param01, T2 param02, T3 param03) { _bus.Add(@event, param01, param02, param03); }
+
         /*
          * Map Info.
          */
@@ -249,7 +259,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
             _infos.Add(info);
             return info;
         }
-        
+
         /*
          * Remove Map Info.
          */
@@ -272,7 +282,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
                 _infosPool.Return(info);
             }
         }
-        
+
         /*
          * Other.
          */

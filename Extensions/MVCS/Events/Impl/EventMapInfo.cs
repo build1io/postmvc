@@ -28,6 +28,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
                    ReferenceEquals(_event, @event) &&
                    Equals(_listener, listener);
         }
+
+        public void OnTake() { }
+
+        public void OnReturn()
+        {
+            _dispatcher = null;
+            _event = null;
+            _listener = null;
+            _unbindHandler = null;
+        }
     }
 
     internal sealed class EventMapInfo<T1> : IEventMapInfo
@@ -55,6 +65,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
             return ReferenceEquals(_dispatcher, dispatcher) &&
                    ReferenceEquals(_event, @event) &&
                    Equals(_listener, listener);
+        }
+        
+        public void OnTake() { }
+
+        public void OnReturn()
+        {
+            _dispatcher = null;
+            _event = null;
+            _listener = null;
+            _unbindHandler = null;
         }
     }
 
@@ -84,6 +104,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
                    ReferenceEquals(_event, @event) &&
                    Equals(_listener, listener);
         }
+
+        public void OnTake() { }
+        
+        public void OnReturn()
+        {
+            _dispatcher = null;
+            _event = null;
+            _listener = null;
+            _unbindHandler = null;
+        }
     }
 
     internal sealed class EventMapInfo<T1, T2, T3> : IEventMapInfo
@@ -111,6 +141,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
             return ReferenceEquals(_dispatcher, dispatcher) &&
                    ReferenceEquals(_event, @event) &&
                    Equals(_listener, listener);
+        }
+        
+        public void OnTake() { }
+
+        public void OnReturn()
+        {
+            _dispatcher = null;
+            _event = null;
+            _listener = null;
+            _unbindHandler = null;
         }
     }
 }
