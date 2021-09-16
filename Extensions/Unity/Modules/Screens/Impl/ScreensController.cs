@@ -9,8 +9,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
 {
     public sealed class ScreensController : UIControlsController<Screen, ScreenConfig>, IScreensController
     {
-        [Logger(LogLevel.Warning)] public ILogger          Logger     { get; set; }
-        [Inject]                   public IEventDispatcher Dispatcher { get; set; }
+        [Log(LogLevel.Warning)] public ILog             Log        { get; set; }
+        [Inject]                public IEventDispatcher Dispatcher { get; set; }
 
         public bool HasShownScreens => _openScreens.Count > 0;
 
@@ -21,7 +21,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
         {
             _openScreens = new List<Screen>(4);
         }
-        
+
         /*
          * Check.
          */
@@ -42,11 +42,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
 
         public void Show(Screen screen, ScreenBehavior behavior)
         {
-            Logger.Debug((s, b) => $"Show. {s} {b}", screen, behavior);
-            
+            Log.Debug((s, b) => $"Show. {s} {b}", screen, behavior);
+
             if (screen == _currentScreen)
             {
-                Logger.Warn(s => $"Screen already shown: {s}", screen);
+                Log.Warn(s => $"Screen already shown: {s}", screen);
                 return;
             }
 
@@ -56,11 +56,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
                 HideScreenImpl(_currentScreen);
                 _currentScreen = null;
             }
-            
+
             var instance = GetInstance(screen, UIControlOptions.Instantiate | UIControlOptions.Activate, out var isNewInstance);
             if (instance == null)
             {
-                Logger.Error(s => $"Failed to instantiate screen: {s}", screen);
+                Log.Error(s => $"Failed to instantiate screen: {s}", screen);
                 return;
             }
 
@@ -97,8 +97,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
 
         public void Hide(Screen screen)
         {
-            Logger.Debug(s => $"Hide. {s}", screen);
-            
+            Log.Debug(s => $"Hide. {s}", screen);
+
             HideScreenImpl(screen);
 
             if (_currentScreen == screen)
@@ -114,21 +114,21 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
 
         private void HideScreenImpl(Screen screen)
         {
-            Logger.Debug(s => $"HideScreenImpl. {s}", screen);
-            
+            Log.Debug(s => $"HideScreenImpl. {s}", screen);
+
             if (!_openScreens.Contains(screen))
             {
-                Logger.Error(s => $"Specified screen is not shown: {s}", screen);
+                Log.Error(s => $"Specified screen is not shown: {s}", screen);
                 return;
             }
 
             if (!Deactivate(screen, out var destroyed) || !_openScreens.Remove(screen))
                 return;
-            
-            Logger.Debug((s, d) => $"Hidden: {s} destroyed={d}", screen, destroyed);
-            
+
+            Log.Debug((s, d) => $"Hidden: {s} destroyed={d}", screen, destroyed);
+
             Dispatcher.Dispatch(ScreenEvent.Hidden, screen);
-            
+
             if (destroyed)
                 Dispatcher.Dispatch(ScreenEvent.Destroyed, screen);
         }

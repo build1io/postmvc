@@ -7,7 +7,7 @@ namespace Build1.PostMVC.Utils.Pooling
 {
     internal abstract class Pool<T> where T : IPoolable
     {
-        private readonly ILogger Logger = LoggerProvider.GetLogger<Pool<T>>(LogLevel.None);
+        private readonly ILog log = LogProvider.GetLog<Pool<T>>(LogLevel.None);
 
         private readonly Dictionary<Type, Stack<T>>   _availableInstances;
         private readonly Dictionary<Type, HashSet<T>> _usedInstances;
@@ -28,23 +28,23 @@ namespace Build1.PostMVC.Utils.Pooling
             var availableInstances = GetAvailableInstances(typeof(TF), true);
             if (availableInstances.Count > 0)
             {
-                Logger.Debug("Taking existing...");
+                log.Debug("Taking existing...");
 
                 var info = availableInstances.Pop();
                 usedInstances.Add(info);
 
-                Logger.Debug(LogInstances);
+                log.Debug(LogInstances);
 
                 info.OnTake();
                 return (TF)info;
             }
 
-            Logger.Debug("Creating instance...");
+            log.Debug("Creating instance...");
 
             var instance = Activator.CreateInstance<TF>();
             usedInstances.Add(instance);
 
-            Logger.Debug(LogInstances);
+            log.Debug(LogInstances);
 
             instance.OnTake();
             return instance;
@@ -60,8 +60,8 @@ namespace Build1.PostMVC.Utils.Pooling
             instance.OnReturn();
             GetAvailableInstances(commandType, false).Push(instance);
 
-            Logger.Debug("Returning instance...");
-            Logger.Debug(LogInstances);
+            log.Debug("Returning instance...");
+            log.Debug(LogInstances);
         }
 
         /*
@@ -86,12 +86,12 @@ namespace Build1.PostMVC.Utils.Pooling
             return usedInstances;
         }
 
-        private void LogInstances(ILoggerDebug logger)
+        private void LogInstances(ILogDebug log)
         {
             var used = _usedInstances.Values.Sum(instances => instances.Count);
             var available = _availableInstances.Values.Sum(instances => instances.Count);
 
-            logger.Debug($"Used: {used} Available: {available}");
+            log.Debug($"Used: {used} Available: {available}");
         }
     }
 }

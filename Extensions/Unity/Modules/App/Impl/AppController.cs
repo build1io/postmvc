@@ -6,8 +6,6 @@ using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using Build1.PostMVC.Extensions.Unity.Utils.Path;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Logger = Build1.PostMVC.Extensions.Unity.Modules.Logging.Logger;
-using ILogger = Build1.PostMVC.Extensions.Unity.Modules.Logging.ILogger;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
 {
@@ -15,10 +13,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
     {
         public const string BuildNumberFileName = "build-number";
 
-        [Logger(LogLevel.Warning)] public  ILogger           Logger           { get; set; }
-        [Inject]                   public  IEventDispatcher  Dispatcher       { get; set; }
-        [Inject]                   public  IContext          Context          { get; set; }
-        [Inject]                   private IAgentsController AgentsController { get; set; }
+        [Log(LogLevel.Warning)] public  ILog              Log              { get; set; }
+        [Inject]                public  IEventDispatcher  Dispatcher       { get; set; }
+        [Inject]                public  IContext          Context          { get; set; }
+        [Inject]                private IAgentsController AgentsController { get; set; }
 
         public string PersistentDataPath { get; private set; }
         public string Version            => Application.version;
@@ -35,7 +33,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
         {
             PersistentDataPath = GetPersistentDataPath();
             BuildNumber = GetBuildNumber();
-            
+
             _mainSceneName = GetMainSceneName();
 
             _agent = AgentsController.Create<AppAgent>();
@@ -43,7 +41,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
             _agent.Focus += OnFocus;
             _agent.Quitting += OnQuitting;
 
-            Logger.Debug(() => $"MainScene: \"{_mainSceneName}\" BuildNumber: {BuildNumber}");
+            Log.Debug((s, b) => $"MainScene: \"{s}\" BuildNumber: {b}", _mainSceneName, BuildNumber);
         }
 
         [PreDestroy]
@@ -75,7 +73,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
         /*
          * Private.
          */
-        
+
         private string GetMainSceneName()
         {
             return System.IO.Path.GetFileNameWithoutExtension(SceneUtility.GetScenePathByBuildIndex(0));
@@ -90,7 +88,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
             if (IsPaused == paused)
                 return;
 
-            Logger.Debug(() => $"OnPause({paused})");
+            Log.Debug(p => $"OnPause({p})", paused);
 
             IsPaused = paused;
             Dispatcher.Dispatch(AppEvent.Pause, paused);
@@ -100,8 +98,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
         {
             if (IsFocused == focused)
                 return;
-            
-            Logger.Debug(() => $"OnFocus({focused})");
+
+            Log.Debug(f => $"OnFocus({f})", focused);
 
             IsFocused = focused;
             Dispatcher.Dispatch(AppEvent.Focus, focused);

@@ -6,16 +6,14 @@ using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using Build1.PostMVC.Extensions.Unity.Modules.UI;
 using Build1.PostMVC.Extensions.Unity.Modules.UI.Impl;
-using Logger = Build1.PostMVC.Extensions.Unity.Modules.Logging.Logger;
-using ILogger = Build1.PostMVC.Extensions.Unity.Modules.Logging.ILogger;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
 {
     public sealed class PopupController : UIControlsController<PopupBase, PopupConfig>, IPopupController
     {
-        [Logger(LogLevel.Warning)] public ILogger          Logger          { get; set; }
-        [Inject]                   public IEventDispatcher Dispatcher      { get; set; }
-        [Inject]                   public IInjectionBinder InjectionBinder { get; set; }
+        [Log(LogLevel.Warning)] public ILog             Log             { get; set; }
+        [Inject]                public IEventDispatcher Dispatcher      { get; set; }
+        [Inject]                public IInjectionBinder InjectionBinder { get; set; }
 
         public bool HasOpenPopups => _openPopups.Count > 0;
 
@@ -60,17 +58,17 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
                 {
                     _queue.Enqueue(popup);
                     _queueData.Enqueue(data);
-                
+
                     if (_openPopups.Count == 0)
                         ProcessQueue();
-                
+
                     return;
                 }
-                
+
                 case PopupBehavior.OpenOnTop:
                     OpenPopup(popup, data);
                     return;
-                
+
                 default:
                     throw new Exception($"Unable to process behavior: {behavior}");
             }
@@ -84,7 +82,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
         {
             if (!_openPopups.Contains(popup))
             {
-                Logger.Error(p => $"Specified popup is not open: {p}", popup);
+                Log.Error(p => $"Specified popup is not open: {p}", popup);
                 return;
             }
 
@@ -94,7 +92,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
                 return;
             }
 
-            Logger.Error(p => $"Failed to deactivate popup: {p}", popup);
+            Log.Error(p => $"Failed to deactivate popup: {p}", popup);
         }
 
         public void CloseAll()
@@ -111,7 +109,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
         {
             if (_openPopups.Count > 0)
             {
-                Logger.Debug(op => $"Queue processing cancelled. There are open popups: {string.Join(",", op.Select(p => p.ToString()))}", _openPopups);
+                Log.Debug(op => $"Queue processing cancelled. There are open popups: {string.Join(",", op.Select(p => p.ToString()))}", _openPopups);
                 return;
             }
 
@@ -130,7 +128,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
                 dataBinding = InjectionBinder.Bind(popup.dataType).ToValue(data).ToBinding();
 
             var instance = GetInstance(popup, UIControlOptions.Instantiate);
-            
+
             var view = instance.GetComponent<PopupView>() ?? (IPopupView)instance.GetComponent<PopupViewDispatcher>();
             if (view == null)
                 throw new Exception("Popup view doesn't inherit from PopupView or PopupViewDispatcher.");

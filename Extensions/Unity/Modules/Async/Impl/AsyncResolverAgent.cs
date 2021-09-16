@@ -4,15 +4,13 @@ using System.Collections.Generic;
 using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using UnityEngine;
-using ILogger = Build1.PostMVC.Extensions.Unity.Modules.Logging.ILogger;
-using Logger = Build1.PostMVC.Extensions.Unity.Modules.Logging.Logger;
 using Random = System.Random;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Async.Impl
 {
     public class AsyncResolverAgent : MonoBehaviour
     {
-        [Logger(LogLevel.Warning)] public ILogger Logger { get; set; }
+        [Log(LogLevel.Warning)] public ILog Log { get; set; }
 
         private const int ResolvingCallsCapacity = 8;
         private const int PendingCallsCapacity   = 8;
@@ -68,7 +66,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Async.Impl
                     return;
                 _pendingActions.Add(action);
                 if (_pendingActions.Count > ResolvingCallsCapacity)
-                    Logger.Warn(() => $"Estimated capacity of {ResolvingCallsCapacity} for pending actions exceeded. Increase the capacity to save memory.");
+                    Log.Warn(c => $"Estimated capacity of {c} for pending actions exceeded. Increase the capacity to save memory.", ResolvingCallsCapacity);
             }
         }
 

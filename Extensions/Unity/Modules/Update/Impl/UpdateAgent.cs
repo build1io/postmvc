@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using UnityEngine;
-using Logger = Build1.PostMVC.Extensions.Unity.Modules.Logging.Logger;
-using ILogger = Build1.PostMVC.Extensions.Unity.Modules.Logging.ILogger;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Update.Impl
 {
@@ -13,7 +11,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Update.Impl
         private const int UpdatesCapacity      = 4;
         private const int LateUpdatesCapacity  = 4;
 
-        [Logger(LogLevel.Warning)] public ILogger Logger { get; set; }
+        [Log(LogLevel.Warning)] public ILog Log { get; set; }
 
         private readonly List<Action<float>> _updates          = new List<Action<float>>(UpdatesCapacity);
         private readonly List<Action<float>> _updatesFixed     = new List<Action<float>>(FixedUpdatesCapacity);
@@ -28,39 +26,39 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Update.Impl
         {
             if (_updatesFixed.Contains(callback))
             {
-                Logger.Warn(() => "Already subscribed for FixedUpdate.");
+                Log.Warn("Already subscribed for FixedUpdate.");
                 return;
             }
 
             _updatesFixed.Add(callback);
             if (_updatesFixed.Count > FixedUpdatesCapacity)
-                Logger.Warn(() => $"Estimated capacity of FixedUpdates ({FixedUpdatesCapacity}) exceeded. Increase the capacity to use memory efficiently.");
+                Log.Warn(c => $"Estimated capacity of FixedUpdates ({c}) exceeded. Increase the capacity to use memory efficiently.", FixedUpdatesCapacity);
         }
 
         public void SubscribeForUpdate(Action<float> callback)
         {
             if (_updates.Contains(callback))
             {
-                Logger.Warn(() => "Already subscribed for Update.");
+                Log.Warn("Already subscribed for Update.");
                 return;
             }
 
             _updates.Add(callback);
             if (_updates.Count > UpdatesCapacity)
-                Logger.Warn(() => $"Estimated capacity of Updates ({UpdatesCapacity}) exceeded. Increase the capacity to use memory efficiently.");
+                Log.Warn(c => $"Estimated capacity of Updates ({c}) exceeded. Increase the capacity to use memory efficiently.", UpdatesCapacity);
         }
 
         public void SubscribeForLateUpdate(Action<float> callback)
         {
             if (_updatesLate.Contains(callback))
             {
-                Logger.Warn(() => "Already subscribed for Update.");
+                Log.Warn("Already subscribed for Update.");
                 return;
             }
 
             _updatesLate.Add(callback);
             if (_updatesLate.Count > LateUpdatesCapacity)
-                Logger.Warn(() => $"Estimated capacity of LateUpdates ({LateUpdatesCapacity}) exceeded. Increase the capacity to use memory efficiently.");
+                Log.Warn(c => $"Estimated capacity of LateUpdates ({c}) exceeded. Increase the capacity to use memory efficiently.", LateUpdatesCapacity);
         }
 
         public void Unsubscribe(Action<float> callback)

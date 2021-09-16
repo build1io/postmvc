@@ -2,12 +2,12 @@ using System;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 {
-    internal abstract class LoggerBase : ILogger, ILoggerDebug, ILoggerWarn, ILoggerError
+    internal abstract class LogBase : ILog, ILogDebug, ILogWarn, ILogError
     {
         private string   _prefix;
         private LogLevel _level;
 
-        protected LoggerBase(string prefix, LogLevel mode)
+        protected LogBase(string prefix, LogLevel mode)
         {
             _prefix = prefix;
             _level = mode;
@@ -23,10 +23,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
         public abstract void Debug<T1>(Func<T1, string> callback, T1 param01);
         public abstract void Debug<T1, T2>(Func<T1, T2, string> callback, T1 param01, T2 param02);
         public abstract void Debug<T1, T2, T3>(Func<T1, T2, T3, string> callback, T1 param01, T2 param02, T3 param03);
-        public abstract void Debug(Action<ILoggerDebug> callback);
-        public abstract void Debug<T1>(Action<ILoggerDebug, T1> callback, T1 param01);
-        public abstract void Debug<T1, T2>(Action<ILoggerDebug, T1, T2> callback, T1 param01, T2 param02);
-        public abstract void Debug<T1, T2, T3>(Action<ILoggerDebug, T1, T2, T3> callback, T1 param01, T2 param02, T3 param03);
+        public abstract void Debug(Action<ILogDebug> callback);
+        public abstract void Debug<T1>(Action<ILogDebug, T1> callback, T1 param01);
+        public abstract void Debug<T1, T2>(Action<ILogDebug, T1, T2> callback, T1 param01, T2 param02);
+        public abstract void Debug<T1, T2, T3>(Action<ILogDebug, T1, T2, T3> callback, T1 param01, T2 param02, T3 param03);
 
         /*
          * Warn.
@@ -38,10 +38,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
         public abstract void Warn<T1>(Func<T1, string> callback, T1 param01);
         public abstract void Warn<T1, T2>(Func<T1, T2, string> callback, T1 param01, T2 param02);
         public abstract void Warn<T1, T2, T3>(Func<T1, T2, T3, string> callback, T1 param01, T2 param02, T3 param03);
-        public abstract void Warn(Action<ILoggerWarn> callback);
-        public abstract void Warn<T1>(Action<ILoggerWarn, T1> callback, T1 param01);
-        public abstract void Warn<T1, T2>(Action<ILoggerWarn, T1, T2> callback, T1 param01, T2 param02);
-        public abstract void Warn<T1, T2, T3>(Action<ILoggerWarn, T1, T2, T3> callback, T1 param01, T2 param02, T3 param03);
+        public abstract void Warn(Action<ILogWarn> callback);
+        public abstract void Warn<T1>(Action<ILogWarn, T1> callback, T1 param01);
+        public abstract void Warn<T1, T2>(Action<ILogWarn, T1, T2> callback, T1 param01, T2 param02);
+        public abstract void Warn<T1, T2, T3>(Action<ILogWarn, T1, T2, T3> callback, T1 param01, T2 param02, T3 param03);
 
         /*
          * Error.
@@ -53,10 +53,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
         public abstract void Error<T1>(Func<T1, string> callback, T1 param01);
         public abstract void Error<T1, T2>(Func<T1, T2, string> callback, T1 param01, T2 param02);
         public abstract void Error<T1, T2, T3>(Func<T1, T2, T3, string> callback, T1 param01, T2 param02, T3 param03);
-        public abstract void Error(Action<ILoggerError> callback);
-        public abstract void Error<T1>(Action<ILoggerError, T1> callback, T1 param01);
-        public abstract void Error<T1, T2>(Action<ILoggerError, T1, T2> callback, T1 param01, T2 param02);
-        public abstract void Error<T1, T2, T3>(Action<ILoggerError, T1, T2, T3> callback, T1 param01, T2 param02, T3 param03);
+        public abstract void Error(Action<ILogError> callback);
+        public abstract void Error<T1>(Action<ILogError, T1> callback, T1 param01);
+        public abstract void Error<T1, T2>(Action<ILogError, T1, T2> callback, T1 param01, T2 param02);
+        public abstract void Error<T1, T2, T3>(Action<ILogError, T1, T2, T3> callback, T1 param01, T2 param02, T3 param03);
 
         /*
          * Public.

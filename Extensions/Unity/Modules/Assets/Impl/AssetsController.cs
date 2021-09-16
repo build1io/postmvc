@@ -10,8 +10,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 {
     internal sealed class AssetsController : IAssetsController
     {
-        [Logger(LogLevel.Warning)] public ILogger           Logger           { get; set; }
-        [Inject]                   public IAgentsController AgentsController { get; set; }
+        [Log(LogLevel.Warning)] public ILog              Log              { get; set; }
+        [Inject]                public IAgentsController AgentsController { get; set; }
 
         public AssetsAtlasProcessingMode AtlasProcessingMode = AssetsAtlasProcessingMode.Strict;
 
@@ -48,9 +48,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
                 throw new Exception("AssetsController already initialized.");
 
             #if UNITY_WEBGL && !UNITY_EDITOR
-                _assetsAgentBase = AgentsController.Create<AssetsAgentWebGL>();
+            _assetsAgentBase = AgentsController.Create<AssetsAgentWebGL>();
             #else
-                _assetsAgentBase = AgentsController.Create<AssetsAgentDefault>();
+            _assetsAgentBase = AgentsController.Create<AssetsAgentDefault>();
             #endif
 
             _assetsAgentBase.AtlasRequested += OnAtlasRequested;
@@ -78,19 +78,19 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         {
             if (bundle.IsLoaded)
             {
-                Logger.Debug(n => $"Bundle already loaded: {n}", bundle.name);
+                Log.Debug(n => $"Bundle already loaded: {n}", bundle.name);
                 onComplete?.Invoke(bundle);
                 return;
             }
 
             _assetsAgentBase.LoadAssetBundleAsync(bundle.name, unityBundle =>
             {
-                Logger.Debug(n => $"Bundle loaded: {n}", bundle.name);
+                Log.Debug(n => $"Bundle loaded: {n}", bundle.name);
                 SetBundleLoaded(bundle, unityBundle);
                 onComplete?.Invoke(bundle);
             }, exception =>
             {
-                Logger.Error(exception);
+                Log.Error(exception);
                 onError?.Invoke(exception);
             });
         }
@@ -120,7 +120,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             bundle.Bundle.Unload(unloadObjects);
             SetBundleUnloaded(bundle);
 
-            Logger.Debug(n => $"Bundle unloaded: {n}", bundle.name);
+            Log.Debug(n => $"Bundle unloaded: {n}", bundle.name);
         }
 
         public void UnloadAllBundles(bool unloadObjects)
@@ -128,7 +128,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             foreach (var bundle in _bundlesLoaded)
                 UnloadBundle(bundle, unloadObjects);
         }
-        
+
         private void SetBundleUnloaded(AssetBundle bundle)
         {
             bundle.SetBundle(null);

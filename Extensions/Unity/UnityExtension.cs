@@ -19,8 +19,6 @@ using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using Build1.PostMVC.Extensions.Unity.Modules.Update;
 using Build1.PostMVC.Extensions.Unity.Modules.Update.Impl;
 using UnityEngine;
-using ILogger = Build1.PostMVC.Extensions.Unity.Modules.Logging.ILogger;
-using Logger = Build1.PostMVC.Extensions.Unity.Modules.Logging.Logger;
 using Object = UnityEngine.Object;
 
 namespace Build1.PostMVC.Extensions.Unity
@@ -41,7 +39,7 @@ namespace Build1.PostMVC.Extensions.Unity
             injectionBinder.Bind<IUnityViewEventProcessor>().To<UnityViewEventProcessor>().AsSingleton();
 
             // TODO: move to PostMVCUnityApp module.
-            injectionBinder.Bind<ILogger>().ToProvider<LoggerProvider>().ByAttribute<Logger>();
+            injectionBinder.Bind<ILog>().ToProvider<LogProvider>().ByAttribute<Log>();
             injectionBinder.Bind<IAgentsController>().To<AgentsController>().AsSingleton();
             injectionBinder.Bind<IAppController>().To<AppController>().AsSingleton().ConstructOnStart();
             injectionBinder.Bind<IAssetsController>().To<AssetsController>().AsSingleton();

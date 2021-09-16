@@ -4,14 +4,12 @@ using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using Build1.PostMVC.Extensions.Unity.Utils;
 using UnityEngine;
-using Logger = Build1.PostMVC.Extensions.Unity.Modules.Logging.Logger;
-using ILogger = Build1.PostMVC.Extensions.Unity.Modules.Logging.ILogger;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Device.Impl
 {
     public sealed class DeviceController : IDeviceController
     {
-        [Logger(LogLevel.Warning)] public ILogger Logger { get; set; }
+        [Log(LogLevel.Warning)] public ILog Log { get; set; }
 
         public DeviceType CurrentDeviceType
         {
@@ -89,7 +87,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Device.Impl
             CurrentDevicePlatform = GetCurrentDevicePlatform();
             CurrentDeviceType = DeviceUtil.GetDeviceType(CurrentDevicePlatform);
 
-            Logger.Debug(() => $"Platform: {CurrentDevicePlatform} DeviceType: {CurrentDeviceType}");
+            Log.Debug((p, t) => $"Platform: {p} DeviceType: {t}", CurrentDevicePlatform, CurrentDeviceType);
         }
 
         private DevicePlatform GetCurrentDevicePlatform()
