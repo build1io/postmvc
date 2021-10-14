@@ -142,20 +142,30 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Async.Impl
 
         IEnumerator IntervalCallImpl(int callId, float seconds, Action callback)
         {
-            while (_intervalCallIds.Contains(callId))
+            do
             {
                 yield return new WaitForSeconds(seconds);
+
+                if (!_intervalCallIds.Contains(callId))
+                    break;
+
                 callback.Invoke();
-            }
+                
+            } while (_intervalCallIds.Contains(callId));
         }
         
         IEnumerator IntervalCallImpl<T>(int callId, float seconds, Action<T> callback, T param)
         {
-            while (_intervalCallIds.Contains(callId))
+            do
             {
                 yield return new WaitForSeconds(seconds);
+
+                if (!_intervalCallIds.Contains(callId))
+                    break;
+
                 callback.Invoke(param);
-            }
+                
+            } while (_intervalCallIds.Contains(callId));
         }
         
         /*
