@@ -78,7 +78,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
          * Closing.
          */
 
-        public void Close(PopupBase popup)
+        public void Close(PopupBase popup, bool immediate = false)
         {
             if (!_openPopups.Contains(popup))
             {
@@ -86,19 +86,33 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
                 return;
             }
 
-            if (Deactivate(popup) && _openPopups.Remove(popup))
+            if (immediate)
             {
-                Dispatcher.Dispatch(PopupEvent.Closed, popup);
+                if (Deactivate(popup) && _openPopups.Remove(popup))
+                {
+                    Dispatcher.Dispatch(PopupEvent.Closed, popup);
+                    return;
+                }
+
+                Log.Error(p => $"Failed to deactivate popup: {p}", popup);
                 return;
             }
+            
+            var instance = GetInstance(popup, UIControlOptions.None);
+            if (!instance)
+                throw new Exception("Popup instance not found.");
+            
+            var view = instance.GetComponent<PopupView>() ?? (IPopupView)instance.GetComponent<PopupViewDispatcher>();
+            if (view == null)
+                throw new Exception("Popup view doesn't inherit from PopupView or PopupViewDispatcher.");
 
-            Log.Error(p => $"Failed to deactivate popup: {p}", popup);
+            view.Close();
         }
 
-        public void CloseAll()
+        public void CloseAll(bool immediate = false)
         {
             for (var i = _openPopups.Count - 1; i >= 0; i--)
-                Close(_openPopups[i]);
+                Close(_openPopups[i], immediate);
         }
 
         /*

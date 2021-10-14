@@ -66,7 +66,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
             var activate = (options & UIControlOptions.Activate) == UIControlOptions.Activate;
             var layer = UILayerController.GetLayerView<Transform>(configuration.appLayerId);
             var instanceTransform = layer.Find(control.name);
-            if (instanceTransform != null)
+            if (instanceTransform)
             {
                 if (activate)
                     instanceTransform.gameObject.SetActive(true);
@@ -96,7 +96,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
             var configuration = DeviceController.GetConfiguration(control);
             var layer = UILayerController.GetLayerView(configuration.appLayerId);
             var view = layer.transform.Find(control.name);
-            if (view == null || !view.gameObject.activeSelf)
+            if (!view || !view.gameObject.activeSelf)
                 return false;
 
             if (control.ToDestroyOnDeactivation)

@@ -10,7 +10,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
         void Open<T>(Popup<T> popup, T data);
         void Open<T>(Popup<T> popup, T data, PopupBehavior behavior);
         
-        void Close(PopupBase popup);
-        void CloseAll();
+        void Close(PopupBase popup, bool immediate = false);
+        void CloseAll(bool immediate = false);
     }
 }

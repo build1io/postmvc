@@ -16,9 +16,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
             Popup = popup;
         }
 
-        public void Close()
+        public virtual void Close()
         {
-            PopupController.Close(Popup);
+            PopupController.Close(Popup, true);
         }
     }
 }
