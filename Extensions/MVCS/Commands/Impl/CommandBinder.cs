@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 using Build1.PostMVC.Extensions.MVCS.Commands.Api;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Events.Impl;
@@ -706,8 +707,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 
             var @event = binding.FailEvent;
             if (@event == null)
-                throw exception;
-                
+                ExceptionDispatchInfo.Capture(exception).Throw();
+
             UnbindOrScheduleIfOnce(binding);
                 
             Dispatcher.Dispatch(@event, exception);
