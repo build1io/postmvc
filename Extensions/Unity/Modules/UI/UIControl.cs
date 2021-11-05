@@ -8,6 +8,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI
         public readonly string            name;
         public readonly UIControlBehavior behavior;
 
+        public bool IsSingleInstance        => (behavior & UIControlBehavior.SingleInstance) == UIControlBehavior.SingleInstance;
         public bool ToPreInstantiate        => (behavior & UIControlBehavior.PreInstantiate) == UIControlBehavior.PreInstantiate;
         public bool ToDestroyOnDeactivation => (behavior & UIControlBehavior.DestroyOnDeactivation) == UIControlBehavior.DestroyOnDeactivation;
 

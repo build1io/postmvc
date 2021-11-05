@@ -65,12 +65,16 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
 
             var activate = (options & UIControlOptions.Activate) == UIControlOptions.Activate;
             var layer = UILayerController.GetLayerView<Transform>(configuration.appLayerId);
-            var instanceTransform = layer.Find(control.name);
-            if (instanceTransform)
+            
+            if (control.IsSingleInstance)
             {
-                if (activate)
-                    instanceTransform.gameObject.SetActive(true);
-                return instanceTransform.gameObject;
+                var instanceTransform = layer.Find(control.name);
+                if (instanceTransform)
+                {
+                    if (activate)
+                        instanceTransform.gameObject.SetActive(true);
+                    return instanceTransform.gameObject;
+                }    
             }
 
             var instantiate = (options & UIControlOptions.Instantiate) == UIControlOptions.Instantiate;

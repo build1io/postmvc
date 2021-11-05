@@ -37,7 +37,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
 
         public void Show(Screen screen)
         {
-            Show(screen, ScreenBehavior.Default);
+            Show(screen, ScreenBehavior.Replace);
         }
 
         public void Show(Screen screen, ScreenBehavior behavior)
@@ -51,7 +51,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
             }
 
             var previousScreen = _currentScreen;
-            if (behavior == ScreenBehavior.Default && _currentScreen != null)
+            if (behavior == ScreenBehavior.Replace && _currentScreen != null)
             {
                 HideScreenImpl(_currentScreen);
                 _currentScreen = null;
