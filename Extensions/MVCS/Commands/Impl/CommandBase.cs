@@ -62,7 +62,14 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
          * Protected.
          */
 
-        protected          void Retain() { IsRetained = true; }
+        protected void Retain()
+        {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToRetainResolvedCommand);
+
+            IsRetained = true;
+        }
+
         protected abstract void Release();
         protected abstract void Fail(Exception exception);
 
