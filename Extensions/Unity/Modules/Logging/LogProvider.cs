@@ -71,14 +71,18 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             
             return new LogWebGL(prefix, level);
 
+            #elif UNITY_EDITOR
+            
+            return new LogDebug(prefix, level);
+            
             #else
-
-            // Always returns true in Editor. 
+            
+            // Always returns true in Editor.
             if (UnityEngine.Debug.isDebugBuild)
                 return new LogDebug(prefix, level);
 
             return new LogVoid(prefix, level);
-
+            
             #endif
         }
     }
