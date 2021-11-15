@@ -15,6 +15,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public AssetsAtlasProcessingMode AtlasProcessingMode = AssetsAtlasProcessingMode.Strict;
 
+        private readonly Dictionary<Enum, AssetBundle>   _registered;
         private readonly List<AssetBundle>               _bundlesLoaded;
         private readonly Dictionary<string, AssetBundle> _bundleByAtlasId;
 
@@ -22,6 +23,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public AssetsController()
         {
+            _registered = new Dictionary<Enum, AssetBundle>();
             _bundlesLoaded = new List<AssetBundle>();
             _bundleByAtlasId = new Dictionary<string, AssetBundle>();
         }
@@ -66,14 +68,46 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         }
 
         /*
-         * Bundles.
+         * Registration.
          */
 
+        public void RegisterBundle(Enum bundleId, string name, params string[] atlasesNames)
+        {
+            if (_registered.ContainsKey(bundleId))
+                throw new AssetsException(AssetsExceptionType.BundleAlreadyRegistered, bundleId.ToString());
+            _registered.Add(bundleId, new AssetBundle(bundleId, name, atlasesNames));
+        }
+        
+        public void RegisterBundle(AssetBundle bundle)
+        {
+            if (_registered.ContainsKey(bundle.id))
+                throw new AssetsException(AssetsExceptionType.BundleAlreadyRegistered, bundle.id.ToString());
+            _registered.Add(bundle.id, bundle);
+        }
+
+        /*
+         * Loading.
+         */
+        
+        public bool IsBundleLoaded(Enum bundleId)
+        {
+            if (!_registered.TryGetValue(bundleId, out var bundle))
+                throw new AssetsException(AssetsExceptionType.BundleNotRegistered, bundleId.ToString());
+            return bundle.IsLoaded;
+        }
+        
         public bool IsBundleLoaded(AssetBundle bundle)
         {
             return bundle.IsLoaded;
         }
-
+        
+        public void LoadBundle(Enum bundleId, Action<AssetBundle> onComplete, Action<AssetsException> onError)
+        {
+            if (!_registered.TryGetValue(bundleId, out var bundle))
+                throw new AssetsException(AssetsExceptionType.BundleNotRegistered, bundleId.ToString());
+            LoadBundle(bundle, onComplete, onError);
+        }
+        
         public void LoadBundle(AssetBundle bundle, Action<AssetBundle> onComplete, Action<AssetsException> onError)
         {
             if (bundle.IsLoaded)
@@ -94,7 +128,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
                 onError?.Invoke(exception);
             });
         }
-
+        
         private void SetBundleLoaded(AssetBundle bundle, UnityEngine.AssetBundle unityBundle)
         {
             bundle.SetBundle(unityBundle);
@@ -111,6 +145,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         /*
          * Unloading.
          */
+
+        public void UnloadBundle(Enum bundleId, bool unloadObjects)
+        {
+            if (!_registered.TryGetValue(bundleId, out var bundle))
+                throw new AssetsException(AssetsExceptionType.BundleNotRegistered, bundleId.ToString());
+            UnloadBundle(bundle, unloadObjects);
+        }
 
         public void UnloadBundle(AssetBundle bundle, bool unloadObjects)
         {
@@ -143,8 +184,15 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         }
 
         /*
-         * Items.
+         * Assets.
          */
+
+        public T GetAsset<T>(Enum bundleId, string assetName) where T : UnityEngine.Object
+        {
+            if (!_registered.TryGetValue(bundleId, out var bundle))
+                throw new AssetsException(AssetsExceptionType.BundleNotRegistered, bundleId.ToString());
+            return GetAsset<T>(bundle, assetName);
+        }
 
         public T GetAsset<T>(AssetBundle bundle, string assetName) where T : UnityEngine.Object
         {
@@ -156,6 +204,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             return asset;
         }
 
+        public bool TryGetAsset<T>(Enum bundleId, string assetName, out T asset) where T : UnityEngine.Object
+        {
+            if (!_registered.TryGetValue(bundleId, out var bundle))
+                throw new AssetsException(AssetsExceptionType.BundleNotRegistered, bundleId.ToString());
+            return TryGetAsset(bundle, assetName, out asset);
+        }
+        
         public bool TryGetAsset<T>(AssetBundle bundle, string assetName, out T asset) where T : UnityEngine.Object
         {
             if (!bundle.IsLoaded)

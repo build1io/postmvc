@@ -43,7 +43,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
                 Instantiate(control, configuration, layerView, false);
             }
         }
-        
+
         /*
          * Protected.
          */
@@ -52,20 +52,20 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
         {
             return GetInstance(control, options, out var isNewInstance);
         }
-        
+
         protected GameObject GetInstance(T control, UIControlOptions options, out bool isNewInstance)
         {
             isNewInstance = false;
             if (control == null)
                 return null;
-            
+
             var configuration = DeviceController.GetConfiguration(control);
             if (!CheckConfigInstalled(configuration))
                 InstallConfiguration(configuration);
 
             var activate = (options & UIControlOptions.Activate) == UIControlOptions.Activate;
             var layer = UILayerController.GetLayerView<Transform>(configuration.appLayerId);
-            
+
             if (control.IsSingleInstance)
             {
                 var instanceTransform = layer.Find(control.name);
@@ -74,13 +74,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
                     if (activate)
                         instanceTransform.gameObject.SetActive(true);
                     return instanceTransform.gameObject;
-                }    
+                }
             }
 
             var instantiate = (options & UIControlOptions.Instantiate) == UIControlOptions.Instantiate;
             if (!instantiate)
                 return null;
-            
+
             isNewInstance = true;
             return Instantiate(control, configuration, layer, activate);
         }
@@ -89,14 +89,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
         {
             return Deactivate(control, out var destroyed);
         }
-        
+
         protected bool Deactivate(T control, out bool destroyed)
         {
             destroyed = false;
-            
+
             if (control == null)
                 return false;
-            
+
             var configuration = DeviceController.GetConfiguration(control);
             var layer = UILayerController.GetLayerView(configuration.appLayerId);
             var view = layer.transform.Find(control.name);
@@ -118,7 +118,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
 
         protected GameObject Instantiate(T control, C configuration, Component parent, bool active)
         {
-            var prefab = AssetsController.GetAsset<GameObject>(configuration.assetBundle, configuration.prefabName);
+            var prefab = configuration.assetBundle != null
+                             ? AssetsController.GetAsset<GameObject>(configuration.assetBundle, configuration.prefabName)
+                             : AssetsController.GetAsset<GameObject>(configuration.assetBundleId, configuration.prefabName);
+            
             prefab.SetActive(active);
 
             var instance = Object.Instantiate(prefab, parent.transform);
@@ -131,7 +134,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
         {
             if (control == null)
                 return false;
-            
+
             var configuration = DeviceController.GetConfiguration(control);
             var layer = UILayerController.GetLayerView(configuration.appLayerId);
             var view = layer.transform.Find(control.name);

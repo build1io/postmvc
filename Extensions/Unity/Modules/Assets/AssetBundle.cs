@@ -1,3 +1,5 @@
+using System;
+
 namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
 {
     public sealed class AssetBundle
@@ -5,11 +7,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         internal bool                    IsLoaded => Bundle != null;
         internal UnityEngine.AssetBundle Bundle   { get; private set; }
 
-        public readonly int      id;
+        public readonly Enum     id;
         public readonly string   name;
         public readonly string[] atlasesNames;
 
-        public AssetBundle(int id, string name, params string[] atlasesNames)
+        public AssetBundle(Enum id, string name, params string[] atlasesNames)
         {
             this.id = id;
             this.name = name;
