@@ -11,6 +11,11 @@ namespace Build1.PostMVC.Extensions.MVCS.Mediation
         IMediationBindingTo Bind(Type viewType);
         IMediationBindingTo Bind(Type viewType, Type viewInterfaceType);
         
+        IMediationBindingTo Rebind(Type viewType);
+        IMediationBindingTo Rebind(Type viewType, Type viewInterfaceType);
+        
+        void Unbind(Type viewType);
+        
         void OnViewAdd(IView view);
         void OnViewRemove(IView view);
 

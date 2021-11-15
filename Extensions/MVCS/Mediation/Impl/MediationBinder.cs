@@ -88,6 +88,31 @@ namespace Build1.PostMVC.Extensions.MVCS.Mediation.Impl
             _bindings.Add(viewType, binding);
             return binding;
         }
+        
+        /*
+         * Rebinding.
+         */
+
+        public IMediationBindingTo Rebind(Type viewType)
+        {
+            Unbind(viewType);
+            return Bind(viewType);
+        }
+
+        public IMediationBindingTo Rebind(Type viewType, Type viewInterfaceType)
+        {
+            Unbind(viewType);
+            return Bind(viewType, viewInterfaceType);
+        }
+        
+        /*
+         * Unbinding.
+         */
+
+        public void Unbind(Type viewType)
+        {
+            _bindings.Remove(viewType);
+        }
 
         /*
          * View.

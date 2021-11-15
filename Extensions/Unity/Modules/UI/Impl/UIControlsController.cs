@@ -151,8 +151,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
             foreach (var binding in configuration)
             {
                 var bindingTo = binding.viewInterfaceType != null
-                                    ? MediationBinder.Bind(binding.viewType, binding.viewInterfaceType)
-                                    : MediationBinder.Bind(binding.viewType);
+                                    ? MediationBinder.Rebind(binding.viewType, binding.viewInterfaceType)
+                                    : MediationBinder.Rebind(binding.viewType);
                 if (binding.mediatorType != null)
                     bindingTo.To(binding.mediatorType);
             }
