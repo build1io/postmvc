@@ -1,9 +1,9 @@
 using System;
 
-namespace Build1.PostMVC.Extensions.Unity.Modules.DeviceOrientation
+namespace Build1.PostMVC.Extensions.Unity.Modules.Orientation
 {
     [Flags]
-    public enum DeviceOrientation
+    public enum ScreenOrientation
     {
         Portrait           = 1 << 0,
         PortraitUpsideDown = 1 << 1,
