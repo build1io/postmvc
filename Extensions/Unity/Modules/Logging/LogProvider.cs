@@ -7,7 +7,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 {
     public sealed class LogProvider : InjectionProvider<Log, ILog>
     {
-        public static LogLevel GlobalLogLevelOverride = LogLevel.None;
+        public static LogLevel GlobalLogLevelOverride  = LogLevel.None;
+        public static bool     ForceLogsInReleaseBuild = false;
 
         private readonly Stack<ILog> _availableInstances;
         private readonly List<ILog>  _usedInstances;
@@ -72,17 +73,17 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             return new LogWebGL(prefix, level);
 
             #elif UNITY_EDITOR
-            
+
             return new LogDebug(prefix, level);
-            
+
             #else
             
             // Always returns true in Editor.
-            if (UnityEngine.Debug.isDebugBuild)
+            if (UnityEngine.Debug.isDebugBuild || ForceLogsInReleaseBuild)
                 return new LogDebug(prefix, level);
 
             return new LogVoid(prefix, level);
-            
+
             #endif
         }
     }
