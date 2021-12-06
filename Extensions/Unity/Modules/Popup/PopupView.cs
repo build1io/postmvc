@@ -7,15 +7,18 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
 {
     public abstract class PopupView : UnityView, IPopupView
     {
-        [Header("Parts Base"), SerializeField] private RectTransform  content;
+        [Header("Parts Base"), SerializeField] private GameObject     overlay;
+        [SerializeField]                       private RectTransform  content;
         [SerializeField]                       private GameObject     raycastBlocker;
         [SerializeField]                       private PopupAnimation animationObject;
 
         [Inject] public IPopupController PopupController { get; set; }
 
-        public PopupBase     Popup      { get; private set; }
-        public GameObject    GameObject => gameObject;
-        public RectTransform Content    => content;
+        public PopupBase  Popup      { get; private set; }
+        public GameObject GameObject => gameObject;
+
+        public GameObject    Overlay => overlay;
+        public RectTransform Content => content;
 
         protected override void OnEnable()
         {
@@ -52,8 +55,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
          * Protected.
          */
 
-        protected virtual void OnShown()  { }
-        protected virtual void OnHidden() { }
+        protected virtual void OnShownHandler()  { }
+        protected virtual void OnHiddenHandler() { }
 
         /*
          * Private.
@@ -64,12 +67,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
             if (raycastBlocker)
                 raycastBlocker.SetActive(false);
 
-            OnShown();
+            OnShownHandler();
         }
 
         private void OnHiddenImpl()
         {
-            OnHidden();
+            OnHiddenHandler();
             PopupController.Close(Popup, true);
         }
     }
