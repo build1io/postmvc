@@ -5,8 +5,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
 {
     public interface IPopupView : IUnityView
     {
-        GameObject GameObject  { get; }
-        PopupBase  Popup       { get; }
+        PopupBase     Popup      { get; }
+        GameObject    GameObject { get; }
+        RectTransform Content    { get; }
 
         void SetUp(PopupBase popup);
         void Close();
