@@ -7,6 +7,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
 {
     public abstract class PopupViewDispatcher : UnityViewDispatcher, IPopupView
     {
+        public static readonly MVCS.Events.Event OnHidden = new MVCS.Events.Event();
+        
         [Header("Parts Base"), SerializeField] private RectTransform  content;
         [SerializeField]                       private GameObject     raycastBlocker;
         [SerializeField]                       private PopupAnimation animationObject;
@@ -25,7 +27,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
                 raycastBlocker.SetActive(true);
             
             if (animationObject)
-                animationObject.AnimateShow(this, OnShown);
+                animationObject.AnimateShow(this, OnShownImpl);
         }
         
         /*
@@ -43,23 +45,36 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
                 raycastBlocker.SetActive(true);
 
             if (animationObject)
-                animationObject.AnimateHide(this, CloseImpl);
+                animationObject.AnimateHide(this, OnHiddenImpl);
             else
-                CloseImpl();
+                OnHiddenImpl();
         }
+        
+        /*
+         * Protected.
+         */
+
+        protected virtual void OnShown()  { }
+        protected virtual void OnHid() { }
 
         /*
          * Private.
          */
 
-        private void OnShown()
+        private void OnShownImpl()
         {
             if (raycastBlocker)
                 raycastBlocker.SetActive(false);
+
+            OnShown();
         }
-        
-        private void CloseImpl()
+
+        private void OnHiddenImpl()
         {
+            OnHid();
+            
+            Dispatch(OnHidden);
+            
             PopupController.Close(Popup, true);
         }
     }

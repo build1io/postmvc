@@ -10,9 +10,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
         [Header("Parts Base"), SerializeField] private RectTransform  content;
         [SerializeField]                       private GameObject     raycastBlocker;
         [SerializeField]                       private PopupAnimation animationObject;
-        
+
         [Inject] public IPopupController PopupController { get; set; }
-        
+
         public PopupBase     Popup      { get; private set; }
         public GameObject    GameObject => gameObject;
         public RectTransform Content    => content;
@@ -23,15 +23,15 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
 
             if (raycastBlocker)
                 raycastBlocker.SetActive(true);
-            
+
             if (animationObject)
-                animationObject.AnimateShow(this, OnShown);
+                animationObject.AnimateShow(this, OnShownImpl);
         }
-        
+
         /*
          * Public.
          */
-        
+
         public void SetUp(PopupBase popup)
         {
             Popup = popup;
@@ -43,23 +43,33 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
                 raycastBlocker.SetActive(true);
 
             if (animationObject)
-                animationObject.AnimateHide(this, CloseImpl);
+                animationObject.AnimateHide(this, OnHiddenImpl);
             else
-                CloseImpl();
+                OnHiddenImpl();
         }
-        
+
+        /*
+         * Protected.
+         */
+
+        protected virtual void OnShown()  { }
+        protected virtual void OnHidden() { }
+
         /*
          * Private.
          */
 
-        private void OnShown()
+        private void OnShownImpl()
         {
             if (raycastBlocker)
                 raycastBlocker.SetActive(false);
+
+            OnShown();
         }
-        
-        private void CloseImpl()
+
+        private void OnHiddenImpl()
         {
+            OnHidden();
             PopupController.Close(Popup, true);
         }
     }
