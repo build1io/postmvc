@@ -24,11 +24,16 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
         {
             base.OnEnable();
 
-            if (raycastBlocker)
-                raycastBlocker.SetActive(true);
-
             if (animationObject)
+            {
+                if (raycastBlocker)
+                    raycastBlocker.SetActive(true);
+
                 animationObject.AnimateShow(this, OnShownImpl);
+                return;
+            }
+
+            OnShownImpl();
         }
 
         /*
@@ -42,13 +47,16 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
 
         public virtual void Close()
         {
-            if (raycastBlocker)
-                raycastBlocker.SetActive(true);
-
             if (animationObject)
+            {
+                if (raycastBlocker)
+                    raycastBlocker.SetActive(true);
+
                 animationObject.AnimateHide(this, OnHiddenImpl);
-            else
-                OnHiddenImpl();
+                return;
+            }
+
+            OnHiddenImpl();
         }
 
         /*

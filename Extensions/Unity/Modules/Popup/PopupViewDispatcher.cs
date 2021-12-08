@@ -33,7 +33,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
                     raycastBlocker.SetActive(true);
 
                 animationObject.AnimateShow(this, OnShownImpl);
+                return;
             }
+
+            OnShownImpl();
         }
 
         /*
