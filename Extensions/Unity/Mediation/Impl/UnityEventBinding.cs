@@ -129,4 +129,128 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation.Impl
             _action?.Invoke(param);
         }
     }
+    
+    internal sealed class UnityEventBinding<T1, T2> : UnityEventBindingBase, IUnityEventBindingTo<T1, T2>, IUnityEventBindingFrom<T1, T2>
+    {
+        private UnityEvent<T1, T2>  _unityEvent;
+        private List<Event<T1, T2>> _events;
+        private Action<T1, T2>      _action;
+
+        public UnityEventBinding(UnityEvent<T1, T2> unityEvent, IEventDispatcher dispatcher) : base(dispatcher)
+        {
+            _unityEvent = unityEvent;
+            _unityEvent.AddListener(EventHandler);
+        }
+        
+        public IUnityEventBindingTo<T1, T2> ToEvent(Event<T1, T2> @event)
+        {
+            if (_events == null)
+                _events = new List<Event<T1, T2>> { @event };
+            else
+                _events.Add(@event);
+            return this;
+        }
+        
+        public IUnityEventBindingTo<T1, T2> ToAction(Action<T1, T2> action)
+        {
+            _action += action;
+            return this;
+        }
+        
+        public IUnityEventBindingFrom<T1, T2> FromEvent(Event<T1, T2> @event)
+        {
+            _events?.Remove(@event);
+            return this;
+        }
+
+        public IUnityEventBindingFrom<T1, T2> FromAction(Action<T1, T2> action)
+        {
+            _action -= action;
+            return this;
+        }
+        
+        public override void Destroy()
+        {
+            _unityEvent?.RemoveListener(EventHandler);
+            _unityEvent = null;
+            _dispatcher = null;
+        }
+        
+        /*
+         * Event Handlers.
+         */
+
+        private void EventHandler(T1 param01, T2 param02)
+        {
+            if (_events != null)
+            {
+                foreach (var @event in _events)
+                    _dispatcher.Dispatch(@event, param01, param02);
+            }
+
+            _action?.Invoke(param01, param02);
+        }
+    }
+    
+    internal sealed class UnityEventBinding<T1, T2, T3> : UnityEventBindingBase, IUnityEventBindingTo<T1, T2, T3>, IUnityEventBindingFrom<T1, T2, T3>
+    {
+        private UnityEvent<T1, T2, T3>  _unityEvent;
+        private List<Event<T1, T2, T3>> _events;
+        private Action<T1, T2, T3>      _action;
+
+        public UnityEventBinding(UnityEvent<T1, T2, T3> unityEvent, IEventDispatcher dispatcher) : base(dispatcher)
+        {
+            _unityEvent = unityEvent;
+            _unityEvent.AddListener(EventHandler);
+        }
+        
+        public IUnityEventBindingTo<T1, T2, T3> ToEvent(Event<T1, T2, T3> @event)
+        {
+            if (_events == null)
+                _events = new List<Event<T1, T2, T3>> { @event };
+            else
+                _events.Add(@event);
+            return this;
+        }
+        
+        public IUnityEventBindingTo<T1, T2, T3> ToAction(Action<T1, T2, T3> action)
+        {
+            _action += action;
+            return this;
+        }
+        
+        public IUnityEventBindingFrom<T1, T2, T3> FromEvent(Event<T1, T2, T3> @event)
+        {
+            _events?.Remove(@event);
+            return this;
+        }
+
+        public IUnityEventBindingFrom<T1, T2, T3> FromAction(Action<T1, T2, T3> action)
+        {
+            _action -= action;
+            return this;
+        }
+        
+        public override void Destroy()
+        {
+            _unityEvent?.RemoveListener(EventHandler);
+            _unityEvent = null;
+            _dispatcher = null;
+        }
+        
+        /*
+         * Event Handlers.
+         */
+
+        private void EventHandler(T1 param01, T2 param02, T3 param03)
+        {
+            if (_events != null)
+            {
+                foreach (var @event in _events)
+                    _dispatcher.Dispatch(@event, param01, param02, param03);
+            }
+
+            _action?.Invoke(param01, param02, param03);
+        }
+    }
 }

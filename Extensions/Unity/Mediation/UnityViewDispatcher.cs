@@ -67,9 +67,29 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
             _bindings.Add(unityEvent, binding);
             return (IUnityEventBindingTo<T1>)binding;
         }
+        
+        protected IUnityEventBindingTo<T1, T2> BindUnityEvent<T1, T2>(UnityEvent<T1, T2> unityEvent)
+        {
+            if (_bindings.TryGetValue(unityEvent, out var binding))
+                return (IUnityEventBindingTo<T1, T2>)binding;
+            binding = new UnityEventBinding<T1, T2>(unityEvent, _dispatcher);
+            _bindings.Add(unityEvent, binding);
+            return (IUnityEventBindingTo<T1, T2>)binding;
+        }
+        
+        protected IUnityEventBindingTo<T1, T2, T3> BindUnityEvent<T1, T2, T3>(UnityEvent<T1, T2, T3> unityEvent)
+        {
+            if (_bindings.TryGetValue(unityEvent, out var binding))
+                return (IUnityEventBindingTo<T1, T2, T3>)binding;
+            binding = new UnityEventBinding<T1, T2, T3>(unityEvent, _dispatcher);
+            _bindings.Add(unityEvent, binding);
+            return (IUnityEventBindingTo<T1, T2, T3>)binding;
+        }
 
-        protected IUnityEventBindingFrom     UnbindUnityEvent(UnityEvent unityEvent)         { return (IUnityEventBindingFrom)_bindings[unityEvent]; }
-        protected IUnityEventBindingFrom<T1> UnbindUnityEvent<T1>(UnityEvent<T1> unityEvent) { return (IUnityEventBindingFrom<T1>)_bindings[unityEvent]; }
+        protected IUnityEventBindingFrom             UnbindUnityEvent(UnityEvent unityEvent)                         { return (IUnityEventBindingFrom)_bindings[unityEvent]; }
+        protected IUnityEventBindingFrom<T1>         UnbindUnityEvent<T1>(UnityEvent<T1> unityEvent)                 { return (IUnityEventBindingFrom<T1>)_bindings[unityEvent]; }
+        protected IUnityEventBindingFrom<T1, T2>     UnbindUnityEvent<T1, T2>(UnityEvent<T1, T2> unityEvent)         { return (IUnityEventBindingFrom<T1, T2>)_bindings[unityEvent]; }
+        protected IUnityEventBindingFrom<T1, T2, T3> UnbindUnityEvent<T1, T2, T3>(UnityEvent<T1, T2, T3> unityEvent) { return (IUnityEventBindingFrom<T1, T2, T3>)_bindings[unityEvent]; }
 
         protected void UnbindUnityEventCompletely(UnityEventBase unityEvent)
         {
@@ -78,7 +98,7 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
             binding.Destroy();
             _bindings.Remove(unityEvent);
         }
-        
+
         protected void UnbindAllUnityEvents()
         {
             foreach (var bridge in _bindings.Values)
