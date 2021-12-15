@@ -45,7 +45,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
         [Test]
         public void StopNullTest()
         {
-            Assert.That(() => _binder.OnCommandFailed(null, null), Throws.Exception);
+            Assert.That(() => _binder.OnCommandFail(null, null), Throws.Exception);
         }
     }
 }

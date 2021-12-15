@@ -593,6 +593,47 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command00Tests
         }
         
         /*
+         * Break.
+         */
+         
+        [Test]
+        public void RetainBreakTest()
+        {
+            var countRetain = 0;
+            var count = 0;
+            var countBreak = 0;
+            
+            Command00Retain.OnExecute += () => { countRetain++; };
+            Command00.OnExecute += () => { count++; };
+            Command00Copy.OnExecute += () => { countBreak++; };
+
+            _binder.Bind(CommandTestEvent.Event00)
+                   .To<Command00Retain>()
+                   .To<Command00>()
+                   .OnBreak(CommandTestEvent.Event00Complete)
+                   .InSequence();
+
+            _binder.Bind(CommandTestEvent.Event00Complete)
+                   .To<Command00Copy>();
+            
+            Assert.AreEqual(0, countRetain);
+            Assert.AreEqual(0, count);
+            Assert.AreEqual(0, countBreak);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event00);
+
+            Assert.AreEqual(1, countRetain);
+            Assert.AreEqual(0, count);
+            Assert.AreEqual(0, countBreak);
+
+            Command00Retain.Instance.BreakImpl();
+            
+            Assert.AreEqual(1, countRetain);
+            Assert.AreEqual(0, count);
+            Assert.AreEqual(1, countBreak);
+        }
+        
+        /*
          * Parameters.
          */
         

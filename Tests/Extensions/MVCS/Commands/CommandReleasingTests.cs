@@ -22,10 +22,10 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
         [Test]
         public void ReleasingTest()
         {
-            Assert.That(() => _binder.OnCommandFinished(null), Throws.Exception);
-            Assert.That(() => _binder.OnCommandFinished<int>(null), Throws.Exception);
-            Assert.That(() => _binder.OnCommandFinished<int, string>(null), Throws.Exception);
-            Assert.That(() => _binder.OnCommandFinished<int, string, CommandData>(null), Throws.Exception);
+            Assert.That(() => _binder.OnCommandFinish(null), Throws.Exception);
+            Assert.That(() => _binder.OnCommandFinish<int>(null), Throws.Exception);
+            Assert.That(() => _binder.OnCommandFinish<int, string>(null), Throws.Exception);
+            Assert.That(() => _binder.OnCommandFinish<int, string, CommandData>(null), Throws.Exception);
         }
     }
 }

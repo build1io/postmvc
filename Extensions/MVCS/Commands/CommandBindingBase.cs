@@ -18,7 +18,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         internal bool             IsUnbindOnQuit   { get; private set; }
 
         internal bool IsExecuting { get; private set; }
-        internal bool HasFails    => CommandsFailed.Count > 0;
+        internal bool IsBreak     { get; private set; }
+
+        internal bool HasFails => CommandsFailed.Count > 0;
 
         protected CommandBindingBase(EventBase type)
         {
@@ -38,13 +40,19 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             CommandsReleased = 0;
             CommandsFailed.Clear();
             IsExecuting = false;
+            IsBreak = false;
         }
 
-        public void RegisterCommandExecute() 
+        public void RegisterCommandExecute()
         {
             CommandsExecuted++;
         }
-        
+
+        public void RegisterCommandBreak()
+        {
+            IsBreak = true;
+        }
+
         public void RegisterCommandRelease()
         {
             CommandsReleased++;
@@ -59,7 +67,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         {
             return Commands.Count == CommandsExecuted;
         }
-        
+
         public bool CheckAllReleased()
         {
             if (IsSequence)

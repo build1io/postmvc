@@ -20,15 +20,15 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 
         IList<CommandBindingBase> GetBindings(EventBase type);
 
-        void OnCommandFinished(ICommand command);
-        void OnCommandFinished<T1>(ICommand<T1> command);
-        void OnCommandFinished<T1, T2>(ICommand<T1, T2> command);
-        void OnCommandFinished<T1, T2, T3>(ICommand<T1, T2, T3> command);
-
-        void OnCommandFailed(ICommand command, Exception exception);
-        void OnCommandFailed<T1>(ICommand<T1> command, Exception exception);
-        void OnCommandFailed<T1, T2>(ICommand<T1, T2> command, Exception exception);
-        void OnCommandFailed<T1, T2, T3>(ICommand<T1, T2, T3> command, Exception exception);
+        void OnCommandFinish(ICommand command);
+        void OnCommandFinish<T1>(ICommand<T1> command);
+        void OnCommandFinish<T1, T2>(ICommand<T1, T2> command);
+        void OnCommandFinish<T1, T2, T3>(ICommand<T1, T2, T3> command);
+        
+        void OnCommandFail(ICommand command, Exception exception);
+        void OnCommandFail<T1>(ICommand<T1> command, Exception exception);
+        void OnCommandFail<T1, T2>(ICommand<T1, T2> command, Exception exception);
+        void OnCommandFail<T1, T2, T3>(ICommand<T1, T2, T3> command, Exception exception);
 
         void ProcessEvent(Event type);
         void ProcessEvent<T1>(Event<T1> type, T1 param01);

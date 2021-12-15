@@ -8,6 +8,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Api
         Exception Exception  { get; }
         bool      IsExecuted { get; }
         bool      IsRetained { get; }
+        bool      IsBreak    { get; }
         bool      IsFailed   { get; }
         bool      IsClean    { get; }
 

@@ -13,6 +13,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         public Exception Exception  { get; protected set; }
         public bool      IsExecuted { get; private set; }
         public bool      IsRetained { get; protected set; }
+        public bool      IsBreak    { get; protected set; }
         public bool      IsFailed   { get; protected set; }
         public bool      IsClean    => Index == DefaultIndex;
 
@@ -55,6 +56,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             Exception = default;
             IsExecuted = false;
             IsRetained = false;
+            IsBreak = false;
             IsFailed = false;
         }
 
@@ -71,6 +73,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         }
 
         protected abstract void Release();
+        protected abstract void Break();
         protected abstract void Fail(Exception exception);
 
         /*

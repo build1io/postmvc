@@ -131,25 +131,25 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         }
 
         /*
-         * On Command Finished.
+         * On Command Finish.
          */
         
-        public void OnCommandFinished(ICommand command)
+        public void OnCommandFinish(ICommand command)
         {
             if (command.IsExecuted)
                 OnCommandFinishedImpl(command);
         }
-        public void OnCommandFinished<T1>(ICommand<T1> command)
+        public void OnCommandFinish<T1>(ICommand<T1> command)
         {
             if (command.IsExecuted)
                 OnCommandFinishedImpl(command);
         }
-        public void OnCommandFinished<T1, T2>(ICommand<T1, T2> command)
+        public void OnCommandFinish<T1, T2>(ICommand<T1, T2> command)
         {
             if (command.IsExecuted)
                 OnCommandFinishedImpl(command);
         }
-        public void OnCommandFinished<T1, T2, T3>(ICommand<T1, T2, T3> command)
+        public void OnCommandFinish<T1, T2, T3>(ICommand<T1, T2, T3> command)
         {
             if (command.IsExecuted)
                 OnCommandFinishedImpl(command);
@@ -162,11 +162,18 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             
             binding.RegisterCommandRelease();
             
+            if (command.IsBreak)
+                binding.RegisterCommandBreak();
+
             ReturnCommand(command);
 
             if (binding.IsSequence)
             {
-                ProcessBindingCommand(binding, index + 1);
+                if (binding.IsBreak)
+                    FinishBindingExecution(binding);
+                else
+                    ProcessBindingCommand(binding, index + 1);
+                
                 return;
             }
             
@@ -188,11 +195,18 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             
             binding.RegisterCommandRelease();
             
+            if (command.IsBreak)
+                binding.RegisterCommandBreak();
+            
             ReturnCommand(command);
 
             if (binding.IsSequence)
             {
-                ProcessBindingCommand(binding, index + 1, param01);
+                if (binding.IsBreak)
+                    FinishBindingExecution(binding, param01);
+                else
+                    ProcessBindingCommand(binding, index + 1, param01);
+                
                 return;
             }
             
@@ -215,11 +229,18 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             
             binding.RegisterCommandRelease();
             
+            if (command.IsBreak)
+                binding.RegisterCommandBreak();
+            
             ReturnCommand(command);
 
             if (binding.IsSequence)
             {
-                ProcessBindingCommand(binding, index + 1, param01, param02);
+                if (binding.IsBreak)
+                    FinishBindingExecution(binding, param01, param02);
+                else
+                    ProcessBindingCommand(binding, index + 1, param01, param02);
+                
                 return;
             }
             
@@ -243,11 +264,18 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             
             binding.RegisterCommandRelease();
             
+            if (command.IsBreak)
+                binding.RegisterCommandBreak();
+            
             ReturnCommand(command);
 
             if (binding.IsSequence)
             {
-                ProcessBindingCommand(binding, index + 1, param01, param02, param03);
+                if (binding.IsBreak)
+                    FinishBindingExecution(binding, param01, param02, param03);
+                else
+                    ProcessBindingCommand(binding, index + 1, param01, param02, param03);
+                
                 return;
             }
             
@@ -262,25 +290,25 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         }
         
         /*
-         * On Command Failed.
+         * On Command Fail.
          */
         
-        public void OnCommandFailed(ICommand command, Exception exception)
+        public void OnCommandFail(ICommand command, Exception exception)
         {
             if (command.IsExecuted)
                 OnCommandFailedImpl(command, exception);
         }
-        public void OnCommandFailed<T1>(ICommand<T1> command, Exception exception)
+        public void OnCommandFail<T1>(ICommand<T1> command, Exception exception)
         {
             if (command.IsExecuted)
                 OnCommandFailedImpl(command, exception);
         }
-        public void OnCommandFailed<T1, T2>(ICommand<T1, T2> command, Exception exception)
+        public void OnCommandFail<T1, T2>(ICommand<T1, T2> command, Exception exception)
         {
             if (command.IsExecuted)
                 OnCommandFailedImpl(command, exception);
         }
-        public void OnCommandFailed<T1, T2, T3>(ICommand<T1, T2, T3> command, Exception exception)
+        public void OnCommandFail<T1, T2, T3>(ICommand<T1, T2, T3> command, Exception exception)
         {
             if (command.IsExecuted)
                 OnCommandFailedImpl(command, exception);
@@ -656,19 +684,38 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         {
             if (TryHandleBindingFail(binding))
                 return;
+
+            if (binding.IsBreak)
+            {
+                binding.FinishExecution();
+                
+                if (binding.BreakEvent != null)
+                    Dispatcher.Dispatch(binding.BreakEvent);
+                
+                return;
+            }
             
             binding.FinishExecution();
             UnbindOrScheduleIfOnce(binding);
             
-            var @event = binding.CompleteEvent;
-            if (@event != null)
-                Dispatcher.Dispatch(@event);
+            if (binding.CompleteEvent != null)
+                Dispatcher.Dispatch(binding.CompleteEvent);
         }
 
         private void FinishBindingExecution<T1>(CommandBinding<T1> binding, T1 param01)
         {
             if (TryHandleBindingFail(binding))
                 return;
+            
+            if (binding.IsBreak)
+            {
+                binding.FinishExecution();
+                
+                if (binding.BreakEvent != null)
+                    Dispatcher.Dispatch(binding.BreakEvent, param01);
+                
+                return;
+            }
             
             binding.FinishExecution();
             UnbindOrScheduleIfOnce(binding);
@@ -683,6 +730,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             if (TryHandleBindingFail(binding))
                 return;
             
+            if (binding.IsBreak)
+            {
+                binding.FinishExecution();
+                
+                if (binding.BreakEvent != null)
+                    Dispatcher.Dispatch(binding.BreakEvent, param01, param02);
+                
+                return;
+            }
+            
             binding.FinishExecution();
             UnbindOrScheduleIfOnce(binding);
             
@@ -695,6 +752,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         {
             if (TryHandleBindingFail(binding))
                 return;
+            
+            if (binding.IsBreak)
+            {
+                binding.FinishExecution();
+                
+                if (binding.BreakEvent != null)
+                    Dispatcher.Dispatch(binding.BreakEvent, param01, param02, param03);
+                
+                return;
+            }
             
             binding.FinishExecution();
             UnbindOrScheduleIfOnce(binding);

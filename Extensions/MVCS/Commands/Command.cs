@@ -22,7 +22,18 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             
             IsResolved = true;
             IsRetained = false;
-            CommandBinder.OnCommandFinished(this);
+            CommandBinder.OnCommandFinish(this);
+        }
+
+        protected override void Break()
+        {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToReleaseResolvedCommand);
+            
+            IsResolved = true;
+            IsRetained = false;
+            IsBreak = true;
+            CommandBinder.OnCommandFinish(this);
         }
 
         protected override void Fail(Exception exception)
@@ -34,7 +45,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             Exception = exception;
             IsRetained = false;
             IsFailed = true;
-            CommandBinder.OnCommandFailed(this, exception);
+            CommandBinder.OnCommandFail(this, exception);
         }
     }
 
@@ -65,9 +76,20 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             
             IsResolved = true;
             IsRetained = false;
-            CommandBinder.OnCommandFinished(this);
+            CommandBinder.OnCommandFinish(this);
         }
 
+        protected override void Break()
+        {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToReleaseResolvedCommand);
+            
+            IsResolved = true;
+            IsRetained = false;
+            IsBreak = true;
+            CommandBinder.OnCommandFinish(this);
+        }
+        
         protected override void Fail(Exception exception)
         {
             if (IsResolved)
@@ -77,7 +99,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             Exception = exception;
             IsRetained = false;
             IsFailed = true;
-            CommandBinder.OnCommandFailed(this, exception);
+            CommandBinder.OnCommandFail(this, exception);
         }
     }
 
@@ -111,7 +133,18 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             
             IsResolved = true;
             IsRetained = false;
-            CommandBinder.OnCommandFinished(this);
+            CommandBinder.OnCommandFinish(this);
+        }
+        
+        protected override void Break()
+        {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToReleaseResolvedCommand);
+            
+            IsResolved = true;
+            IsRetained = false;
+            IsBreak = true;
+            CommandBinder.OnCommandFinish(this);
         }
 
         protected override void Fail(Exception exception)
@@ -123,7 +156,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             Exception = exception;
             IsRetained = false;
             IsFailed = true;
-            CommandBinder.OnCommandFailed(this, exception);
+            CommandBinder.OnCommandFail(this, exception);
         }
     }
 
@@ -160,7 +193,18 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             
             IsResolved = true;
             IsRetained = false;
-            CommandBinder.OnCommandFinished(this);
+            CommandBinder.OnCommandFinish(this);
+        }
+        
+        protected override void Break()
+        {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToReleaseResolvedCommand);
+            
+            IsResolved = true;
+            IsRetained = false;
+            IsBreak = true;
+            CommandBinder.OnCommandFinish(this);
         }
 
         protected override void Fail(Exception exception)
@@ -172,7 +216,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             Exception = exception;
             IsRetained = false;
             IsFailed = true;
-            CommandBinder.OnCommandFailed(this, exception);
+            CommandBinder.OnCommandFail(this, exception);
         }
     }
 }

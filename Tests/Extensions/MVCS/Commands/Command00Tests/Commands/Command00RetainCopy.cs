@@ -22,6 +22,11 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command00Tests.Commands
             Release();
         }
         
+        public void BreakImpl()
+        {
+            Break();
+        }
+        
         public void FailImpl()
         {
             OnFail?.Invoke();
