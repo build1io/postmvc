@@ -344,6 +344,11 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command00Tests
             
             _binder.Bind(CommandTestEvent.Event00).To<Command00>().To<Command00Exception>().To<Command00Copy>().Once();
 
+            Assert.AreEqual(0, count);
+            Assert.AreEqual(0, countException);
+            Assert.AreEqual(0, countCopy);
+            Assert.AreEqual(0, countCatch);
+            
             try
             {
                 _dispatcher.Dispatch(CommandTestEvent.Event00);
@@ -352,6 +357,11 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command00Tests
             {
                 countCatch++;
             }
+            
+            Assert.AreEqual(1, count);
+            Assert.AreEqual(1, countException);
+            Assert.AreEqual(1, countCopy);
+            Assert.AreEqual(1, countCatch);
             
             try
             {
@@ -592,6 +602,31 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command00Tests
             Assert.AreEqual(0, indexes[0]);
             Assert.AreEqual(1, indexes[1]);
             Assert.AreEqual(2, indexes[2]);
+        }
+
+        [Test]
+        public void RetainRetainReleaseReleaseTest()
+        {
+            var count = 0;
+
+            Command00Retain.OnExecute += () => { count++; };
+            Command00RetainCopy.OnExecute += () => { count++; };
+            
+            _binder.Bind(CommandTestEvent.Event00).To<Command00Retain>().To<Command00RetainCopy>();
+            
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event00);
+            
+            Assert.AreEqual(2, count);
+            
+            Command00Retain.Instance.ReleaseImpl();
+            
+            Assert.AreEqual(2, count);
+            
+            Command00RetainCopy.Instance.ReleaseImpl();
+            
+            Assert.AreEqual(2, count);
         }
         
         /*

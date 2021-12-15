@@ -368,6 +368,11 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command01Tests
                 countCatch++;
             }
             
+            Assert.AreEqual(1, count);
+            Assert.AreEqual(1, countException);
+            Assert.AreEqual(0, countCopy);
+            Assert.AreEqual(1, countCatch);
+            
             try
             {
                 _dispatcher.Dispatch(CommandTestEvent.Event01, 5);

@@ -176,7 +176,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 return;
             }
             
-            ProcessBindingCommand(binding, index + 1);
+            if (!binding.CheckAllExecuted())
+                ProcessBindingCommand(binding, index + 1);
         }
 
         private void OnCommandFinishedImpl<T1>(ICommand<T1> command)
@@ -201,7 +202,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 return;
             }
             
-            ProcessBindingCommand(binding, index + 1, param01);
+            if (!binding.CheckAllExecuted())
+                ProcessBindingCommand(binding, index + 1, param01);
         }
         
         private void OnCommandFinishedImpl<T1, T2>(ICommand<T1, T2> command)
@@ -227,7 +229,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 return;
             }
             
-            ProcessBindingCommand(binding, index + 1, param01, param02);
+            if (!binding.CheckAllExecuted())
+                ProcessBindingCommand(binding, index + 1, param01, param02);
         }
         
         private void OnCommandFinishedImpl<T1, T2, T3>(ICommand<T1, T2, T3> command)
@@ -254,7 +257,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 return;
             }
             
-            ProcessBindingCommand(binding, index + 1, param01, param02, param03);
+            if (!binding.CheckAllExecuted())
+                ProcessBindingCommand(binding, index + 1, param01, param02, param03);
         }
         
         /*
@@ -303,7 +307,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 return;
             }
 
-            ProcessBindingCommand(binding, index + 1);
+            if (!binding.CheckAllExecuted())
+                ProcessBindingCommand(binding, index + 1);
         }
         
         private void OnCommandFailedImpl<T1>(ICommand<T1> command, Exception exception)
@@ -328,7 +333,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 return;
             }
 
-            ProcessBindingCommand(binding, index + 1, param01);
+            if (!binding.CheckAllExecuted())
+                ProcessBindingCommand(binding, index + 1, param01);
         }
         
         private void OnCommandFailedImpl<T1, T2>(ICommand<T1, T2> command, Exception exception)
@@ -354,7 +360,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 return;
             }
 
-            ProcessBindingCommand(binding, index + 1, param01, param02);
+            if (!binding.CheckAllExecuted())
+                ProcessBindingCommand(binding, index + 1, param01, param02);
         }
         
         private void OnCommandFailedImpl<T1, T2, T3>(ICommand<T1, T2, T3> command, Exception exception)
@@ -381,7 +388,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 return;
             }
 
-            ProcessBindingCommand(binding, index + 1, param01, param02, param03);
+            if (!binding.CheckAllExecuted())
+                ProcessBindingCommand(binding, index + 1, param01, param02, param03);
         }
         
         /*
@@ -480,8 +488,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         {
             if (binding.CheckAllReleased())
             {
-                if (binding.CheckAllReleased())
-                    FinishBindingExecution(binding);
+                FinishBindingExecution(binding);
                 return;
             }
             
@@ -503,6 +510,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             }
             
             command.PostExecute();
+            binding.RegisterCommandExecute();
 
             if (!command.IsRetained)
             {
@@ -521,8 +529,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         {
             if (binding.CheckAllReleased())
             {
-                if (binding.CheckAllReleased())
-                    FinishBindingExecution(binding, param01);
+                FinishBindingExecution(binding, param01);
                 return;
             }
             
@@ -544,6 +551,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             }
             
             command.PostExecute();
+            binding.RegisterCommandExecute();
 
             if (!command.IsRetained)
             {
@@ -562,8 +570,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         {
             if (binding.CheckAllReleased())
             {
-                if (binding.CheckAllReleased())
-                    FinishBindingExecution(binding, param01, param02);
+                FinishBindingExecution(binding, param01, param02);
                 return;
             }
             
@@ -585,6 +592,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             }
             
             command.PostExecute();
+            binding.RegisterCommandExecute();
 
             if (!command.IsRetained)
             {
@@ -603,8 +611,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         {
             if (binding.CheckAllReleased())
             {
-                if (binding.CheckAllReleased())
-                    FinishBindingExecution(binding, param01, param02, param03);
+                FinishBindingExecution(binding, param01, param02, param03);
                 return;
             }
             
@@ -626,6 +633,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             }
             
             command.PostExecute();
+            binding.RegisterCommandExecute();
 
             if (!command.IsRetained)
             {

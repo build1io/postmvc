@@ -9,20 +9,22 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
     {
         internal EventBase        Event            { get; }
         internal List<Type>       Commands         { get; }
+        internal int              CommandsExecuted { get; private set; }
         internal int              CommandsReleased { get; private set; }
-        internal List<Exception>  CommandsFailed   { get; private set; }
+        internal List<Exception>  CommandsFailed   { get; }
         internal Event<Exception> FailEvent        { get; private set; }
         internal bool             IsSequence       { get; private set; }
         internal bool             IsOnce           { get; private set; }
         internal bool             IsUnbindOnQuit   { get; private set; }
 
         internal bool IsExecuting { get; private set; }
-        internal bool HasFails    => CommandsFailed != null;
+        internal bool HasFails    => CommandsFailed.Count > 0;
 
         protected CommandBindingBase(EventBase type)
         {
             Event = type;
             Commands = new List<Type>();
+            CommandsFailed = new List<Exception>();
         }
 
         public void StartExecution()
@@ -32,11 +34,17 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 
         public void FinishExecution()
         {
+            CommandsExecuted = 0;
             CommandsReleased = 0;
-            CommandsFailed = null;
+            CommandsFailed.Clear();
             IsExecuting = false;
         }
 
+        public void RegisterCommandExecute() 
+        {
+            CommandsExecuted++;
+        }
+        
         public void RegisterCommandRelease()
         {
             CommandsReleased++;
@@ -44,15 +52,19 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 
         public void RegisterCommandException(Exception exception)
         {
-            CommandsFailed ??= new List<Exception>();
             CommandsFailed.Add(exception);
         }
 
+        public bool CheckAllExecuted()
+        {
+            return Commands.Count == CommandsExecuted;
+        }
+        
         public bool CheckAllReleased()
         {
             if (IsSequence)
-                return Commands.Count == CommandsReleased || CommandsFailed != null;
-            return Commands.Count == CommandsReleased + (CommandsFailed?.Count ?? 0);
+                return Commands.Count == CommandsReleased || HasFails;
+            return Commands.Count == CommandsReleased + CommandsFailed.Count;
         }
 
         /*

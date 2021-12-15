@@ -605,6 +605,31 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command02Tests
             Assert.AreEqual(2, indexes[2]);
         }
         
+        [Test]
+        public void RetainRetainReleaseReleaseTest()
+        {
+            var count = 0;
+
+            Command02Retain.OnExecute += (param01, param02) => { count++; };
+            Command02RetainCopy.OnExecute += (param01, param02) => { count++; };
+            
+            _binder.Bind(CommandTestEvent.Event02).To<Command02Retain>().To<Command02RetainCopy>();
+            
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event02, 10, string.Empty);
+            
+            Assert.AreEqual(2, count);
+            
+            Command02Retain.Instance.ReleaseImpl();
+            
+            Assert.AreEqual(2, count);
+            
+            Command02RetainCopy.Instance.ReleaseImpl();
+            
+            Assert.AreEqual(2, count);
+        }
+        
         /*
          * Parameters.
          */
