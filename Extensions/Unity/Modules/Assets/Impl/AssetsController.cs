@@ -182,7 +182,22 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             foreach (var atlasesName in bundle.atlasesNames)
                 _bundleByAtlasId.Remove(atlasesName);
         }
+        
+        /*
+         * Getting.
+         */
 
+        public AssetBundle GetBundle(Enum bundleId)
+        {
+            if (!_registered.TryGetValue(bundleId, out var bundle))
+                throw new AssetsException(AssetsExceptionType.BundleNotRegistered, bundleId.ToString());
+            
+            if (!bundle.IsLoaded)
+                throw new AssetsException(AssetsExceptionType.BundleNotLoaded, bundle.name);
+            
+            return bundle;
+        }
+        
         /*
          * Assets.
          */

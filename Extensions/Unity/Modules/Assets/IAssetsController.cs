@@ -31,6 +31,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         void UnloadAllBundles(bool unloadObjects);
 
         /*
+         * Getting.
+         */
+
+        AssetBundle GetBundle(Enum bundleId);
+        
+        /*
          * Assets.
          */
 

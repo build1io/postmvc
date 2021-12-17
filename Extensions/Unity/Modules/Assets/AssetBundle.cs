@@ -4,9 +4,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
 {
     public sealed class AssetBundle
     {
-        internal bool                    IsLoaded => Bundle != null;
-        internal UnityEngine.AssetBundle Bundle   { get; private set; }
+        public bool IsLoaded => Bundle != null;
 
+        internal UnityEngine.AssetBundle Bundle { get; private set; }
+        
         public readonly Enum     id;
         public readonly string   name;
         public readonly string[] atlasesNames;
@@ -22,6 +23,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         {
             Bundle = bundle;
         }
+
+        public string[] GetAllScenePaths() { return Bundle.GetAllScenePaths(); }
+        public string[] GetAllAssetNames() { return Bundle.GetAllAssetNames(); }
 
         public override string ToString()
         {
