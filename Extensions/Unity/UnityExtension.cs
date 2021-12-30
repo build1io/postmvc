@@ -15,6 +15,8 @@ using Build1.PostMVC.Extensions.Unity.Modules.Assets;
 using Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl;
 using Build1.PostMVC.Extensions.Unity.Modules.Async;
 using Build1.PostMVC.Extensions.Unity.Modules.Async.Impl;
+using Build1.PostMVC.Extensions.Unity.Modules.Coroutines;
+using Build1.PostMVC.Extensions.Unity.Modules.Coroutines.Impl;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using Build1.PostMVC.Extensions.Unity.Modules.Update;
 using Build1.PostMVC.Extensions.Unity.Modules.Update.Impl;
@@ -44,6 +46,7 @@ namespace Build1.PostMVC.Extensions.Unity
             injectionBinder.Bind<IAppController>().To<AppController>().AsSingleton().ConstructOnStart();
             injectionBinder.Bind<IAssetsController>().To<AssetsController>().AsSingleton();
             injectionBinder.Bind<IAsyncResolver>().To<AsyncResolver>().AsSingleton();
+            injectionBinder.Bind<ICoroutineProvider>().To<CoroutineProvider>().AsSingleton();
             injectionBinder.Bind<IUpdateController>().To<UpdateController>().AsSingleton();
             injectionBinder.Rebind<IEventBus>().To<EventBusUnity>().AsSingleton();
         }
