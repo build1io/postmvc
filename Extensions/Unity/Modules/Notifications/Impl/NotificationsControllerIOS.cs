@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Injection;
+using Build1.PostMVC.Extensions.Unity.Modules.Async;
 using Build1.PostMVC.Extensions.Unity.Modules.Coroutines;
 using Build1.PostMVC.Extensions.Unity.Modules.InternetReachability;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
@@ -18,6 +19,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
         private const AuthorizationOption AuthorizationOptions = AuthorizationOption.Alert | AuthorizationOption.Badge | AuthorizationOption.Sound;
 
         [Log(LogLevel.Warning)] public ILog                            Log                            { get; set; }
+        [Inject]                public IAsyncResolver                  AsyncResolver                  { get; set; }
         [Inject]                public IEventDispatcher                Dispatcher                     { get; set; }
         [Inject]                public ICoroutineProvider              CoroutineProvider              { get; set; }
         [Inject]                public IInternetReachabilityController InternetReachabilityController { get; set; }
@@ -31,11 +33,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
         private AuthorizationStatus _status;
         private string              _deviceToken;
         private List<Notification>  _notificationToSchedule;
+        private int                 _callId;
 
         [PreDestroy]
         public void PreDestroy()
         {
             CoroutineProvider.StopCoroutine(ref _coroutine);
+            AsyncResolver.CancelCall(ref _callId);
         }
 
         /*
@@ -49,7 +53,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
                 Log.Warn("Already initializing");
                 return;
             }
-            
+
             if (Initialized)
             {
                 Log.Warn("Already initialized");
@@ -72,10 +76,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
                 Log.Debug(log =>
                 {
                     log.Debug(reachable ? "Internet is reachable" : "Internet not reachable");
-                    log.Debug("Requesting authorization...");    
+                    log.Debug("Requesting authorization...");
                 });
-                
-                CoroutineProvider.StartCoroutine(RequestAuthorizationCoroutine(AuthorizationOptions, reachable), out _coroutine);    
+
+                CoroutineProvider.StartCoroutine(RequestAuthorizationCoroutine(AuthorizationOptions, reachable), out _coroutine);
             });
         }
 
@@ -85,7 +89,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
             {
                 while (!request.IsFinished)
                     yield return null;
-                
+
                 _coroutine = null;
                 OnAuthorized(request);
             }
@@ -100,26 +104,32 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
                 _status = AuthorizationStatus.Authorized;
                 _deviceToken = request.DeviceToken;
 
-                // If any notifications were requested before authorization, they must be scheduled after it.
                 if (_notificationToSchedule != null)
-                    foreach (var notification in _notificationToSchedule)
-                        ScheduleNotificationImpl(notification);
+                {
+                    // Delay needed as notifications scheduled right away don't work.
+                    _callId = AsyncResolver.DelayedCall(() =>
+                    {
+                        // If any notifications were requested before authorization, they must be scheduled after it.
+                        foreach (var notification in _notificationToSchedule)
+                            ScheduleNotificationImpl(notification);
+                        
+                        // Cleaning notification.
+                        _notificationToSchedule = null;
+                    }, 0.1F);    
+                }
             }
             else if (request.Error != null)
             {
                 Log.Error(e => $"Authorization error: {e}", request.Error);
-                
+
                 _status = AuthorizationStatus.Denied;
             }
             else
             {
-                Log.Debug("Not authorized. User denied notification request.");
-                
+                Log.Debug("Not authorized. User denied notifications request.");
+
                 _status = AuthorizationStatus.Denied;
             }
-
-            // Cleaning notification anyway.
-            _notificationToSchedule = null;
 
             CompleteInitialization();
         }
@@ -145,24 +155,28 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
 
         public void ScheduleNotification(Notification notification)
         {
+            Log.Debug("ScheduleNotification");
+
             if (!Initialized)
             {
-                Log.Warn("Notifications not initialized.");
+                Log.Warn("Notifications not initialized");
                 return;
             }
 
             if (!Enabled)
             {
-                Log.Debug("Notifications disabled.");
+                Log.Debug("Notifications disabled");
                 return;
             }
-            
+
             if (_status == AuthorizationStatus.NotDetermined)
             {
+                Log.Debug("Notifications state not determined");
+
                 // Adding notification to the list so it'll be scheduled after authorization request if user will grant access.
                 _notificationToSchedule ??= new List<Notification>();
                 _notificationToSchedule.Add(notification);
-                
+
                 RequestAuthorization();
                 return;
             }
@@ -172,18 +186,20 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
 
         private void ScheduleNotificationImpl(Notification notification)
         {
+            Log.Debug("ScheduleNotificationImpl");
+
             if (!Enabled)
             {
                 Log.Debug("Notifications disabled.");
                 return;
             }
-            
+
             if (!Authorized)
             {
                 Log.Warn("Notifications not authorized.");
                 return;
             }
-            
+
             var timeTrigger = new iOSNotificationTimeIntervalTrigger
             {
                 TimeInterval = new TimeSpan(0, 0, notification.TimeoutSeconds),
@@ -215,16 +231,22 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
 
         public void CancelScheduledNotification(string id)
         {
+            Log.Debug(i => $"CancelScheduledNotification: {i}", id);
+            
             iOSNotificationCenter.RemoveScheduledNotification(id);
         }
 
         public void CancelScheduledNotification(Notification notification)
         {
+            Log.Debug(i => $"CancelScheduledNotification: {i}", notification.id);
+            
             iOSNotificationCenter.RemoveScheduledNotification(notification.id);
         }
 
         public void CancelAllScheduledNotifications()
         {
+            Log.Debug("CancelAllScheduledNotifications");
+            
             iOSNotificationCenter.RemoveAllScheduledNotifications();
         }
 
@@ -234,6 +256,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
 
         public void CleanDisplayedNotifications()
         {
+            Log.Debug("CleanDisplayedNotifications");
+            
             iOSNotificationCenter.ApplicationBadge = 0;
             iOSNotificationCenter.RemoveAllDeliveredNotifications();
         }
