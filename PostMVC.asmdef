@@ -2,7 +2,8 @@
     "name": "PostMVC",
     "rootNamespace": "",
     "references": [
-        "GUID:1e8e55397bd004beaba78a667566665f"
+        "GUID:1e8e55397bd004beaba78a667566665f",
+        "GUID:ac145e6b8c6034cdbadc8c6e26aedbcf"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

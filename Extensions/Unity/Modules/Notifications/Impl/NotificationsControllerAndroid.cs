@@ -6,7 +6,7 @@ using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using Unity.Notifications.Android;
 
-namespace Modules.Notifications.Impl.Android
+namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
 {
     internal sealed class NotificationsControllerAndroid : INotificationsController
     {
@@ -55,6 +55,10 @@ namespace Modules.Notifications.Impl.Android
         {
             Enabled = enabled;
         }
+        
+        /*
+         * Scheduling.
+         */
 
         public void ScheduleNotification(Notification notification)
         {
@@ -81,29 +85,34 @@ namespace Modules.Notifications.Impl.Android
             else
                 androidNotification.LargeIcon = DefaultIcon;
 
-            androidNotification.FireTime = DateTime.Now.AddSeconds(notification.timeoutSeconds);
+            androidNotification.FireTime = DateTime.Now.AddSeconds(notification.TimeoutSeconds);
 
-            AndroidNotificationCenter.SendNotification(androidNotification, DefaultChannelId);
+            AndroidNotificationCenter.SendNotificationWithExplicitID(androidNotification, DefaultChannelId, notification.id);
         }
+        
+        /*
+         * Cancelling.
+         */
 
-        public void CancelScheduledNotifications()
+        public void CancelScheduledNotification(Notification notification)
         {
-            if (!Initialized)
-            {
-                Log.Error("Notification not initialized.");
-                return;
-            }
-
-            if (!Enabled)
-            {
-                Log.Debug("Notifications disabled.");
-                return;
-            }
-
+            Log.Debug(i => $"CancelScheduledNotification: {i}", notification.id);
+            
+            AndroidNotificationCenter.CancelScheduledNotification(notification.id);
+        }
+        
+        public void CancelAllScheduledNotifications()
+        {
+            Log.Debug("CancelAllScheduledNotifications");
+            
             AndroidNotificationCenter.CancelAllScheduledNotifications();
         }
+        
+        /*
+         * Cleaning.
+         */
 
-        public void ClearDisplayedNotifications()
+        public void CleanDisplayedNotifications()
         {
             if (!Initialized)
             {

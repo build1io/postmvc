@@ -208,7 +208,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
 
             var iOSNotification = new iOSNotification
             {
-                Identifier = notification.id,
+                Identifier = notification.idString,
 
                 Title = notification.title,
                 Subtitle = notification.subTitle,
@@ -229,18 +229,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
          * Cancelling.
          */
 
-        public void CancelScheduledNotification(string id)
-        {
-            Log.Debug(i => $"CancelScheduledNotification: {i}", id);
-            
-            iOSNotificationCenter.RemoveScheduledNotification(id);
-        }
-
         public void CancelScheduledNotification(Notification notification)
         {
             Log.Debug(i => $"CancelScheduledNotification: {i}", notification.id);
             
-            iOSNotificationCenter.RemoveScheduledNotification(notification.id);
+            iOSNotificationCenter.RemoveScheduledNotification(notification.idString);
         }
 
         public void CancelAllScheduledNotifications()
