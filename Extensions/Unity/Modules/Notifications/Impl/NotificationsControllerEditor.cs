@@ -6,8 +6,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
 {
     internal sealed class NotificationsControllerEditor : INotificationsController
     {
-        [Log(LogLevel.All)] public ILog             Log        { get; set; }
-        [Inject]            public IEventDispatcher Dispatcher { get; set; }
+        [Log(LogLevel.Warning)] public ILog             Log        { get; set; }
+        [Inject]                public IEventDispatcher Dispatcher { get; set; }
 
         public bool Initialized { get; private set; }
         public bool Enabled     { get; private set; }
