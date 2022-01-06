@@ -13,39 +13,39 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI
         public DevicePlatform DevicePlatform { get; }
         public DeviceType     DeviceType     { get; }
 
-        public readonly AssetBundle            assetBundle;
-        public readonly Enum                   assetBundleId;
+        public readonly AssetBundleInfo        bundleInfo;
+        public readonly Enum                   bundleId;
         public readonly string                 prefabName;
         public readonly int                    appLayerId;
         public readonly List<UIControlBinding> bindings;
 
-        protected UIControlConfiguration(AssetBundle assetBundle, string prefabName, int appLayerId) : this(DevicePlatform.Any, DeviceType.Any, assetBundle, prefabName, appLayerId) { }
-        protected UIControlConfiguration(Enum assetBundleId, string prefabName, int appLayerId) : this(DevicePlatform.Any, DeviceType.Any, assetBundleId, prefabName, appLayerId) { }
+        protected UIControlConfiguration(AssetBundleInfo bundleInfo, string prefabName, int appLayerId) : this(DevicePlatform.Any, DeviceType.Any, bundleInfo, prefabName, appLayerId) { }
+        protected UIControlConfiguration(Enum bundleId, string prefabName, int appLayerId) : this(DevicePlatform.Any, DeviceType.Any, bundleId, prefabName, appLayerId) { }
 
-        protected UIControlConfiguration(DevicePlatform platform, AssetBundle assetBundle, string prefabName, int appLayerId) : this(platform, DeviceType.Any, assetBundle, prefabName, appLayerId) { }
-        protected UIControlConfiguration(DevicePlatform platform, Enum assetBundleId, string prefabName, int appLayerId) : this(platform, DeviceType.Any, assetBundleId, prefabName, appLayerId) { }
+        protected UIControlConfiguration(DevicePlatform platform, AssetBundleInfo bundleInfo, string prefabName, int appLayerId) : this(platform, DeviceType.Any, bundleInfo, prefabName, appLayerId) { }
+        protected UIControlConfiguration(DevicePlatform platform, Enum bundleId, string prefabName, int appLayerId) : this(platform, DeviceType.Any, bundleId, prefabName, appLayerId) { }
 
-        protected UIControlConfiguration(DeviceType deviceType, AssetBundle assetBundle, string prefabName, int appLayerId) : this(DevicePlatform.Any, deviceType, assetBundle, prefabName, appLayerId) { }
-        protected UIControlConfiguration(DeviceType deviceType, Enum assetBundleId, string prefabName, int appLayerId) : this(DevicePlatform.Any, deviceType, assetBundleId, prefabName, appLayerId) { }
+        protected UIControlConfiguration(DeviceType deviceType, AssetBundleInfo bundleInfo, string prefabName, int appLayerId) : this(DevicePlatform.Any, deviceType, bundleInfo, prefabName, appLayerId) { }
+        protected UIControlConfiguration(DeviceType deviceType, Enum bundleId, string prefabName, int appLayerId) : this(DevicePlatform.Any, deviceType, bundleId, prefabName, appLayerId) { }
 
-        protected UIControlConfiguration(DevicePlatform platform, DeviceType deviceType, AssetBundle assetBundle, string prefabName, int appLayerId)
+        protected UIControlConfiguration(DevicePlatform platform, DeviceType deviceType, AssetBundleInfo bundleInfo, string prefabName, int appLayerId)
         {
             DevicePlatform = platform;
             DeviceType = deviceType;
 
-            this.assetBundle = assetBundle;
+            this.bundleInfo = bundleInfo;
             this.prefabName = prefabName;
             this.appLayerId = appLayerId;
 
             bindings = new List<UIControlBinding>();
         }
 
-        protected UIControlConfiguration(DevicePlatform platform, DeviceType deviceType, Enum assetBundleId, string prefabName, int appLayerId)
+        protected UIControlConfiguration(DevicePlatform platform, DeviceType deviceType, Enum bundleId, string prefabName, int appLayerId)
         {
             DevicePlatform = platform;
             DeviceType = deviceType;
 
-            this.assetBundleId = assetBundleId;
+            this.bundleId = bundleId;
             this.prefabName = prefabName;
             this.appLayerId = appLayerId;
 

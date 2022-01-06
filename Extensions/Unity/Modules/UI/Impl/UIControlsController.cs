@@ -118,10 +118,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.UI.Impl
 
         protected GameObject Instantiate(T control, C configuration, Component parent, bool active)
         {
-            var prefab = configuration.assetBundle != null
-                             ? AssetsController.GetAsset<GameObject>(configuration.assetBundle, configuration.prefabName)
-                             : AssetsController.GetAsset<GameObject>(configuration.assetBundleId, configuration.prefabName);
-            
+            var prefab = configuration.bundleInfo != null
+                             ? AssetsController.GetAsset<GameObject>(configuration.bundleInfo, configuration.prefabName)
+                             : AssetsController.GetAsset<GameObject>(configuration.bundleId, configuration.prefabName);
+
             prefab.SetActive(active);
 
             var instance = Object.Instantiate(prefab, parent.transform);

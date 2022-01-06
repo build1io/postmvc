@@ -9,17 +9,17 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens
 {
     public sealed class ScreenConfig : UIControlConfiguration
     {
-        public ScreenConfig(AssetBundle assetBundle, string prefabName, int appLayerId) : base(assetBundle, prefabName, appLayerId) { }
-        public ScreenConfig(Enum assetBundleId, string prefabName, int appLayerId) : base(assetBundleId, prefabName, appLayerId) { }
+        public ScreenConfig(AssetBundleInfo bundleInfo, string prefabName, int appLayerId) : base(bundleInfo, prefabName, appLayerId) { }
+        public ScreenConfig(Enum bundleId, string prefabName, int appLayerId) : base(bundleId, prefabName, appLayerId) { }
 
-        public ScreenConfig(DevicePlatform platform, AssetBundle assetBundle, string prefabName, int appLayerId) : base(platform, assetBundle, prefabName, appLayerId) { }
-        public ScreenConfig(DevicePlatform platform, Enum assetBundleId, string prefabName, int appLayerId) : base(platform, assetBundleId, prefabName, appLayerId) { }
+        public ScreenConfig(DevicePlatform platform, AssetBundleInfo bundleInfo, string prefabName, int appLayerId) : base(platform, bundleInfo, prefabName, appLayerId) { }
+        public ScreenConfig(DevicePlatform platform, Enum bundleId, string prefabName, int appLayerId) : base(platform, bundleId, prefabName, appLayerId) { }
 
-        public ScreenConfig(DeviceType deviceType, AssetBundle assetBundle, string prefabName, int appLayerId) : base(deviceType, assetBundle, prefabName, appLayerId) { }
-        public ScreenConfig(DeviceType deviceType, Enum assetBundleId, string prefabName, int appLayerId) : base(deviceType, assetBundleId, prefabName, appLayerId) { }
+        public ScreenConfig(DeviceType deviceType, AssetBundleInfo bundleInfo, string prefabName, int appLayerId) : base(deviceType, bundleInfo, prefabName, appLayerId) { }
+        public ScreenConfig(DeviceType deviceType, Enum bundleId, string prefabName, int appLayerId) : base(deviceType, bundleId, prefabName, appLayerId) { }
 
-        public ScreenConfig(DevicePlatform platform, DeviceType deviceType, AssetBundle assetBundle, string prefabName, int appLayerId) : base(platform, deviceType, assetBundle, prefabName, appLayerId) { }
-        public ScreenConfig(DevicePlatform platform, DeviceType deviceType, Enum assetBundleId, string prefabName, int appLayerId) : base(platform, deviceType, assetBundleId, prefabName, appLayerId) { }
+        public ScreenConfig(DevicePlatform platform, DeviceType deviceType, AssetBundleInfo bundleInfo, string prefabName, int appLayerId) : base(platform, deviceType, bundleInfo, prefabName, appLayerId) { }
+        public ScreenConfig(DevicePlatform platform, DeviceType deviceType, Enum bundleId, string prefabName, int appLayerId) : base(platform, deviceType, bundleId, prefabName, appLayerId) { }
 
         public new ScreenConfig AddBinding<V, M>() where V : IUnityView
                                                    where M : Mediator

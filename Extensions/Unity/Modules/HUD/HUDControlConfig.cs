@@ -8,25 +8,25 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.HUD
 {
     public sealed class HUDControlConfig : UIControlConfiguration
     {
-        public HUDControlConfig(Enum assetBundleId, 
+        public HUDControlConfig(Enum bundleId, 
                                 string prefabName, 
-                                int appLayerId) : base(assetBundleId, prefabName, appLayerId) { }
+                                int appLayerId) : base(bundleId, prefabName, appLayerId) { }
         
         public HUDControlConfig(DevicePlatform platform, 
-                                Enum assetBundleId, 
+                                Enum bundleId, 
                                 string prefabName, 
-                                int appLayerId) : base(platform, assetBundleId, prefabName, appLayerId) { }
+                                int appLayerId) : base(platform, bundleId, prefabName, appLayerId) { }
         
         public HUDControlConfig(DeviceType deviceType, 
-                                Enum assetBundleId, 
+                                Enum bundleId, 
                                 string prefabName, 
-                                int appLayerId) : base(deviceType, assetBundleId, prefabName, appLayerId) { }
+                                int appLayerId) : base(deviceType, bundleId, prefabName, appLayerId) { }
         
         public HUDControlConfig(DevicePlatform platform, 
                                 DeviceType deviceType, 
-                                Enum assetBundleId, 
+                                Enum bundleId, 
                                 string prefabName, 
-                                int appLayerId) : base(platform, deviceType, assetBundleId, prefabName, appLayerId) { }
+                                int appLayerId) : base(platform, deviceType, bundleId, prefabName, appLayerId) { }
 
         public new HUDControlConfig AddBinding<V, M>() where V : IUnityView
                                                        where M : Mediator

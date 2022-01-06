@@ -8,17 +8,17 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
 {
     public sealed class PopupConfig : UIControlConfiguration
     {
-        public PopupConfig(AssetBundle assetBundle, string prefabName, int appLayerId) : base(assetBundle, prefabName, appLayerId) { }
-        public PopupConfig(Enum assetBundleId, string prefabName, int appLayerId) : base(assetBundleId, prefabName, appLayerId) { }
+        public PopupConfig(AssetBundleInfo bundleInfo, string prefabName, int appLayerId) : base(bundleInfo, prefabName, appLayerId) { }
+        public PopupConfig(Enum bundleId, string prefabName, int appLayerId) : base(bundleId, prefabName, appLayerId) { }
 
-        public PopupConfig(DevicePlatform platform, AssetBundle assetBundle, string prefabName, int appLayerId) : base(platform, assetBundle, prefabName, appLayerId) { }
-        public PopupConfig(DevicePlatform platform, Enum assetBundleId, string prefabName, int appLayerId) : base(platform, assetBundleId, prefabName, appLayerId) { }
+        public PopupConfig(DevicePlatform platform, AssetBundleInfo bundleInfo, string prefabName, int appLayerId) : base(platform, bundleInfo, prefabName, appLayerId) { }
+        public PopupConfig(DevicePlatform platform, Enum bundleId, string prefabName, int appLayerId) : base(platform, bundleId, prefabName, appLayerId) { }
 
-        public PopupConfig(DeviceType deviceType, AssetBundle assetBundle, string prefabName, int appLayerId) : base(deviceType, assetBundle, prefabName, appLayerId) { }
-        public PopupConfig(DeviceType deviceType, Enum assetBundleId, string prefabName, int appLayerId) : base(deviceType, assetBundleId, prefabName, appLayerId) { }
+        public PopupConfig(DeviceType deviceType, AssetBundleInfo bundleInfo, string prefabName, int appLayerId) : base(deviceType, bundleInfo, prefabName, appLayerId) { }
+        public PopupConfig(DeviceType deviceType, Enum bundleId, string prefabName, int appLayerId) : base(deviceType, bundleId, prefabName, appLayerId) { }
 
-        public PopupConfig(DevicePlatform platform, DeviceType deviceType, AssetBundle assetBundle, string prefabName, int appLayerId) : base(platform, deviceType, assetBundle, prefabName, appLayerId) { }
-        public PopupConfig(DevicePlatform platform, DeviceType deviceType, Enum assetBundleId, string prefabName, int appLayerId) : base(platform, deviceType, assetBundleId, prefabName, appLayerId) { }
+        public PopupConfig(DevicePlatform platform, DeviceType deviceType, AssetBundleInfo bundleInfo, string prefabName, int appLayerId) : base(platform, deviceType, bundleInfo, prefabName, appLayerId) { }
+        public PopupConfig(DevicePlatform platform, DeviceType deviceType, Enum bundleId, string prefabName, int appLayerId) : base(platform, deviceType, bundleId, prefabName, appLayerId) { }
 
         public new PopupConfig AddBinding<V, M>() where V : IPopupView
                                                   where M : Mediator

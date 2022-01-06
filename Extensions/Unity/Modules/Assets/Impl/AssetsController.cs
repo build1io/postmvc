@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Agents;
 using Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents;
@@ -11,21 +12,22 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
     internal sealed class AssetsController : IAssetsController
     {
         [Log(LogLevel.Warning)] public ILog              Log              { get; set; }
+        [Inject]                public IEventDispatcher  Dispatcher       { get; set; }
         [Inject]                public IAgentsController AgentsController { get; set; }
 
         public AssetsAtlasProcessingMode AtlasProcessingMode = AssetsAtlasProcessingMode.Strict;
 
-        private readonly Dictionary<Enum, AssetBundle>   _registered;
-        private readonly List<AssetBundle>               _bundlesLoaded;
-        private readonly Dictionary<string, AssetBundle> _bundleByAtlasId;
+        private readonly Dictionary<Enum, AssetBundleInfo>   _registered;
+        private readonly List<AssetBundleInfo>               _bundlesLoaded;
+        private readonly Dictionary<string, AssetBundleInfo> _bundleByAtlasId;
 
         private AssetsAgentBase _assetsAgentBase;
 
         public AssetsController()
         {
-            _registered = new Dictionary<Enum, AssetBundle>();
-            _bundlesLoaded = new List<AssetBundle>();
-            _bundleByAtlasId = new Dictionary<string, AssetBundle>();
+            _registered = new Dictionary<Enum, AssetBundleInfo>();
+            _bundlesLoaded = new List<AssetBundleInfo>();
+            _bundleByAtlasId = new Dictionary<string, AssetBundleInfo>();
         }
 
         [PostConstruct]
@@ -71,74 +73,111 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
          * Registration.
          */
 
-        public void RegisterBundle(Enum bundleId, string name, params string[] atlasesNames)
+        public AssetBundleInfo RegisterBundle(Enum bundleId, string name, params string[] atlasesNames)
         {
             if (_registered.ContainsKey(bundleId))
                 throw new AssetsException(AssetsExceptionType.BundleAlreadyRegistered, bundleId.ToString());
-            _registered.Add(bundleId, new AssetBundle(bundleId, name, atlasesNames));
+
+            var info = new AssetBundleInfo(bundleId, name, atlasesNames);
+            _registered.Add(bundleId, info);
+
+            return info;
         }
-        
-        public void RegisterBundle(AssetBundle bundle)
+
+        public AssetBundleInfo RegisterBundle(Enum bundleId, string name, string url, params string[] atlasesNames)
         {
-            if (_registered.ContainsKey(bundle.id))
-                throw new AssetsException(AssetsExceptionType.BundleAlreadyRegistered, bundle.id.ToString());
-            _registered.Add(bundle.id, bundle);
+            if (_registered.ContainsKey(bundleId))
+                throw new AssetsException(AssetsExceptionType.BundleAlreadyRegistered, bundleId.ToString());
+
+            var info = new AssetBundleInfo(bundleId, name, url, atlasesNames);
+            _registered.Add(bundleId, info);
+
+            return info;
+        }
+
+        public void RegisterBundle(AssetBundleInfo info)
+        {
+            if (_registered.ContainsKey(info.bundleId))
+                throw new AssetsException(AssetsExceptionType.BundleAlreadyRegistered, info.bundleId.ToString());
+            _registered.Add(info.bundleId, info);
         }
 
         /*
          * Loading.
          */
-        
+
         public bool IsBundleLoaded(Enum bundleId)
         {
-            if (!_registered.TryGetValue(bundleId, out var bundle))
+            if (!_registered.TryGetValue(bundleId, out var info))
                 throw new AssetsException(AssetsExceptionType.BundleNotRegistered, bundleId.ToString());
-            return bundle.IsLoaded;
+            return info.IsLoaded;
         }
-        
-        public bool IsBundleLoaded(AssetBundle bundle)
+
+        public bool IsBundleLoaded(AssetBundleInfo bundleInfo)
         {
-            return bundle.IsLoaded;
+            return bundleInfo.IsLoaded;
         }
-        
-        public void LoadBundle(Enum bundleId, Action<AssetBundle> onComplete, Action<AssetsException> onError)
+
+        public void LoadBundle(Enum bundleId)
+        {
+            LoadBundle(bundleId, null, null);
+        }
+
+        public void LoadBundle(Enum bundleId, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
         {
             if (!_registered.TryGetValue(bundleId, out var bundle))
                 throw new AssetsException(AssetsExceptionType.BundleNotRegistered, bundleId.ToString());
             LoadBundle(bundle, onComplete, onError);
         }
         
-        public void LoadBundle(AssetBundle bundle, Action<AssetBundle> onComplete, Action<AssetsException> onError)
+        public void LoadBundle(AssetBundleInfo bundleInfo)
         {
-            if (bundle.IsLoaded)
+            LoadBundle(bundleInfo, null, null);
+        }
+
+        public void LoadBundle(AssetBundleInfo bundleInfo, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
+        {
+            if (bundleInfo.IsLoaded)
             {
-                Log.Debug(n => $"Bundle already loaded: {n}", bundle.name);
-                onComplete?.Invoke(bundle);
+                Log.Debug(n => $"Bundle already loaded: {n}", bundleInfo.bundleName);
+                onComplete?.Invoke(bundleInfo);
                 return;
             }
 
-            _assetsAgentBase.LoadAssetBundleAsync(bundle.name, unityBundle =>
-            {
-                Log.Debug(n => $"Bundle loaded: {n}", bundle.name);
-                SetBundleLoaded(bundle, unityBundle);
-                onComplete?.Invoke(bundle);
-            }, exception =>
-            {
-                Log.Error(exception);
-                onError?.Invoke(exception);
-            });
+            _assetsAgentBase.LoadAssetBundleAsync(bundleInfo, 
+                                                  progress =>
+                                                  {
+                                                      Log.Debug((p, n) => $"Bundle progress: {p} {n}", progress, bundleInfo.bundleName);
+                                                      
+                                                      Dispatcher.Dispatch(AssetsEvent.BundleLoadingProgress, bundleInfo.bundleId, progress);
+                                                  },
+                                                  unityBundle =>
+                                                  {
+                                                      Log.Debug(n => $"Bundle loaded: {n}", bundleInfo.bundleName);
+
+                                                      SetBundleLoaded(bundleInfo, unityBundle);
+
+                                                      onComplete?.Invoke(bundleInfo);
+                                                      Dispatcher.Dispatch(AssetsEvent.BundleLoadingSuccess, bundleInfo);
+                                                  }, exception =>
+                                                  {
+                                                      Log.Error(exception);
+
+                                                      onError?.Invoke(exception);
+                                                      Dispatcher.Dispatch(AssetsEvent.BundleLoadingFail, exception);
+                                                  });
         }
-        
-        private void SetBundleLoaded(AssetBundle bundle, UnityEngine.AssetBundle unityBundle)
+
+        private void SetBundleLoaded(AssetBundleInfo bundle, UnityEngine.AssetBundle unityBundle)
         {
             bundle.SetBundle(unityBundle);
 
             _bundlesLoaded.Add(bundle);
 
-            if (bundle.atlasesNames.Length <= 0)
+            if (!bundle.HasAtlases)
                 return;
-
-            foreach (var atlasesName in bundle.atlasesNames)
+            
+            foreach (var atlasesName in bundle.AtlasesNames)
                 _bundleByAtlasId.Add(atlasesName, bundle);
         }
 
@@ -153,15 +192,15 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             UnloadBundle(bundle, unloadObjects);
         }
 
-        public void UnloadBundle(AssetBundle bundle, bool unloadObjects)
+        public void UnloadBundle(AssetBundleInfo bundleInfo, bool unloadObjects)
         {
-            if (!bundle.IsLoaded)
-                throw new AssetsException(AssetsExceptionType.BundleNotLoaded, bundle.name);
+            if (!bundleInfo.IsLoaded)
+                throw new AssetsException(AssetsExceptionType.BundleNotLoaded, bundleInfo.bundleName);
 
-            bundle.Bundle.Unload(unloadObjects);
-            SetBundleUnloaded(bundle);
+            bundleInfo.Bundle.Unload(unloadObjects);
+            SetBundleUnloaded(bundleInfo);
 
-            Log.Debug(n => $"Bundle unloaded: {n}", bundle.name);
+            Log.Debug(n => $"Bundle unloaded: {n}", bundleInfo.bundleName);
         }
 
         public void UnloadAllBundles(bool unloadObjects)
@@ -170,34 +209,34 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
                 UnloadBundle(bundle, unloadObjects);
         }
 
-        private void SetBundleUnloaded(AssetBundle bundle)
+        private void SetBundleUnloaded(AssetBundleInfo bundle)
         {
             bundle.SetBundle(null);
 
             _bundlesLoaded.Remove(bundle);
 
-            if (bundle.atlasesNames.Length <= 0)
+            if (!bundle.HasAtlases)
                 return;
 
-            foreach (var atlasesName in bundle.atlasesNames)
+            foreach (var atlasesName in bundle.AtlasesNames)
                 _bundleByAtlasId.Remove(atlasesName);
         }
-        
+
         /*
          * Getting.
          */
 
-        public AssetBundle GetBundle(Enum bundleId)
+        public AssetBundleInfo GetBundle(Enum bundleId)
         {
             if (!_registered.TryGetValue(bundleId, out var bundle))
                 throw new AssetsException(AssetsExceptionType.BundleNotRegistered, bundleId.ToString());
-            
+
             if (!bundle.IsLoaded)
-                throw new AssetsException(AssetsExceptionType.BundleNotLoaded, bundle.name);
-            
+                throw new AssetsException(AssetsExceptionType.BundleNotLoaded, bundle.bundleName);
+
             return bundle;
         }
-        
+
         /*
          * Assets.
          */
@@ -209,13 +248,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             return GetAsset<T>(bundle, assetName);
         }
 
-        public T GetAsset<T>(AssetBundle bundle, string assetName) where T : UnityEngine.Object
+        public T GetAsset<T>(AssetBundleInfo bundleInfo, string assetName) where T : UnityEngine.Object
         {
-            if (!bundle.IsLoaded)
-                throw new AssetsException(AssetsExceptionType.BundleNotLoaded, bundle.name);
-            var asset = (T)bundle.Bundle.LoadAsset(assetName, typeof(T));
+            if (!bundleInfo.IsLoaded)
+                throw new AssetsException(AssetsExceptionType.BundleNotLoaded, bundleInfo.bundleName);
+            var asset = (T)bundleInfo.Bundle.LoadAsset(assetName, typeof(T));
             if (asset == null)
-                throw new AssetsException(AssetsExceptionType.AssetNotFound, $"Asset: \"{assetName}\" Bundle: \"{bundle.name}\"");
+                throw new AssetsException(AssetsExceptionType.AssetNotFound, $"Asset: \"{assetName}\" Bundle: \"{bundleInfo.bundleName}\"");
             return asset;
         }
 
@@ -225,12 +264,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
                 throw new AssetsException(AssetsExceptionType.BundleNotRegistered, bundleId.ToString());
             return TryGetAsset(bundle, assetName, out asset);
         }
-        
-        public bool TryGetAsset<T>(AssetBundle bundle, string assetName, out T asset) where T : UnityEngine.Object
+
+        public bool TryGetAsset<T>(AssetBundleInfo bundleInfo, string assetName, out T asset) where T : UnityEngine.Object
         {
-            if (!bundle.IsLoaded)
-                throw new AssetsException(AssetsExceptionType.BundleNotLoaded, bundle.name);
-            asset = (T)bundle.Bundle.LoadAsset(assetName, typeof(T));
+            if (!bundleInfo.IsLoaded)
+                throw new AssetsException(AssetsExceptionType.BundleNotLoaded, bundleInfo.bundleName);
+            asset = (T)bundleInfo.Bundle.LoadAsset(assetName, typeof(T));
             return asset != null;
         }
 

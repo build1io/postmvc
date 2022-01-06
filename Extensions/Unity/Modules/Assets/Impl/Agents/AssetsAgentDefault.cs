@@ -1,36 +1,21 @@
 using System;
-using System.Collections;
-using System.IO;
 using UnityEngine;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
 {
     internal sealed class AssetsAgentDefault : AssetsAgentBase
     {
-        public override void LoadAssetBundleAsync(string bundleName,
-                                                  Action<UnityEngine.AssetBundle> onComplete,
+        public override void LoadAssetBundleAsync(AssetBundleInfo bundleInfo,
+                                                  Action<float> onProgress,
+                                                  Action<AssetBundle> onComplete,
                                                   Action<AssetsException> onError)
         {
-            StartCoroutine(LoadAssetBundleAsyncImpl(bundleName, onComplete, onError));
-        }
-
-        private IEnumerator LoadAssetBundleAsyncImpl(string bundleName,
-                                                     Action<UnityEngine.AssetBundle> onComplete,
-                                                     Action<AssetsException> onError)
-        {
-            var bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
-            var bundleLoadRequest = UnityEngine.AssetBundle.LoadFromFileAsync(bundlePath);
-
-            yield return bundleLoadRequest;
-
-            if (bundleLoadRequest.assetBundle == null)
-            {
-                onError?.Invoke(new AssetsException(AssetsExceptionType.BundleNotFound, bundlePath));
-            }
+            if (bundleInfo.IsEmbedBundle)
+                StartCoroutine(LoadEmbedAssetBundleCoroutine(bundleInfo.bundleName, onProgress, onComplete, onError));
+            else if (bundleInfo.IsRemoteBundle)
+                StartCoroutine(LoadRemoteAssetBundleCoroutine(bundleInfo.BundleUrl, onProgress, onComplete, onError));
             else
-            {
-                onComplete?.Invoke(bundleLoadRequest.assetBundle);
-            }
+                throw new Exception("Unknown bundle loading method");
         }
     }
 }
