@@ -1,6 +1,7 @@
 # Unity
 *.meta
 !/Extensions/Unity/Components/*.meta
+!/Extensions/Unity/Modules/Popup/Animation/*.meta
 
 # JetBrains
 .idea/
