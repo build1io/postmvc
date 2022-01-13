@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Agents;
 
@@ -16,6 +17,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Async.Impl
         public void PostConstruct()
         {
             _agent = AgentsController.Create<AsyncResolverAgent>();
+
+            AsyncResolverStaticAdapter.AsyncResolver = this;
         }
 
         [PreDestroy]
@@ -32,6 +35,26 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Async.Impl
         public void Resolve<T1>(Action<T1> action, T1 value, bool unique = true)                       { _agent.Resolve(action, value, unique); }
         public void Resolve<T1, T2>(Action<T1, T2> action, T1 value01, T2 value02, bool unique = true) { _agent.Resolve(action, value01, value02, unique); }
 
+        /*
+         * Resolve Tasks.
+         */
+
+        public void ResolveTask(Task task, Action<Task> continuation)
+        {
+            task.ContinueWith(innerTask =>
+            {
+                Resolve(continuation.Invoke, innerTask);
+            });
+        }
+
+        public void ResolveTask<T>(Task<T> task, Action<Task<T>> continuation)
+        {
+            task.ContinueWith(innerTask =>
+            {
+                Resolve(continuation.Invoke, innerTask);
+            });
+        }
+        
         /*
          * Calls.
          */

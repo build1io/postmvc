@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Async
 {
@@ -13,6 +14,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Async
         void Resolve(Action action, bool unique = true);
         void Resolve<T1>(Action<T1> action, T1 value, bool unique = true);
         void Resolve<T1, T2>(Action<T1, T2> action, T1 value01, T2 value02, bool unique = true);
+
+        /*
+         * Resolve Tasks.
+         */
+
+        void ResolveTask(Task task, Action<Task> continuation);
+        void ResolveTask<T>(Task<T> task, Action<Task<T>> continuation);
 
         /*
          * Calls.
