@@ -45,7 +45,7 @@ namespace Build1.PostMVC.Extensions.Unity
             injectionBinder.Bind<IAgentsController>().To<AgentsController>().AsSingleton();
             injectionBinder.Bind<IAppController>().To<AppController>().AsSingleton().ConstructOnStart();
             injectionBinder.Bind<IAssetsController>().To<AssetsController>().AsSingleton();
-            injectionBinder.Bind<IAsyncResolver>().To<AsyncResolver>().AsSingleton();
+            injectionBinder.Bind<IAsyncResolver>().To<AsyncResolver>().AsSingleton().ConstructOnStart();
             injectionBinder.Bind<ICoroutineProvider>().To<CoroutineProvider>().AsSingleton();
             injectionBinder.Bind<IUpdateController>().To<UpdateController>().AsSingleton();
             injectionBinder.Rebind<IEventBus>().To<EventBusUnity>().AsSingleton();
