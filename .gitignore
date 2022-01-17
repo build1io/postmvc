@@ -1,5 +1,6 @@
 # Unity
 *.meta
+!PostMVC.asmdef.meta
 !/Extensions/Unity/Components/*.meta
 !/Extensions/Unity/Modules/Popup/Animation/*.meta
 
