@@ -5,32 +5,32 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection
 {
     public interface IInjectionBinder
     {
-        IInjectionBindingTo Bind<T>() where T : class;
+        IInjectionBindingTo Bind<T>();
         IInjectionBindingTo Bind(Type type);
         void                Bind(IInjectionBinding binding);
 
-        IInjectionBindingTo Rebind<T>() where T : class;
+        IInjectionBindingTo Rebind<T>();
         IInjectionBindingTo Rebind(Type type);
 
-        void Unbind<T>() where T : class;
+        void Unbind<T>();
         void Unbind(Type type);
         void Unbind(IInjectionBinding binding);
         void UnbindAll();
 
-        IInjectionBinding GetBinding<T>() where T : class;
+        IInjectionBinding GetBinding<T>();
         IInjectionBinding GetBinding(Type key);
 
         void ForEachBinding(Action<IInjectionBinding> handler);
 
-        T      GetInstance<T>() where T : class;
+        T      GetInstance<T>();
         object GetInstance(Type key);
         object GetInstance(IInjectionBinding binding);
 
-        T      Construct<T>(bool triggerPostConstructors) where T : class, new();
-        T      Construct<T>(T instance, bool triggerPostConstructors) where T : class;
+        T      Construct<T>(bool triggerPostConstructors) where T : new();
+        T      Construct<T>(T instance, bool triggerPostConstructors);
         object Construct(object instance, bool triggerPostConstructors);
 
-        T      Destroy<T>(T instance, bool triggerPreDestroys) where T : class;
+        T      Destroy<T>(T instance, bool triggerPreDestroys);
         object Destroy(object instance, bool triggerPreDestroys);
     }
 }

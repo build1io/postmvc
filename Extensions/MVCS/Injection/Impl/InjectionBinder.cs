@@ -20,7 +20,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
          * Bindings.
          */
 
-        public IInjectionBindingTo Bind<T>() where T : class
+        public IInjectionBindingTo Bind<T>()
         {
             return Bind(typeof(T));
         }
@@ -41,7 +41,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             _bindings.Add(binding.Key, binding);
         }
 
-        public IInjectionBindingTo Rebind<T>() where T : class
+        public IInjectionBindingTo Rebind<T>()
         {
             return Rebind(typeof(T));
         }
@@ -52,7 +52,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             return Bind(type);
         }
 
-        public void Unbind<T>() where T : class
+        public void Unbind<T>()
         {
             Unbind(typeof(T));
         }
@@ -82,7 +82,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             _bindings.Clear();
         }
 
-        public IInjectionBinding GetBinding<T>() where T : class
+        public IInjectionBinding GetBinding<T>()
         {
             return GetBinding(typeof(T));
         }
@@ -108,7 +108,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
          * Instances.
          */
 
-        public T GetInstance<T>() where T : class
+        public T GetInstance<T>()
         {
             return (T)GetInstance(GetBinding<T>());
         }
@@ -127,12 +127,12 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
          * Construction / Deconstruction.
          */
 
-        public T Construct<T>(bool triggerPostConstructors) where T : class, new()
+        public T Construct<T>(bool triggerPostConstructors) where T : new()
         {
             return Construct(new T(), triggerPostConstructors);
         }
         
-        public T Construct<T>(T instance, bool triggerPostConstructors) where T : class
+        public T Construct<T>(T instance, bool triggerPostConstructors)
         {
             _injector.Construct(instance, triggerPostConstructors);
             return instance;
@@ -144,7 +144,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             return instance;
         }
 
-        public T Destroy<T>(T instance, bool triggerPreDestroys) where T : class
+        public T Destroy<T>(T instance, bool triggerPreDestroys)
         {
             _injector.Destroy(instance, triggerPreDestroys);
             return instance;
