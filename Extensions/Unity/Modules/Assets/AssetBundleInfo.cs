@@ -5,15 +5,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
 {
     public sealed class AssetBundleInfo
     {
-        public string       BundleUrl    { get; private set; }
-        public List<string> AtlasesNames { get; private set; }
+        public string                  BundleUrl    { get; private set; }
+        public List<string>            AtlasesNames { get; private set; }
+        public UnityEngine.AssetBundle Bundle       { get; private set; }
 
         public bool HasAtlases     => AtlasesNames != null && AtlasesNames.Count > 0;
         public bool IsEmbedBundle  => BundleUrl == null;
         public bool IsRemoteBundle => BundleUrl != null;
         public bool IsLoaded       => Bundle != null;
-
-        internal UnityEngine.AssetBundle Bundle { get; private set; }
 
         public readonly Enum   bundleId;
         public readonly string bundleName;
@@ -33,7 +32,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
             this.bundleName = bundleName;
 
             BundleUrl = bundleUrl;
-            
+
             if (atlasesNames != null)
                 AtlasesNames = new List<string>(atlasesNames);
         }
@@ -50,7 +49,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
                 AtlasesNames = new List<string>(atlasesNames);
             else
                 AtlasesNames.AddRange(atlasesNames);
-            
+
             return this;
         }
 
