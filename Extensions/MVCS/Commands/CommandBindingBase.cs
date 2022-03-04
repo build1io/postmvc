@@ -7,15 +7,17 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 {
     public abstract class CommandBindingBase
     {
-        internal EventBase        Event            { get; }
-        internal List<Type>       Commands         { get; }
-        internal int              CommandsExecuted { get; private set; }
-        internal int              CommandsReleased { get; private set; }
-        internal List<Exception>  CommandsFailed   { get; }
-        internal Event<Exception> FailEvent        { get; private set; }
-        internal bool             IsSequence       { get; private set; }
-        internal bool             IsOnce           { get; private set; }
-        internal bool             IsUnbindOnQuit   { get; private set; }
+        internal EventBase       Event            { get; }
+        internal List<Type>      Commands         { get; }
+        internal int             CommandsExecuted { get; private set; }
+        internal int             CommandsReleased { get; private set; }
+        internal List<Exception> CommandsFailed   { get; }
+        internal EventBase       CompleteEvent    { get; set; }
+        internal EventBase       BreakEvent       { get; set; }
+        internal EventBase       FailEvent        { get; private set; }
+        internal bool            IsSequence       { get; private set; }
+        internal bool            IsOnce           { get; private set; }
+        internal bool            IsUnbindOnQuit   { get; private set; }
 
         internal bool IsExecuting { get; private set; }
         internal bool IsBreak     { get; private set; }
@@ -76,7 +78,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         }
 
         /*
-         * Configuration.
+         * On Fail.
          */
 
         public CommandBindingBase OnFail(Event<Exception> @event)
@@ -84,6 +86,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             FailEvent = @event;
             return this;
         }
+        
+        public CommandBindingBase OnFail(Event @event)
+        {
+            FailEvent = @event;
+            return this;
+        }
+        
+        /*
+         * Configuration.
+         */
 
         public CommandBindingBase InParallel()
         {

@@ -1,21 +1,22 @@
 using System;
-using Build1.PostMVC.Extensions.MVCS.Commands.Api;
 
 namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 {
-    public abstract class CommandBase : ICommandBase
+    public abstract class CommandBase
     {
-        protected const int DefaultIndex = -1;
+        private const int DefaultIndex = -1;
 
         private static int Id;
 
-        public int       Index      { get; private set; } = DefaultIndex;
-        public Exception Exception  { get; protected set; }
-        public bool      IsExecuted { get; private set; }
-        public bool      IsRetained { get; protected set; }
-        public bool      IsBreak    { get; protected set; }
-        public bool      IsFailed   { get; protected set; }
-        public bool      IsClean    => Index == DefaultIndex;
+        public int                Index      { get; private set; } = DefaultIndex;
+        public CommandBindingBase Binding    { get; private set; }
+        public CommandParamsBase  Params     { get; private set; }
+        public Exception          Exception  { get; protected set; }
+        public bool               IsExecuted { get; private set; }
+        public bool               IsRetained { get; protected set; }
+        public bool               IsBreak    { get; protected set; }
+        public bool               IsFailed   { get; protected set; }
+        public bool               IsClean    => Index == DefaultIndex;
 
         protected ICommandBinder CommandBinder { get; private set; }
         protected bool           IsResolved    { get; set; }
@@ -36,9 +37,11 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             CommandBinder = commandBinder;
         }
 
-        public void Setup(int index)
+        public void Setup(int index, CommandBindingBase binding, CommandParamsBase param)
         {
             Index = index;
+            Binding = binding;
+            Params = param;
             IsResolved = false;
         }
 
@@ -72,9 +75,39 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             IsRetained = true;
         }
 
-        protected abstract void Release();
-        protected abstract void Break();
-        protected abstract void Fail(Exception exception);
+        protected void Release()
+        {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToReleaseResolvedCommand);
+
+            IsResolved = true;
+            IsRetained = false;
+            CommandBinder.OnCommandFinish(this);
+        }
+
+        protected void Break()
+        {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToReleaseResolvedCommand);
+
+            IsResolved = true;
+            IsRetained = false;
+            IsBreak = true;
+            CommandBinder.OnCommandFinish(this);
+        }
+
+        protected void Fail(Exception exception)
+        {
+            if (IsResolved)
+                throw new CommandException(CommandExceptionType.AttemptToFailResolvedCommand);
+
+            IsResolved = true;
+            Exception = exception;
+            IsRetained = false;
+            IsFailed = true;
+
+            CommandBinder.OnCommandFail(this, exception);
+        }
 
         /*
          * Dictionary Optimizations.

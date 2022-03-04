@@ -27,6 +27,8 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command00Tests
             Command00Fail.OnExecute = null;
             Command00Retain.OnExecute = null;
             Command00Retain.OnFail = null;
+            Command00RetainCopy.OnExecute = null;
+            Command00RetainCopy.OnFail = null;
             Command00RetainExceptionInstant.OnExecute = null;
             Command00RetainFailInstant.OnExecute = null;
             Command00RetainReleaseInstant.OnExecute = null;

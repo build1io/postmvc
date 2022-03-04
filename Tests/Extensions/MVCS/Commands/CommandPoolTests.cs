@@ -1,19 +1,19 @@
-using Build1.PostMVC.Extensions.MVCS.Commands.Api;
 using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
 using Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command01Tests.Commands;
 using Build1.PostMVC.Tests.Extensions.MVCS.Commands.Command02Tests.Commands;
+using Build1.PostMVC.Utils.Pooling;
 using NUnit.Framework;
 
 namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
 {
     internal sealed class CommandPoolTests
     {
-        private ICommandPool _pool;
+        private Pool<CommandBase> _pool;
 
         [SetUp]
         public void SetUp()
         {
-            _pool = new CommandPool();
+            _pool = new Pool<CommandBase>();
         }
         
         [Test]
@@ -33,29 +33,29 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
         [Test]
         public void TakeNullTest()
         {
-            Assert.That(() => _pool.TakeCommand(null), Throws.Exception);
+            Assert.That(() => _pool.Take(null), Throws.Exception);
         }
         
         [Test]
         public void ReturnNullTest()
         {
-            Assert.DoesNotThrow(() => _pool.ReturnCommand(null));
+            Assert.DoesNotThrow(() => _pool.Return(null));
         }
 
         [Test]
         public void NewInstanceTest()
         {
-            Assert.IsNotNull(_pool.TakeCommand<Command01>(out var isNewInstance));
+            Assert.IsNotNull(_pool.Take<Command01>(out var isNewInstance));
             Assert.IsTrue(isNewInstance);
         }
 
         [Test]
         public void ReturnedInstanceTest()
         {
-            var command = _pool.TakeCommand<Command01>();
-            _pool.ReturnCommand(command);
+            var command = _pool.Take<Command01>();
+            _pool.Return(command);
             
-            command = _pool.TakeCommand<Command01>(out var isNewInstance);
+            command = _pool.Take<Command01>(out var isNewInstance);
             Assert.IsNotNull(command);
             Assert.IsFalse(isNewInstance);
         }
@@ -66,15 +66,15 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
             Assert.AreEqual(0, _pool.GetAvailableInstancesCount<Command01>());
             Assert.AreEqual(0, _pool.GetUsedInstancesCount<Command01>());
             
-            var command = _pool.TakeCommand<Command01>();
+            var command = _pool.Take<Command01>();
             Assert.AreEqual(0, _pool.GetAvailableInstancesCount<Command01>());
             Assert.AreEqual(1, _pool.GetUsedInstancesCount<Command01>());
             
-            _pool.ReturnCommand(command);
+            _pool.Return(command);
             Assert.AreEqual(1, _pool.GetAvailableInstancesCount<Command01>());
             Assert.AreEqual(0, _pool.GetUsedInstancesCount<Command01>());
             
-            command = _pool.TakeCommand<Command01>();
+            command = _pool.Take<Command01>();
             Assert.AreEqual(0, _pool.GetAvailableInstancesCount<Command01>());
             Assert.AreEqual(1, _pool.GetUsedInstancesCount<Command01>());
         }
@@ -82,18 +82,18 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
         [Test]
         public void InstanceIdentityTest()
         {
-            var command01 = _pool.TakeCommand<Command01>();
-            _pool.ReturnCommand(command01);
-            var command02 = _pool.TakeCommand<Command01>();
+            var command01 = _pool.Take<Command01>();
+            _pool.Return(command01);
+            var command02 = _pool.Take<Command01>();
             Assert.AreEqual(command01, command02);
         }
         
         [Test]
         public void MultipleReturnsTest()
         {
-            var command = _pool.TakeCommand<Command01>();
-            _pool.ReturnCommand(command);
-            _pool.ReturnCommand(command);
+            var command = _pool.Take<Command01>();
+            _pool.Return(command);
+            _pool.Return(command);
             Assert.AreEqual(1, _pool.GetAvailableInstancesCount<Command01>());
             Assert.AreEqual(0, _pool.GetUsedInstancesCount<Command01>());
         }
@@ -101,7 +101,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
         [Test]
         public void OutsideInstanceReturnTest()
         {
-            _pool.ReturnCommand(new Command01());
+            _pool.Return(new Command01());
             Assert.AreEqual(0, _pool.GetAvailableInstancesCount<Command01>());
             Assert.AreEqual(0, _pool.GetUsedInstancesCount<Command01>());
         }
@@ -111,17 +111,17 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
         {
             var instance02 = new Command01();
             
-            _pool.ReturnCommand(instance02);
+            _pool.Return(instance02);
             Assert.AreEqual(0, _pool.GetAvailableInstancesCount<Command01>());
             Assert.AreEqual(0, _pool.GetUsedInstancesCount<Command01>());
             
-            var instance01 = _pool.TakeCommand<Command01>();
+            var instance01 = _pool.Take<Command01>();
 
-            _pool.ReturnCommand(instance02);
+            _pool.Return(instance02);
             Assert.AreEqual(0, _pool.GetAvailableInstancesCount<Command01>());
             Assert.AreEqual(1, _pool.GetUsedInstancesCount<Command01>());
             
-            _pool.ReturnCommand(instance01);
+            _pool.Return(instance01);
             Assert.AreEqual(1, _pool.GetAvailableInstancesCount<Command01>());
             Assert.AreEqual(0, _pool.GetUsedInstancesCount<Command01>());
         }
@@ -129,20 +129,20 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
         [Test]
         public void MultipleTypesTest()
         {
-            var instance01 = _pool.TakeCommand<Command01>();
-            var instance02 = _pool.TakeCommand<Command02>();
+            var instance01 = _pool.Take<Command01>();
+            var instance02 = _pool.Take<Command02>();
             Assert.AreEqual(0, _pool.GetAvailableInstancesCount<Command01>());
             Assert.AreEqual(1, _pool.GetUsedInstancesCount<Command01>());
             Assert.AreEqual(0, _pool.GetAvailableInstancesCount<Command02>());
             Assert.AreEqual(1, _pool.GetUsedInstancesCount<Command02>());
             
-            _pool.ReturnCommand(instance01);
+            _pool.Return(instance01);
             Assert.AreEqual(1, _pool.GetAvailableInstancesCount<Command01>());
             Assert.AreEqual(0, _pool.GetUsedInstancesCount<Command01>());
             Assert.AreEqual(0, _pool.GetAvailableInstancesCount<Command02>());
             Assert.AreEqual(1, _pool.GetUsedInstancesCount<Command02>());
             
-            _pool.ReturnCommand(instance02);
+            _pool.Return(instance02);
             Assert.AreEqual(1, _pool.GetAvailableInstancesCount<Command01>());
             Assert.AreEqual(0, _pool.GetUsedInstancesCount<Command01>());
             Assert.AreEqual(1, _pool.GetAvailableInstancesCount<Command02>());
