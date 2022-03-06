@@ -206,8 +206,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Settings.Impl
         {
             Log.Debug("Saving...");
 
-            if (!CheckNotLoaded())
+            if (!IsLoaded)
+            {
+                Log.Debug("Settings not loaded.");
                 return;
+            }
 
             if (!_settingsDirty && !force)
             {
