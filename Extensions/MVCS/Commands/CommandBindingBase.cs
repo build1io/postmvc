@@ -5,9 +5,10 @@ using Build1.PostMVC.Extensions.MVCS.Events.Impl;
 
 namespace Build1.PostMVC.Extensions.MVCS.Commands
 {
-    public abstract class CommandBindingBase
+    public abstract class CommandBindingBase : ICommandBindingBase
     {
         internal EventBase       Event            { get; }
+        internal ICommandBinder  CommandBinder    { get; }
         internal List<Type>      Commands         { get; }
         internal int             CommandsExecuted { get; private set; }
         internal int             CommandsReleased { get; private set; }
@@ -24,9 +25,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 
         internal bool HasFails => CommandsFailed.Count > 0;
 
-        protected CommandBindingBase(EventBase type)
+        protected CommandBindingBase(EventBase type, ICommandBinder binder)
         {
             Event = type;
+            CommandBinder = binder;
             Commands = new List<Type>();
             CommandsFailed = new List<Exception>();
         }
@@ -81,41 +83,41 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
          * On Fail.
          */
 
-        public CommandBindingBase OnFail(Event<Exception> @event)
+        public ICommandBindingBase OnFail(Event<Exception> @event)
         {
             FailEvent = @event;
             return this;
         }
-        
-        public CommandBindingBase OnFail(Event @event)
+
+        public ICommandBindingBase OnFail(Event @event)
         {
             FailEvent = @event;
             return this;
         }
-        
+
         /*
          * Configuration.
          */
 
-        public CommandBindingBase InParallel()
+        public ICommandBindingBase InParallel()
         {
             IsSequence = false;
             return this;
         }
 
-        public CommandBindingBase InSequence()
+        public ICommandBindingBase InSequence()
         {
             IsSequence = true;
             return this;
         }
 
-        public CommandBindingBase Once()
+        public ICommandBindingBase Once()
         {
             IsOnce = true;
             return this;
         }
 
-        public CommandBindingBase UnbindOnQuit()
+        public ICommandBindingBase UnbindOnQuit()
         {
             IsUnbindOnQuit = true;
             return this;

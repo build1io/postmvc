@@ -9,6 +9,16 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands.Common
         public static readonly Event<int>                      Event01 = new Event<int>();
         public static readonly Event<int, string>              Event02 = new Event<int, string>();
         public static readonly Event<int, string, CommandData> Event03 = new Event<int, string, CommandData>();
+        
+        public static readonly Event                           Event00Copy01 = new Event();
+        public static readonly Event<int>                      Event01Copy01 = new Event<int>();
+        public static readonly Event<int, string>              Event02Copy01 = new Event<int, string>();
+        public static readonly Event<int, string, CommandData> Event03Copy01 = new Event<int, string, CommandData>();
+        
+        public static readonly Event                           Event00Copy02 = new Event();
+        public static readonly Event<int>                      Event01Copy02 = new Event<int>();
+        public static readonly Event<int, string>              Event02Copy02 = new Event<int, string>();
+        public static readonly Event<int, string, CommandData> Event03Copy02 = new Event<int, string, CommandData>();
 
         public static readonly Event                           Event00Complete = new Event();
         public static readonly Event<int>                      Event01Complete = new Event<int>();

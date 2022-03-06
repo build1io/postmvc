@@ -40,28 +40,28 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         public CommandBinding Bind(Event type)
         {
-            var binding = new CommandBinding(type);
+            var binding = new CommandBinding(type, this);
             AddBinding(type, binding);
             return binding;
         }
 
         public CommandBinding<T1> Bind<T1>(Event<T1> type)
         {
-            var binding = new CommandBinding<T1>(type);
+            var binding = new CommandBinding<T1>(type, this);
             AddBinding(type, binding);
             return binding;
         }
 
         public CommandBinding<T1, T2> Bind<T1, T2>(Event<T1, T2> type)
         {
-            var binding = new CommandBinding<T1, T2>(type);
+            var binding = new CommandBinding<T1, T2>(type, this);
             AddBinding(type, binding);
             return binding;
         }
 
         public CommandBinding<T1, T2, T3> Bind<T1, T2, T3>(Event<T1, T2, T3> type)
         {
-            var binding = new CommandBinding<T1, T2, T3>(type);
+            var binding = new CommandBinding<T1, T2, T3>(type, this);
             AddBinding(type, binding);
             return binding;
         }
