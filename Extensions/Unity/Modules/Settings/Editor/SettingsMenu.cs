@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using UnityEditor;
 using UnityEngine;
 
@@ -36,3 +38,5 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Settings.Editor
         }
     }
 }
+
+#endif
