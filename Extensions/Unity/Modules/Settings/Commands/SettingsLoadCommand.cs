@@ -14,10 +14,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Settings.Commands
 
         public override void Execute()
         {
+            Log.Debug("Execute");
+            
             Retain();
 
             Dispatcher.AddListener(SettingsEvent.LoadSuccess, OnSuccess);
             Dispatcher.AddListener(SettingsEvent.LoadFail, OnFail);
+            
             SettingsController.Load();
         }
 
