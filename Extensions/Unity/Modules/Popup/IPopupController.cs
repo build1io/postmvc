@@ -4,6 +4,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
     {
         bool HasOpenPopups { get; }
 
+        bool HasOpenPopup(Popup popup);
+        bool HasOpenPopup<T>(Popup<T> popup);
+
         void Open(Popup popup);
         void Open(Popup popup, PopupBehavior behavior);
         

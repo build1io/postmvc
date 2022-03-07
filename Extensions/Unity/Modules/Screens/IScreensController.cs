@@ -5,7 +5,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens
         bool HasShownScreens { get; }
 
         bool ScreenIsActive(Screen screen);
-        
+        bool ScreenIsCurrent(Screen screen);
+
         void Show(Screen screen);
         void Show(Screen screen, ScreenBehavior behavior);
         
