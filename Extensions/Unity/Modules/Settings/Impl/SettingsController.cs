@@ -246,8 +246,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Settings.Impl
 
         public T GetSetting<T>(Setting<T> setting) where T : struct
         {
+            if (!IsLoaded)
+                throw new Exception("Settings not loaded");
+            
             if (_settingsValues.TryGetValue(setting.key, out var value))
                 return (T)value;
+            
             return setting.defaultValue;
         }
 
