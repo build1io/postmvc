@@ -40,20 +40,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
             Dispatcher.RemoveListener(PopupEvent.Closed, OnPopupClosed);
         }
 
-        public bool HasOpenPopup(Popup popup)
-        {
-            foreach (var openPopup in _openPopups)
-            {
-                if (openPopup == popup)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public bool HasOpenPopup<T>(Popup<T> popup)
+        public bool HasOpenPopup(PopupBase popup)
         {
             foreach (var openPopup in _openPopups)
             {
