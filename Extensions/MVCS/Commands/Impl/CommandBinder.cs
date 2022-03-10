@@ -4,6 +4,7 @@ using System.Runtime.ExceptionServices;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Events.Impl;
 using Build1.PostMVC.Extensions.MVCS.Injection;
+using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using Build1.PostMVC.Utils.Pooling;
 using Event = Build1.PostMVC.Extensions.MVCS.Events.Event;
 
@@ -11,8 +12,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 {
     public sealed class CommandBinder : ICommandBinder
     {
-        [Inject] public IEventDispatcher Dispatcher      { get; set; }
-        [Inject] public IInjectionBinder InjectionBinder { get; set; }
+        [Log(LogLevel.Warning)] public ILog             Log             { get; set; }
+        [Inject]                public IEventDispatcher Dispatcher      { get; set; }
+        [Inject]                public IInjectionBinder InjectionBinder { get; set; }
 
         private readonly CommandParams NoParams = new CommandParams();
 
@@ -100,9 +102,6 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         private void UnbindOrScheduleIfOnce(CommandBindingBase binding)
         {
-            if (!binding.IsOnce)
-                return;
-
             if (_commandsExecutionIterationTokens > 0)
                 _bindingsToUnbind.Add(binding);
             else
@@ -249,7 +248,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
                 var param = _commandsParamsPool.Take<CommandParams<T1>>();
                 param.Param01 = param01;
-                
+
                 binding.StartExecution();
                 ProcessBindingCommand(binding, 0, param);
             }
@@ -274,7 +273,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 var param = _commandsParamsPool.Take<CommandParams<T1, T2>>();
                 param.Param01 = param01;
                 param.Param02 = param02;
-                
+
                 binding.StartExecution();
                 ProcessBindingCommand(binding, 0, param);
             }
@@ -300,7 +299,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 param.Param01 = param01;
                 param.Param02 = param02;
                 param.Param03 = param03;
-                
+
                 binding.StartExecution();
                 ProcessBindingCommand(binding, 0, param);
             }
@@ -362,27 +361,32 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             if (binding.HasFails)
             {
                 _commandsParamsPool.Return(param);
-                
+
                 HandleBindingFail(binding);
                 return;
             }
-            
+
             if (binding.IsBreak)
             {
                 binding.FinishExecution();
-                
+
+                if ((binding.OnceBehavior & OnceBehavior.UnbindOnBreak) == OnceBehavior.UnbindOnBreak)
+                    UnbindOrScheduleIfOnce(binding);
+
                 if (binding.BreakEvent != null)
                     param.DispatchParams(Dispatcher, binding.BreakEvent);
             }
             else
             {
                 binding.FinishExecution();
-                UnbindOrScheduleIfOnce(binding);
-            
+
+                if ((binding.OnceBehavior & OnceBehavior.UnbindOnComplete) == OnceBehavior.UnbindOnComplete)
+                    UnbindOrScheduleIfOnce(binding);
+
                 if (binding.CompleteEvent != null)
-                    param.DispatchParams(Dispatcher, binding.CompleteEvent);    
+                    param.DispatchParams(Dispatcher, binding.CompleteEvent);
             }
-            
+
             _commandsParamsPool.Return(param);
         }
 
@@ -391,7 +395,11 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             var exception = binding.CommandsFailed[0];
 
             binding.FinishExecution();
-            UnbindOrScheduleIfOnce(binding);
+
+            if ((binding.OnceBehavior & OnceBehavior.UnbindOnFail) == OnceBehavior.UnbindOnFail)
+                UnbindOrScheduleIfOnce(binding);
+
+            Log?.Error(exception);
 
             switch (binding.FailEvent)
             {

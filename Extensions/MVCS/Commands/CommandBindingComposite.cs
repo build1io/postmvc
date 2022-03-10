@@ -80,11 +80,18 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
                 binding.InSequence();
             return this;
         }
-        
+
         public ICommandBindingBase Once()
         {
             foreach (var binding in _bindings)
                 binding.Once();
+            return this;
+        }
+        
+        public ICommandBindingBase Once(OnceBehavior behavior)
+        {
+            foreach (var binding in _bindings)
+                binding.Once(behavior);
             return this;
         }
         
@@ -198,6 +205,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         {
             foreach (var binding in _bindings)
                 binding.Once();
+            return this;
+        }
+        
+        public ICommandBindingBase Once(OnceBehavior behavior)
+        {
+            foreach (var binding in _bindings)
+                binding.Once(behavior);
             return this;
         }
         
@@ -332,6 +346,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         {
             foreach (var binding in _bindings)
                 binding.Once();
+            return this;
+        }
+        
+        public ICommandBindingBase Once(OnceBehavior behavior)
+        {
+            foreach (var binding in _bindings)
+                binding.Once(behavior);
             return this;
         }
         
@@ -487,6 +508,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         {
             foreach (var binding in _bindings)
                 binding.Once();
+            return this;
+        }
+        
+        public ICommandBindingBase Once(OnceBehavior behavior)
+        {
+            foreach (var binding in _bindings)
+                binding.Once(behavior);
             return this;
         }
         

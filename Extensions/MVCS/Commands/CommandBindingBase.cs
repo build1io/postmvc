@@ -17,7 +17,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         internal EventBase       BreakEvent       { get; set; }
         internal EventBase       FailEvent        { get; private set; }
         internal bool            IsSequence       { get; private set; }
-        internal bool            IsOnce           { get; private set; }
+        internal OnceBehavior    OnceBehavior     { get; private set; }
         internal bool            IsUnbindOnQuit   { get; private set; }
 
         internal bool IsExecuting { get; private set; }
@@ -113,7 +113,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 
         public ICommandBindingBase Once()
         {
-            IsOnce = true;
+            OnceBehavior = OnceBehavior.Default;
+            return this;
+        }
+        
+        public ICommandBindingBase Once(OnceBehavior behavior)
+        {
+            OnceBehavior = behavior;
             return this;
         }
 

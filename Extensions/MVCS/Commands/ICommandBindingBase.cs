@@ -11,6 +11,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         ICommandBindingBase InParallel();
         ICommandBindingBase InSequence();
         ICommandBindingBase Once();
+        ICommandBindingBase Once(OnceBehavior behavior);
         ICommandBindingBase UnbindOnQuit();
     }
 }
