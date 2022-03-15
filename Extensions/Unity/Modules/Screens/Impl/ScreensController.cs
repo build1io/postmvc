@@ -108,6 +108,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
             return _openScreens.Contains(screen);
         }
 
+        public bool CheckScreenIsCurrent(Screen screen)
+        {
+            return CurrentScreen == screen;
+        }
+
         /*
          * Private.
          */

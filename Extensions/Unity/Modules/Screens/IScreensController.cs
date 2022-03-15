@@ -11,5 +11,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens
         void Hide(Screen screen);
         
         bool CheckScreenIsActive(Screen screen);
+        bool CheckScreenIsCurrent(Screen screen);
     }
 }
