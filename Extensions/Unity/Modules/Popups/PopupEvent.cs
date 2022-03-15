@@ -1,6 +1,6 @@
 using Build1.PostMVC.Extensions.MVCS.Events;
 
-namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
+namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
 {
     public static class PopupEvent
     {

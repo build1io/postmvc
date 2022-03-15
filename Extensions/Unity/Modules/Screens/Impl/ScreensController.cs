@@ -12,9 +12,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
         [Log(LogLevel.Warning)] public ILog             Log        { get; set; }
         [Inject]                public IEventDispatcher Dispatcher { get; set; }
 
-        public bool HasShownScreens => _openScreens.Count > 0;
+        public Screen CurrentScreen   { get; private set; }
+        public bool   HasShownScreens => _openScreens.Count > 0;
 
-        private          Screen       _currentScreen;
         private readonly List<Screen> _openScreens;
 
         public ScreensController()
@@ -23,16 +23,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
         }
 
         /*
-         * Check.
-         */
-
-        public bool ScreenIsActive(Screen screen)
-        {
-            return _openScreens.Contains(screen);
-        }
-
-        /*
-         * Showing.
+         * Show.
          */
 
         public void Show(Screen screen)
@@ -44,17 +35,17 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
         {
             Log.Debug((s, b) => $"Show. {s} {b}", screen, behavior);
 
-            if (screen == _currentScreen)
+            if (screen == CurrentScreen)
             {
                 Log.Warn(s => $"Screen already shown: {s}", screen);
                 return;
             }
 
-            var previousScreen = _currentScreen;
-            if (behavior == ScreenBehavior.Replace && _currentScreen != null)
+            var previousScreen = CurrentScreen;
+            if (behavior == ScreenBehavior.Replace && CurrentScreen != null)
             {
-                HideScreenImpl(_currentScreen);
-                _currentScreen = null;
+                HideScreenImpl(CurrentScreen);
+                CurrentScreen = null;
             }
 
             var instance = GetInstance(screen, UIControlOptions.Instantiate | UIControlOptions.Activate, out var isNewInstance);
@@ -83,7 +74,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
 
             if (behavior != ScreenBehavior.OpenInBackground)
             {
-                _currentScreen = screen;
+                CurrentScreen = screen;
                 Dispatcher.Dispatch(ScreenEvent.Shown, screen);
             }
 
@@ -92,7 +83,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
         }
 
         /*
-         * Hiding.
+         * Hide.
          */
 
         public void Hide(Screen screen)
@@ -101,11 +92,20 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Screens.Impl
 
             HideScreenImpl(screen);
 
-            if (_currentScreen == screen)
-                _currentScreen = null;
+            if (CurrentScreen == screen)
+                CurrentScreen = null;
 
             if (_openScreens.Count > 0)
                 Show(_openScreens[0]);
+        }
+        
+        /*
+         * Check.
+         */
+
+        public bool CheckScreenIsActive(Screen screen)
+        {
+            return _openScreens.Contains(screen);
         }
 
         /*

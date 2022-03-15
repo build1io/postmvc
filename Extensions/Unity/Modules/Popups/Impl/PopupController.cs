@@ -7,7 +7,7 @@ using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 using Build1.PostMVC.Extensions.Unity.Modules.UI;
 using Build1.PostMVC.Extensions.Unity.Modules.UI.Impl;
 
-namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
+namespace Build1.PostMVC.Extensions.Unity.Modules.Popups.Impl
 {
     public sealed class PopupController : UIControlsController<PopupBase, PopupConfig>, IPopupController
     {
@@ -113,6 +113,15 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Impl
         {
             for (var i = _openPopups.Count - 1; i >= 0; i--)
                 Close(_openPopups[i], immediate);
+        }
+        
+        /*
+         * Check.
+         */
+
+        public bool CheckPopupOpen(PopupBase popup)
+        {
+            return _openPopups.Any(p => p == popup);
         }
 
         /*

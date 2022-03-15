@@ -4,7 +4,7 @@ using Build1.PostMVC.Extensions.Unity.Modules.Assets;
 using Build1.PostMVC.Extensions.Unity.Modules.Device;
 using Build1.PostMVC.Extensions.Unity.Modules.UI;
 
-namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
+namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
 {
     public sealed class PopupConfig : UIControlConfiguration
     {

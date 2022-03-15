@@ -1,7 +1,7 @@
 using Build1.PostMVC.Extensions.Unity.Mediation;
 using UnityEngine;
 
-namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
+namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
 {
     public interface IPopupView : IUnityView
     {

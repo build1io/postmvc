@@ -1,9 +1,9 @@
 using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Mediation;
-using Build1.PostMVC.Extensions.Unity.Modules.Popup.Animation;
+using Build1.PostMVC.Extensions.Unity.Modules.Popups.Animation;
 using UnityEngine;
 
-namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
+namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
 {
     public abstract class PopupViewDispatcher : UnityViewDispatcher, IPopupView
     {

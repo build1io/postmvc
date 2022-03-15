@@ -1,4 +1,4 @@
-namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
+namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
 {
     public interface IPopupController
     {
@@ -12,5 +12,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
         
         void Close(PopupBase popup, bool immediate = false);
         void CloseAll(bool immediate = false);
+
+        bool CheckPopupOpen(PopupBase popup);
     }
 }

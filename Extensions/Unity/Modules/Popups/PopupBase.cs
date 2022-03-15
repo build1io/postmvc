@@ -1,7 +1,7 @@
 using System;
 using Build1.PostMVC.Extensions.Unity.Modules.UI;
 
-namespace Build1.PostMVC.Extensions.Unity.Modules.Popup
+namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
 {
     public abstract class PopupBase : UIControl<PopupConfig>
     {

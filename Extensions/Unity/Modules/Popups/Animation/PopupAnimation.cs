@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace Build1.PostMVC.Extensions.Unity.Modules.Popup.Animation
+namespace Build1.PostMVC.Extensions.Unity.Modules.Popups.Animation
 {
     public abstract class PopupAnimation : ScriptableObject
     {
