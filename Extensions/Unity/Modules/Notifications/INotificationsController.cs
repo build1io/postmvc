@@ -4,7 +4,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications
     {
         bool Initialized { get; }
         
-        void Initialize();
+        void Initialize(bool registerForRemoteNotifications);
         void SetEnabled(bool enabled);
         
         void ScheduleNotification(Notification notification);

@@ -31,6 +31,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
 
         private Coroutine           _coroutine;
         private AuthorizationStatus _status;
+        private bool                _registerForRemoteNotifications;
         private string              _deviceToken;
         private List<Notification>  _notificationToSchedule;
         private int                 _callId;
@@ -46,7 +47,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
          * Initializing.
          */
 
-        public void Initialize()
+        public void Initialize(bool registerForRemoteNotifications)
         {
             if (Initializing)
             {
@@ -59,8 +60,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
                 Log.Warn("Already initialized");
                 return;
             }
-
+            
             _status = iOSNotificationCenter.GetNotificationSettings().AuthorizationStatus;
+            _registerForRemoteNotifications = registerForRemoteNotifications;
+            
             if (_status == AuthorizationStatus.Authorized)
                 RequestAuthorization();
             else
@@ -70,6 +73,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
         private void RequestAuthorization()
         {
             Log.Debug("Checking internet...");
+
+            if (!_registerForRemoteNotifications)
+            {
+                CoroutineProvider.StartCoroutine(RequestAuthorizationCoroutine(AuthorizationOptions, false), out _coroutine);
+                return;
+            }
 
             InternetReachabilityController.Check(reachable =>
             {
@@ -112,10 +121,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
                         // If any notifications were requested before authorization, they must be scheduled after it.
                         foreach (var notification in _notificationToSchedule)
                             ScheduleNotificationImpl(notification);
-                        
+
                         // Cleaning notification.
                         _notificationToSchedule = null;
-                    }, 0.1F);    
+                    }, 0.1F);
                 }
             }
             else if (request.Error != null)
@@ -232,14 +241,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
         public void CancelScheduledNotification(Notification notification)
         {
             Log.Debug(i => $"CancelScheduledNotification: {i}", notification.id);
-            
+
             iOSNotificationCenter.RemoveScheduledNotification(notification.idString);
         }
 
         public void CancelAllScheduledNotifications()
         {
             Log.Debug("CancelAllScheduledNotifications");
-            
+
             iOSNotificationCenter.RemoveAllScheduledNotifications();
         }
 
@@ -250,7 +259,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
         public void CleanDisplayedNotifications()
         {
             Log.Debug("CleanDisplayedNotifications");
-            
+
             iOSNotificationCenter.ApplicationBadge = 0;
             iOSNotificationCenter.RemoveAllDeliveredNotifications();
         }

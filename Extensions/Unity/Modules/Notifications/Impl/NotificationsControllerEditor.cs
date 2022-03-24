@@ -16,7 +16,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
          * Initialization.
          */
 
-        public void Initialize()
+        public void Initialize(bool registerForRemoteNotifications)
         {
             if (Initialized)
             {
