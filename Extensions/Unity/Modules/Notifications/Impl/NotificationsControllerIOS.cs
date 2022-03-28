@@ -26,7 +26,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
 
         public bool Initializing => _coroutine != null;
         public bool Initialized  { get; private set; }
-        public bool Authorized   => _status == AuthorizationStatus.Authorized && _deviceToken != null;
+        public bool Authorized   => _status == AuthorizationStatus.Authorized && ((_registerForRemoteNotifications && _deviceToken != null) || !_registerForRemoteNotifications);
         public bool Enabled      { get; private set; }
 
         private Coroutine           _coroutine;
@@ -60,10 +60,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
                 Log.Warn("Already initialized");
                 return;
             }
-            
+
             _status = iOSNotificationCenter.GetNotificationSettings().AuthorizationStatus;
             _registerForRemoteNotifications = registerForRemoteNotifications;
-            
+
             if (_status == AuthorizationStatus.Authorized)
                 RequestAuthorization();
             else
@@ -94,6 +94,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Notifications.Impl
 
         private IEnumerator RequestAuthorizationCoroutine(AuthorizationOption authorizationOptions, bool registerForRemoteNotifications)
         {
+            Log.Debug((a, r) => $"RequestAuthorizationCoroutine: options: {a} remote: {r}", authorizationOptions, registerForRemoteNotifications);
+
             using (var request = new AuthorizationRequest(authorizationOptions, registerForRemoteNotifications))
             {
                 while (!request.IsFinished)
