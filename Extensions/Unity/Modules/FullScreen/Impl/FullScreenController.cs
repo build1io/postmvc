@@ -7,8 +7,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.FullScreen.Impl
 {
     internal sealed class FullScreenController : IFullScreenController
     {
-        [Log(LogLevel.All)] public ILog             Log        { get; set; }
-        [Inject]            public IEventDispatcher Dispatcher { get; set; }
+        [Log(LogLevel.Warning)] public ILog             Log        { get; set; }
+        [Inject]                public IEventDispatcher Dispatcher { get; set; }
 
         public bool IsInFullScreen { get; private set; }
 
