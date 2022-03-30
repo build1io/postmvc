@@ -5,31 +5,45 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
     public interface IAssetsController
     {
         /*
-         * Registration.
+         * Check.
          */
 
-        AssetBundleInfo RegisterBundle(Enum bundleId, string name, string[] atlasesNames = null);
-        AssetBundleInfo RegisterBundle(Enum bundleId, string name, string url, string[] atlasesNames = null);
-        void            RegisterBundle(AssetBundleInfo info);
+        bool CheckBundleLoaded(Enum identifier);
+        bool CheckBundleLoaded(string identifier);
 
         /*
-         * Loading.
+         * Embed.
          */
 
-        bool IsBundleLoaded(Enum bundleId);
-        bool IsBundleLoaded(AssetBundleInfo bundleInfo);
+        void LoadEmbedBundle(Enum identifier);
+        void LoadEmbedBundle(string identifier);
 
-        void LoadBundle(Enum bundleId);
-        void LoadBundle(Enum bundleId, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError);
+        void LoadEmbedBundle(Enum identifier, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError);
+        void LoadEmbedBundle(string identifier, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError);
 
-        void LoadBundle(AssetBundleInfo bundleInfo);
-        void LoadBundle(AssetBundleInfo bundleInfo, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError);
+        /*
+         * Remote.
+         */
+
+        void LoadRemoteBundle(string url);
+        void LoadRemoteBundle(string url, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError);
+        
+        void LoadRemoteOrCachedBundle(string url, uint version);
+        void LoadRemoteOrCachedBundle(string url, uint version, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError);
+
+        /*
+         * Loading by Info.
+         */
+
+        void LoadBundle(AssetBundleInfo info);
+        void LoadBundle(AssetBundleInfo info, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError);
 
         /*
          * Unloading.
          */
 
-        void UnloadBundle(Enum bundleId, bool unloadObjects);
+        void UnloadBundle(Enum identifier, bool unloadObjects);
+        void UnloadBundle(string identifier, bool unloadObjects);
         void UnloadBundle(AssetBundleInfo bundleInfo, bool unloadObjects);
 
         void UnloadAllBundles(bool unloadObjects);
@@ -38,16 +52,19 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
          * Getting.
          */
 
-        AssetBundleInfo GetBundle(Enum bundleId);
+        AssetBundleInfo GetBundle(Enum identifier);
+        AssetBundleInfo GetBundle(string identifier);
 
         /*
          * Assets.
          */
 
-        T GetAsset<T>(Enum bundleId, string assetName) where T : UnityEngine.Object;
+        T GetAsset<T>(Enum identifier, string assetName) where T : UnityEngine.Object;
+        T GetAsset<T>(string identifier, string assetName) where T : UnityEngine.Object;
         T GetAsset<T>(AssetBundleInfo bundleInfo, string assetName) where T : UnityEngine.Object;
 
-        bool TryGetAsset<T>(Enum bundleId, string assetName, out T asset) where T : UnityEngine.Object;
+        bool TryGetAsset<T>(Enum identifier, string assetName, out T asset) where T : UnityEngine.Object;
+        bool TryGetAsset<T>(string identifier, string assetName, out T asset) where T : UnityEngine.Object;
         bool TryGetAsset<T>(AssetBundleInfo bundleInfo, string assetName, out T asset) where T : UnityEngine.Object;
     }
 }

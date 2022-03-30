@@ -5,17 +5,17 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
 {
     internal sealed class AssetsAgentDefault : AssetsAgentBase
     {
-        public override void LoadAssetBundleAsync(AssetBundleInfo bundleInfo,
-                                                  Action<float> onProgress,
-                                                  Action<AssetBundle> onComplete,
-                                                  Action<AssetsException> onError)
+        public override void LoadAssetBundleAsync(AssetBundleInfo info,
+                                                  Action<AssetBundleInfo, float, ulong> onProgress,
+                                                  Action<AssetBundleInfo, AssetBundle> onComplete,
+                                                  Action<AssetBundleInfo, AssetsException> onError)
         {
-            if (bundleInfo.IsEmbedBundle)
-                StartCoroutine(LoadEmbedAssetBundleCoroutine(bundleInfo.bundleName, onProgress, onComplete, onError));
-            else if (bundleInfo.IsRemoteBundle)
-                StartCoroutine(LoadRemoteAssetBundleCoroutine(bundleInfo.BundleUrl, onProgress, onComplete, onError));
+            if (info.IsEmbedBundle)
+                StartCoroutine(LoadEmbedAssetBundleCoroutine(info, onProgress, onComplete, onError));
+            else if (info.IsRemoteBundle)
+                StartCoroutine(LoadRemoteAssetBundleCoroutine(info, onProgress, onComplete, onError));
             else
-                throw new Exception("Unknown bundle loading method");
+                throw new AssetsException(AssetsExceptionType.UnknownBundleType);
         }
     }
 }

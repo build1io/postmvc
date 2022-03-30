@@ -21,70 +21,73 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
          * Public.
          */
 
-        public abstract void LoadAssetBundleAsync(AssetBundleInfo bundleInfo,
-                                                  Action<float> onProgress,
-                                                  Action<AssetBundle> onComplete,
-                                                  Action<AssetsException> onError);
+        public abstract void LoadAssetBundleAsync(AssetBundleInfo info,
+                                                  Action<AssetBundleInfo, float, ulong> onProgress,
+                                                  Action<AssetBundleInfo, AssetBundle> onComplete,
+                                                  Action<AssetBundleInfo, AssetsException> onError);
 
         /*
          * Protected.
          */
 
-        protected IEnumerator LoadEmbedAssetBundleCoroutine(string bundleName,
-                                                            Action<float> onProgress,
-                                                            Action<AssetBundle> onComplete,
-                                                            Action<AssetsException> onError)
+        protected IEnumerator LoadEmbedAssetBundleCoroutine(AssetBundleInfo info,
+                                                            Action<AssetBundleInfo, float, ulong> onProgress,
+                                                            Action<AssetBundleInfo, AssetBundle> onComplete,
+                                                            Action<AssetBundleInfo, AssetsException> onError)
         {
-            var bundlePath = Path.Combine(Application.streamingAssetsPath, bundleName);
+            var bundlePath = Path.Combine(Application.streamingAssetsPath, info.BundleId);
             var bundleLoadRequest = AssetBundle.LoadFromFileAsync(bundlePath);
 
             while (!bundleLoadRequest.isDone)
             {
-                onProgress.Invoke(bundleLoadRequest.progress);
+                onProgress.Invoke(info, bundleLoadRequest.progress, 0);
                 yield return null;
             }
 
-            onProgress.Invoke(bundleLoadRequest.progress);
+            onProgress.Invoke(info, bundleLoadRequest.progress, 0);
 
             if (bundleLoadRequest.assetBundle == null)
             {
-                onError.Invoke(new AssetsException(AssetsExceptionType.BundleNotFound, bundlePath));
+                onError.Invoke(info, new AssetsException(AssetsExceptionType.BundleNotFound, bundlePath));
             }
             else
             {
-                onComplete.Invoke(bundleLoadRequest.assetBundle);
+                onComplete.Invoke(info, bundleLoadRequest.assetBundle);
             }
         }
 
-        protected IEnumerator LoadRemoteAssetBundleCoroutine(string url,
-                                                             Action<float> onProgress,
-                                                             Action<AssetBundle> onComplete,
-                                                             Action<AssetsException> onError)
+        protected IEnumerator LoadRemoteAssetBundleCoroutine(AssetBundleInfo info,
+                                                             Action<AssetBundleInfo, float, ulong> onProgress,
+                                                             Action<AssetBundleInfo, AssetBundle> onComplete,
+                                                             Action<AssetBundleInfo, AssetsException> onError)
         {
-            var bundleLoadRequest = UnityWebRequestAssetBundle.GetAssetBundle(url);
+            var bundleLoadRequest = info.IsCacheEnabled
+                                        ? UnityWebRequestAssetBundle.GetAssetBundle(info.BundleUrl, info.BundleVersion, 0)
+                                        : UnityWebRequestAssetBundle.GetAssetBundle(info.BundleUrl);
+
             bundleLoadRequest.SendWebRequest();
 
             while (!bundleLoadRequest.isDone)
             {
-                onProgress.Invoke(bundleLoadRequest.downloadProgress);
+                onProgress.Invoke(info, bundleLoadRequest.downloadProgress, bundleLoadRequest.downloadedBytes);
                 yield return null;
             }
 
-            onProgress.Invoke(bundleLoadRequest.downloadProgress);
+            onProgress.Invoke(info, bundleLoadRequest.downloadProgress, bundleLoadRequest.downloadedBytes);
 
             switch (bundleLoadRequest.result)
             {
                 case UnityWebRequest.Result.ConnectionError:
-                    onError.Invoke(new AssetsException(AssetsExceptionType.BundleLoadingNetworkError, bundleLoadRequest.error));
+                    onError.Invoke(info, new AssetsException(AssetsExceptionType.BundleLoadingNetworkError, bundleLoadRequest.error));
                     break;
                 case UnityWebRequest.Result.ProtocolError:
-                    onError.Invoke(new AssetsException(AssetsExceptionType.BundleLoadingHttpError, bundleLoadRequest.error));
+                    onError.Invoke(info, new AssetsException(AssetsExceptionType.BundleLoadingHttpError, bundleLoadRequest.error));
                     break;
                 case UnityWebRequest.Result.DataProcessingError:
-                    onError.Invoke(new AssetsException(AssetsExceptionType.BundleLoadingProcessingError, bundleLoadRequest.error));
+                    onError.Invoke(info, new AssetsException(AssetsExceptionType.BundleLoadingProcessingError, bundleLoadRequest.error));
                     break;
                 default:
-                    onComplete.Invoke(DownloadHandlerAssetBundle.GetContent(bundleLoadRequest));
+                    onComplete.Invoke(info, DownloadHandlerAssetBundle.GetContent(bundleLoadRequest));
                     break;
             }
         }

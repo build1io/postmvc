@@ -2,8 +2,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
 {
     public enum AssetsExceptionType
     {
-        BundleAlreadyRegistered      = 1,
-        BundleNotRegistered          = 2,
+        UnknownBundleType            = 1,
+        UnknownBundle                = 2,
         BundleNotFound               = 3,
         BundleLoadingNetworkError    = 4,
         BundleLoadingHttpError       = 5,

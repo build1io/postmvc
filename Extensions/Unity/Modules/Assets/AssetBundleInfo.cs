@@ -5,43 +5,29 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
 {
     public sealed class AssetBundleInfo
     {
-        public string                  BundleUrl    { get; private set; }
-        public List<string>            AtlasesNames { get; private set; }
-        public UnityEngine.AssetBundle Bundle       { get; private set; }
+        public string BundleId        { get; private set; }
+        public string BundleUrl       { get; private set; }
+        public uint   BundleVersion   { get; private set; }
+        public float  LoadingProgress { get; private set; }
+        public ulong  DownloadedBytes { get; private set; }
 
-        public bool HasAtlases     => AtlasesNames != null && AtlasesNames.Count > 0;
-        public bool IsEmbedBundle  => BundleUrl == null;
-        public bool IsRemoteBundle => BundleUrl != null;
+        internal List<string>            AtlasesNames { get; private set; }
+        internal UnityEngine.AssetBundle Bundle       { get; private set; }
+
+        public bool IsEmbedBundle  { get; private set; }
+        public bool IsRemoteBundle => !IsEmbedBundle;
         public bool IsLoaded       => Bundle != null;
 
-        public readonly Enum   bundleId;
-        public readonly string bundleName;
+        internal bool HasAtlases     => AtlasesNames != null && AtlasesNames.Count > 0;
+        internal bool IsCacheEnabled { get; private set; }
 
-        public AssetBundleInfo(Enum bundleId, string bundleName, params string[] atlasesNames)
+        private AssetBundleInfo()
         {
-            this.bundleId = bundleId;
-            this.bundleName = bundleName;
-
-            if (atlasesNames != null)
-                AtlasesNames = new List<string>(atlasesNames);
         }
 
-        public AssetBundleInfo(Enum bundleId, string bundleName, string bundleUrl, params string[] atlasesNames)
-        {
-            this.bundleId = bundleId;
-            this.bundleName = bundleName;
-
-            BundleUrl = bundleUrl;
-
-            if (atlasesNames != null)
-                AtlasesNames = new List<string>(atlasesNames);
-        }
-
-        public AssetBundleInfo SetUrl(string url)
-        {
-            BundleUrl = url;
-            return this;
-        }
+        /*
+         * Public.
+         */
 
         public AssetBundleInfo AddAtlasesNames(params string[] atlasesNames)
         {
@@ -51,6 +37,17 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
                 AtlasesNames.AddRange(atlasesNames);
 
             return this;
+        }
+
+        internal void OverrideBundleUrl(string url)
+        {
+            BundleUrl = url;
+        }
+
+        internal void SetLoadingProgress(float progress, ulong downloadedBytes)
+        {
+            LoadingProgress = progress;
+            DownloadedBytes = downloadedBytes;
         }
 
         internal void SetBundle(UnityEngine.AssetBundle bundle)
@@ -63,7 +60,48 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
 
         public override string ToString()
         {
-            return bundleName;
+            return BundleId;
+        }
+
+        /*
+         * Static.
+         */
+
+        public static AssetBundleInfo FromId(Enum bundleId)
+        {
+            return new AssetBundleInfo { BundleId = EnumToStringIdentifier(bundleId), IsEmbedBundle = true };
+        }
+
+        public static AssetBundleInfo FromId(string bundleId)
+        {
+            return new AssetBundleInfo { BundleId = bundleId, IsEmbedBundle = true };
+        }
+
+        public static AssetBundleInfo FromUrl(string bundleUrl)
+        {
+            return new AssetBundleInfo
+            {
+                BundleId = bundleUrl,
+                BundleUrl = bundleUrl,
+                IsEmbedBundle = false
+            };
+        }
+
+        public static AssetBundleInfo FromUrl(string bundleUrl, bool cacheEnabled, uint version)
+        {
+            return new AssetBundleInfo
+            {
+                BundleId = bundleUrl,
+                BundleUrl = bundleUrl,
+                BundleVersion = version,
+                IsCacheEnabled = cacheEnabled,
+                IsEmbedBundle = false
+            };
+        }
+
+        public static string EnumToStringIdentifier(Enum identifier)
+        {
+            return identifier.ToString();
         }
     }
 }
