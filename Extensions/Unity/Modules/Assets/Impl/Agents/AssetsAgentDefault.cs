@@ -5,10 +5,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
 {
     internal sealed class AssetsAgentDefault : AssetsAgentBase
     {
-        public override void LoadAssetBundleAsync(AssetBundleInfo info,
-                                                  Action<AssetBundleInfo, float, ulong> onProgress,
-                                                  Action<AssetBundleInfo, AssetBundle> onComplete,
-                                                  Action<AssetBundleInfo, AssetsException> onError)
+        public override void LoadAsync(AssetBundleInfo info,
+                                       Action<AssetBundleInfo, float, ulong> onProgress,
+                                       Action<AssetBundleInfo, AssetBundle> onComplete,
+                                       Action<AssetBundleInfo, AssetsException> onError)
         {
             if (info.IsEmbedBundle)
                 StartCoroutine(LoadEmbedAssetBundleCoroutine(info, onProgress, onComplete, onError));

@@ -21,7 +21,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         private readonly List<AssetBundleInfo>               _bundlesLoaded;
         private readonly Dictionary<string, AssetBundleInfo> _bundleByAtlasId;
 
-        private AssetsAgentBase _assetsAgentBase;
+        private AssetsAgentBase _agent;
 
         public AssetsController()
         {
@@ -48,25 +48,25 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         private void InitializeAgent()
         {
-            if (_assetsAgentBase != null)
+            if (_agent != null)
                 throw new Exception("AssetsController already initialized.");
 
             #if UNITY_WEBGL && !UNITY_EDITOR
             _assetsAgentBase = AgentsController.Create<AssetsAgentWebGL>();
             #else
-            _assetsAgentBase = AgentsController.Create<AssetsAgentDefault>();
+            _agent = AgentsController.Create<AssetsAgentDefault>();
             #endif
 
-            _assetsAgentBase.AtlasRequested += OnAtlasRequested;
+            _agent.AtlasRequested += OnAtlasRequested;
         }
 
         private void DisposeAgent()
         {
-            if (_assetsAgentBase == null)
+            if (_agent == null)
                 return;
 
-            _assetsAgentBase.AtlasRequested -= OnAtlasRequested;
-            AgentsController.Destroy(ref _assetsAgentBase);
+            _agent.AtlasRequested -= OnAtlasRequested;
+            AgentsController.Destroy(ref _agent);
         }
 
         /*
@@ -81,6 +81,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         public bool CheckBundleLoaded(string identifier)
         {
             return _bundles.TryGetValue(identifier, out var info) && info.IsLoaded;
+        }
+
+        public bool CheckBundleLoaded(AssetBundleInfo info)
+        {
+            return info.IsLoaded;
         }
 
         /*
@@ -155,31 +160,64 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
                 return;
             }
 
-            _assetsAgentBase.LoadAssetBundleAsync(info,
-                                                  (bundleInfo, progress, downloadedBytes) =>
-                                                  {
-                                                      Log.Debug((p, n) => $"Bundle progress: {p} {n}", progress, bundleInfo.ToString());
+            _agent.LoadAsync(info,
+                             (bundleInfo, progress, downloadedBytes) =>
+                             {
+                                 Log.Debug((p, n) => $"Bundle progress: {p} {n}", progress, bundleInfo.ToString());
 
-                                                      info.SetLoadingProgress(progress, downloadedBytes);
-                                                      
-                                                      Dispatcher.Dispatch(AssetsEvent.BundleLoadingProgress, bundleInfo);
-                                                  },
-                                                  (bundleInfo, unityBundle) =>
-                                                  {
-                                                      Log.Debug(n => $"Bundle loaded: {n}", bundleInfo.BundleId);
+                                 info.SetLoadingProgress(progress, downloadedBytes);
 
-                                                      SetBundleLoaded(bundleInfo, unityBundle);
+                                 Dispatcher.Dispatch(AssetsEvent.BundleLoadingProgress, bundleInfo);
+                             },
+                             (bundleInfo, unityBundle) =>
+                             {
+                                 Log.Debug(n => $"Bundle loaded: {n}", bundleInfo.BundleId);
 
-                                                      onComplete?.Invoke(bundleInfo);
-                                                      Dispatcher.Dispatch(AssetsEvent.BundleLoadingSuccess, bundleInfo);
-                                                  },
-                                                  (bundleInfo, exception) =>
-                                                  {
-                                                      Log.Error(exception);
+                                 SetBundleLoaded(bundleInfo, unityBundle);
 
-                                                      onError?.Invoke(exception);
-                                                      Dispatcher.Dispatch(AssetsEvent.BundleLoadingFail, bundleInfo, exception);
-                                                  });
+                                 onComplete?.Invoke(bundleInfo);
+                                 Dispatcher.Dispatch(AssetsEvent.BundleLoadingSuccess, bundleInfo);
+                             },
+                             (bundleInfo, exception) =>
+                             {
+                                 Log.Error(exception);
+
+                                 onError?.Invoke(exception);
+                                 Dispatcher.Dispatch(AssetsEvent.BundleLoadingFail, bundleInfo, exception);
+                             });
+            
+            info.SetLoading();
+        }
+
+        /*
+         * Loading Aborting.
+         */
+
+        public void AbortBundleLoading(Enum identifier)
+        {
+            AbortBundleLoading(AssetBundleInfo.EnumToStringIdentifier(identifier));
+        }
+
+        public void AbortBundleLoading(string identifier)
+        {
+            if (!_bundles.TryGetValue(identifier, out var info))
+                throw new AssetsException(AssetsExceptionType.UnknownBundle);
+
+            AbortBundleLoading(info);
+        }
+
+        public void AbortBundleLoading(AssetBundleInfo info)
+        {
+            if (!_bundles.ContainsValue(info))
+                throw new AssetsException(AssetsExceptionType.UnknownBundle);
+
+            if (info.IsLoaded)
+            {
+                Log.Warn(n => $"Bundle loaded: {n}", info.ToString());
+                return;
+            }
+
+            info.SetAborted();
         }
 
         /*
@@ -294,7 +332,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         private void SetBundleLoaded(AssetBundleInfo info, UnityEngine.AssetBundle unityBundle)
         {
-            info.SetBundle(unityBundle);
+            info.SetLoaded(unityBundle);
 
             _bundlesLoaded.Add(info);
 
@@ -307,7 +345,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         private void SetBundleUnloaded(AssetBundleInfo bundle)
         {
-            bundle.SetBundle(null);
+            bundle.Clean();
 
             _bundlesLoaded.Remove(bundle);
 

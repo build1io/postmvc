@@ -16,7 +16,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
 
         public bool IsEmbedBundle  { get; private set; }
         public bool IsRemoteBundle => !IsEmbedBundle;
+        public bool IsLoading      { get; private set; }
         public bool IsLoaded       => Bundle != null;
+        public bool IsAborted      { get; private set; }
 
         internal bool HasAtlases     => AtlasesNames != null && AtlasesNames.Count > 0;
         internal bool IsCacheEnabled { get; private set; }
@@ -44,15 +46,34 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
             BundleUrl = url;
         }
 
+        internal void SetLoading()
+        {
+            IsLoading = true;
+            IsAborted = false;
+        }
+
+        internal void SetAborted()
+        {
+            IsAborted = true;
+        }
+
         internal void SetLoadingProgress(float progress, ulong downloadedBytes)
         {
             LoadingProgress = progress;
             DownloadedBytes = downloadedBytes;
         }
 
-        internal void SetBundle(UnityEngine.AssetBundle bundle)
+        internal void SetLoaded(UnityEngine.AssetBundle bundle)
         {
+            IsLoading = false;
             Bundle = bundle;
+        }
+
+        internal void Clean()
+        {
+            IsLoading = false;
+            IsAborted = false;
+            Bundle = null;
         }
 
         public string[] GetAllScenePaths() { return Bundle.GetAllScenePaths(); }

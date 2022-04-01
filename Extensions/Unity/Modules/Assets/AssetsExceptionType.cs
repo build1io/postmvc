@@ -9,6 +9,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         BundleLoadingHttpError       = 5,
         BundleLoadingProcessingError = 6,
         BundleNotLoaded              = 7,
+        BundleLoadingAborted         = 8,
 
         AssetNotFound = 10,
 

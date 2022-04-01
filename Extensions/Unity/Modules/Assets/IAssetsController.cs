@@ -10,6 +10,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
 
         bool CheckBundleLoaded(Enum identifier);
         bool CheckBundleLoaded(string identifier);
+        bool CheckBundleLoaded(AssetBundleInfo info);
 
         /*
          * Embed.
@@ -38,6 +39,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         void LoadBundle(AssetBundleInfo info);
         void LoadBundle(AssetBundleInfo info, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError);
 
+        /*
+         * Loading Aborting.
+         */
+
+        void AbortBundleLoading(Enum identifier);
+        void AbortBundleLoading(string identifier);
+        void AbortBundleLoading(AssetBundleInfo info);
+        
         /*
          * Unloading.
          */
