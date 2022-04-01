@@ -5,13 +5,18 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
     public abstract class Command : CommandBase
     {
         public abstract void Execute();
+        
+        public sealed override void Reset()
+        {
+            base.Reset();
+        }
     }
 
     public abstract class Command<T1> : CommandBase
     {
         public T1 Param01 { get; set; }
 
-        public override void Reset()
+        public sealed override void Reset()
         {
             base.Reset();
 
@@ -26,7 +31,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         public T1 Param01 { get; set; }
         public T2 Param02 { get; set; }
 
-        public override void Reset()
+        public sealed override void Reset()
         {
             base.Reset();
 
@@ -43,7 +48,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         public T2 Param02 { get; set; }
         public T3 Param03 { get; set; }
 
-        public override void Reset()
+        public sealed override void Reset()
         {
             base.Reset();
 

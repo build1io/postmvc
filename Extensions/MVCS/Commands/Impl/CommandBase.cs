@@ -18,10 +18,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         public bool               IsFailed   { get; protected set; }
         public bool               IsClean    => Index == DefaultIndex;
 
-        protected ICommandBinder CommandBinder { get; private set; }
-        protected bool           IsResolved    { get; set; }
+        protected bool IsResolved { get; set; }
 
-        private readonly int _id;
+        private readonly int            _id;
+        private          ICommandBinder _commandBinder;
 
         protected CommandBase()
         {
@@ -34,7 +34,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         public void SetCommandBinder(ICommandBinder commandBinder)
         {
-            CommandBinder = commandBinder;
+            _commandBinder = commandBinder;
         }
 
         public void Setup(int index, CommandBindingBase binding, CommandParamsBase param)
@@ -82,7 +82,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
             IsResolved = true;
             IsRetained = false;
-            CommandBinder.OnCommandFinish(this);
+
+            _commandBinder.OnCommandFinish(this);
         }
 
         protected void Break()
@@ -93,7 +94,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             IsResolved = true;
             IsRetained = false;
             IsBreak = true;
-            CommandBinder.OnCommandFinish(this);
+
+            _commandBinder.OnCommandFinish(this);
         }
 
         protected void Fail(Exception exception)
@@ -106,7 +108,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             IsRetained = false;
             IsFailed = true;
 
-            CommandBinder.OnCommandFail(this, exception);
+            _commandBinder.OnCommandFail(this, exception);
         }
 
         /*
