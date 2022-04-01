@@ -92,17 +92,28 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
          * Embed.
          */
 
-        public void LoadEmbedBundle(Enum identifier)   { LoadBundle(AssetBundleInfo.FromId(identifier), null, null); }
-        public void LoadEmbedBundle(string identifier) { LoadBundle(AssetBundleInfo.FromId(identifier), null, null); }
+        public void LoadEmbedBundle(Enum identifier)
+        {
+            LoadEmbedBundle(AssetBundleInfo.EnumToStringIdentifier(identifier), null, null);
+        }
+
+        public void LoadEmbedBundle(string identifier)
+        {
+            if (!_bundles.TryGetValue(identifier, out var info))
+                info = AssetBundleInfo.FromId(identifier);
+            LoadBundle(info, null, null);
+        }
 
         public void LoadEmbedBundle(Enum identifier, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
         {
-            LoadBundle(AssetBundleInfo.FromId(identifier), onComplete, onError);
+            LoadEmbedBundle(AssetBundleInfo.EnumToStringIdentifier(identifier), onComplete, onError);
         }
 
         public void LoadEmbedBundle(string identifier, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
         {
-            LoadBundle(AssetBundleInfo.FromId(identifier), onComplete, onError);
+            if (!_bundles.TryGetValue(identifier, out var info))
+                info = AssetBundleInfo.FromId(identifier);
+            LoadBundle(info, onComplete, onError);
         }
 
         /*
@@ -111,22 +122,30 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public void LoadRemoteBundle(string url)
         {
-            LoadBundle(AssetBundleInfo.FromUrl(url), null, null);
+            if (!_bundles.TryGetValue(url, out var info))
+                info = AssetBundleInfo.FromUrl(url);
+            LoadBundle(info, null, null);
         }
 
         public void LoadRemoteBundle(string url, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
         {
-            LoadBundle(AssetBundleInfo.FromUrl(url), onComplete, onError);
+            if (!_bundles.TryGetValue(url, out var info))
+                info = AssetBundleInfo.FromUrl(url);
+            LoadBundle(info, onComplete, onError);
         }
 
         public void LoadRemoteOrCachedBundle(string url, uint version)
         {
-            LoadBundle(AssetBundleInfo.FromUrl(url, true, version), null, null);
+            if (!_bundles.TryGetValue(url, out var info))
+                info = AssetBundleInfo.FromUrl(url, true, version);
+            LoadBundle(info, null, null);
         }
 
         public void LoadRemoteOrCachedBundle(string url, uint version, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
         {
-            LoadBundle(AssetBundleInfo.FromUrl(url, true, version), onComplete, onError);
+            if (!_bundles.TryGetValue(url, out var info))
+                info = AssetBundleInfo.FromUrl(url, true, version);
+            LoadBundle(info, onComplete, onError);
         }
 
         /*
@@ -140,11 +159,16 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public void LoadBundle(AssetBundleInfo info, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
         {
+            Log.Debug(i => $"Load bundle: {i}", info);
+            
             if (_bundles.TryGetValue(info.BundleId, out var infoAdded))
             {
-                Log.Warn(i => $"Bundle with the same id already added. Original bundle used. BundleId: {i}", info.BundleId);
+                if (info != infoAdded)
+                {
+                    Log.Warn(i => $"Bundle with the same id already added. Original bundle used. BundleId: {i}", info.BundleId);
 
-                info = infoAdded;
+                    info = infoAdded;    
+                }
             }
             else
             {
@@ -182,6 +206,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
                              {
                                  Log.Error(exception);
 
+                                 SetBundleUnloaded(bundleInfo);
+                                 
                                  onError?.Invoke(exception);
                                  Dispatcher.Dispatch(AssetsEvent.BundleLoadingFail, bundleInfo, exception);
                              });
@@ -243,8 +269,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
             bundleInfo.Bundle.Unload(unloadObjects);
             SetBundleUnloaded(bundleInfo);
-
-            _bundles.Remove(bundleInfo.BundleId);
 
             Log.Debug(n => $"Bundle unloaded: {n}", bundleInfo.BundleId);
         }
@@ -343,16 +367,17 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
                 _bundleByAtlasId.Add(atlasesName, info);
         }
 
-        private void SetBundleUnloaded(AssetBundleInfo bundle)
+        private void SetBundleUnloaded(AssetBundleInfo info)
         {
-            bundle.Clean();
+            info.Clean();
 
-            _bundlesLoaded.Remove(bundle);
+            _bundles.Remove(info.BundleId);
+            _bundlesLoaded.Remove(info);
 
-            if (!bundle.HasAtlases)
+            if (!info.HasAtlases)
                 return;
 
-            foreach (var atlasesName in bundle.AtlasesNames)
+            foreach (var atlasesName in info.AtlasesNames)
                 _bundleByAtlasId.Remove(atlasesName);
         }
 

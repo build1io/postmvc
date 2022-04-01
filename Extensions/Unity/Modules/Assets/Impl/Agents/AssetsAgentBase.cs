@@ -91,10 +91,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
                 case UnityWebRequest.Result.DataProcessingError:
                     onError.Invoke(info, new AssetsException(AssetsExceptionType.BundleLoadingProcessingError, request.error));
                     break;
-                default:
+                case UnityWebRequest.Result.Success:
                     onProgress.Invoke(info, request.downloadProgress, request.downloadedBytes);
                     onComplete.Invoke(info, DownloadHandlerAssetBundle.GetContent(request));
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
