@@ -52,7 +52,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             CommandsExecuted++;
         }
 
-        public void RegisterCommandBreak()
+        public void RegisterBreak()
         {
             IsBreak = true;
         }

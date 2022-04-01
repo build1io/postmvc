@@ -24,7 +24,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         void ProcessEvent<T1>(Event<T1> type, T1 param01);
         void ProcessEvent<T1, T2>(Event<T1, T2> type, T1 param01, T2 param02);
         void ProcessEvent<T1, T2, T3>(Event<T1, T2, T3> type, T1 param01, T2 param02, T3 param03);
-        
+
+        void Break(CommandBindingBase binding);
+        void BreakAll(EventBase @event);
+
         void OnCommandFinish(CommandBase command);
         void OnCommandFail(CommandBase command, Exception exception);
     }

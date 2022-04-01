@@ -150,7 +150,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             binding.RegisterCommandRelease();
 
             if (command.IsBreak)
-                binding.RegisterCommandBreak();
+                binding.RegisterBreak();
 
             ReturnCommand(command);
 
@@ -171,7 +171,12 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             }
 
             if (!binding.CheckAllExecuted())
-                ProcessBindingCommand(binding, index + 1, command.Params);
+            {
+                if (binding.IsBreak)
+                    FinishBindingExecution(binding, default);
+                else
+                    ProcessBindingCommand(binding, index + 1, command.Params);
+            }
         }
 
         /*
@@ -194,18 +199,23 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
             if (binding.IsSequence)
             {
-                FinishBindingExecution(binding, default);
+                FinishBindingExecution(binding, command.Params);
                 return;
             }
 
             if (binding.CheckAllReleased())
             {
-                FinishBindingExecution(binding, default);
+                FinishBindingExecution(binding, command.Params);
                 return;
             }
 
             if (!binding.CheckAllExecuted())
-                ProcessBindingCommand(binding, index + 1, command.Params);
+            {
+                if (binding.IsBreak)
+                    FinishBindingExecution(binding, command.Params);
+                else
+                    ProcessBindingCommand(binding, index + 1, command.Params);
+            }
         }
 
         /*
@@ -307,6 +317,29 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             _commandsExecutionIterationTokens--;
             TryUnbindScheduled();
         }
+        
+        /*
+         * Breaking.
+         */
+
+        public void Break(CommandBindingBase binding)
+        {
+            if (binding.IsExecuting)
+                binding.RegisterBreak();
+        }
+
+        public void BreakAll(EventBase @event)
+        {
+            var bindings = GetBindings(@event);
+            if (bindings == null)
+                return;
+
+            foreach (var binding in bindings)
+            {
+                if (binding.IsExecuting)
+                    binding.RegisterBreak();
+            }
+        }
 
         /*
          * Command Processing.
@@ -358,14 +391,6 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         private void FinishBindingExecution(CommandBindingBase binding, CommandParamsBase param)
         {
-            if (binding.HasFails)
-            {
-                _commandsParamsPool.Return(param);
-
-                HandleBindingFail(binding);
-                return;
-            }
-
             if (binding.IsBreak)
             {
                 binding.FinishExecution();
@@ -375,6 +400,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
                 if (binding.BreakEvent != null)
                     param.DispatchParams(Dispatcher, binding.BreakEvent);
+            }
+            else if (binding.HasFails)
+            {
+                _commandsParamsPool.Return(param);
+
+                HandleBindingFail(binding);
+                return;
             }
             else
             {
