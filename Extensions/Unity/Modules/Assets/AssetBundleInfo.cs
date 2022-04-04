@@ -122,7 +122,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
 
         public static string EnumToStringIdentifier(Enum identifier)
         {
-            return identifier.ToString();
+            return identifier.ToString().ToLower();
         }
     }
 }
