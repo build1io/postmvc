@@ -1,8 +1,5 @@
 using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Device;
-using Build1.PostMVC.Extensions.Unity.Modules.Device.Impl;
-using Build1.PostMVC.Extensions.Unity.Modules.Orientation;
-using Build1.PostMVC.Extensions.Unity.Modules.Orientation.Impl;
 using Build1.PostMVC.Extensions.Unity.Modules.Popups;
 using Build1.PostMVC.Extensions.Unity.Modules.Popups.Impl;
 using Build1.PostMVC.Extensions.Unity.Modules.Screens;
@@ -20,8 +17,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules
         [PostConstruct]
         public void PostConstruct()
         {
-            InjectionBinder.Bind<IDeviceController>().To<DeviceController>().AsSingleton();
-            InjectionBinder.Bind<IOrientationController>().To<OrientationController>().AsSingleton().ConstructOnStart();
+            AddModule<DeviceModule>();
+            
             InjectionBinder.Bind<IPopupController>().To<PopupController>().AsSingleton();
             InjectionBinder.Bind<IScreensController>().To<ScreensController>().AsSingleton();
             InjectionBinder.Bind<IUILayersController>().To<UILayersController>().AsSingleton();
