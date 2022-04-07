@@ -240,7 +240,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Device.Impl
                 ScreenOrientation.PortraitUpsideDown => DeviceScreenOrientation.PortraitUpsideDown,
                 ScreenOrientation.LandscapeLeft      => DeviceScreenOrientation.LandscapeLeft,
                 ScreenOrientation.LandscapeRight     => DeviceScreenOrientation.LandscapeRight,
-                _                                    => throw new ArgumentOutOfRangeException(nameof(orientation), orientation, null)
+                _                                    => DeviceScreenOrientation.Unknown
             };
         }
 
