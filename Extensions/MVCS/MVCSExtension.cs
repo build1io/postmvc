@@ -59,7 +59,7 @@ namespace Build1.PostMVC.Extensions.MVCS
 
             Context.OnModuleConstructing -= OnModuleConstructing;
             Context.OnModuleDisposing -= OnModuleDisposing;
-            
+
             CommandBinder.UnbindAll();
             InjectionBinder.UnbindAll();
         }
@@ -84,7 +84,7 @@ namespace Build1.PostMVC.Extensions.MVCS
 
         private void OnContextQuitting()
         {
-            CommandBinder.UnbindOnQuit();
+            ((CommandBinder)CommandBinder).UnbindOnQuit();
         }
 
         private void OnContextStopped()
