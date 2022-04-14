@@ -67,7 +67,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Async.Impl
 
         public bool CancelCall(int callId)
         {
-            return _agent.CancelCall(callId);
+            return _agent && _agent.CancelCall(callId);
         }
 
         public bool CancelCall(ref int callId)
