@@ -60,8 +60,8 @@ namespace Build1.PostMVC.Extensions.MVCS
             Context.OnModuleConstructing -= OnModuleConstructing;
             Context.OnModuleDisposing -= OnModuleDisposing;
 
-            CommandBinder.UnbindAll();
-            InjectionBinder.UnbindAll();
+            ((CommandBinder)CommandBinder).UnbindAll();
+            ((InjectionBinder)InjectionBinder).UnbindAll();
         }
 
         /*

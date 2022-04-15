@@ -15,7 +15,6 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection
         void Unbind<T>();
         void Unbind(Type type);
         void Unbind(IInjectionBinding binding);
-        void UnbindAll();
 
         IInjectionBinding GetBinding<T>();
         IInjectionBinding GetBinding(Type key);
