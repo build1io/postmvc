@@ -24,12 +24,26 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
             _infoRemovalMethod.Invoke(this);
         }
 
-        public void Unbind()
+        public void Bind()
         {
-            _dispatcher.RemoveListener(_event, _listener);
+            if (_isOnceScenario)
+            {
+                _dispatcher.AddListenerOnce(_event, OnceListener);
+                _dispatcher.AddListenerOnce(_event, _listener);
+                return;
+            }
             
+            _dispatcher.AddListener(_event, _listener);
+        }
+
+        public IEventMapInfo Unbind()
+        {
             if (_isOnceScenario)
                 _dispatcher.RemoveListener(_event, OnceListener);
+            
+            _dispatcher.RemoveListener(_event, _listener);
+
+            return this;
         }
 
         public bool Match(IEventDispatcher dispatcher, EventBase @event, object listener)
@@ -62,12 +76,26 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
             _infoRemovalMethod.Invoke(this);
         }
         
-        public void Unbind()
+        public void Bind()
         {
-            _dispatcher.RemoveListener(_event, _listener);
+            if (_isOnceScenario)
+            {
+                _dispatcher.AddListenerOnce(_event, OnceListener);
+                _dispatcher.AddListenerOnce(_event, _listener);
+                return;
+            }
             
+            _dispatcher.AddListener(_event, _listener);
+        }
+        
+        public IEventMapInfo Unbind()
+        {
             if (_isOnceScenario)
                 _dispatcher.RemoveListener(_event, OnceListener);
+            
+            _dispatcher.RemoveListener(_event, _listener);
+
+            return this;
         }
 
         public bool Match(IEventDispatcher dispatcher, EventBase @event, object listener)
@@ -100,12 +128,26 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
             _infoRemovalMethod.Invoke(this);
         }
         
-        public void Unbind()
+        public void Bind()
         {
-            _dispatcher.RemoveListener(_event, _listener);
+            if (_isOnceScenario)
+            {
+                _dispatcher.AddListenerOnce(_event, OnceListener);
+                _dispatcher.AddListenerOnce(_event, _listener);
+                return;
+            }
             
+            _dispatcher.AddListener(_event, _listener);
+        }
+        
+        public IEventMapInfo Unbind()
+        {
             if (_isOnceScenario)
                 _dispatcher.RemoveListener(_event, OnceListener);
+            
+            _dispatcher.RemoveListener(_event, _listener);
+
+            return this;
         }
 
         public bool Match(IEventDispatcher dispatcher, EventBase @event, object listener)
@@ -137,13 +179,27 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         {
             _infoRemovalMethod.Invoke(this);
         }
-
-        public void Unbind()
+        
+        public void Bind()
         {
-            _dispatcher.RemoveListener(_event, _listener);
+            if (_isOnceScenario)
+            {
+                _dispatcher.AddListenerOnce(_event, OnceListener);
+                _dispatcher.AddListenerOnce(_event, _listener);
+                return;
+            }
             
+            _dispatcher.AddListener(_event, _listener);
+        }
+
+        public IEventMapInfo Unbind()
+        {
             if (_isOnceScenario)
                 _dispatcher.RemoveListener(_event, OnceListener);
+            
+            _dispatcher.RemoveListener(_event, _listener);
+            
+            return this;
         }
 
         public bool Match(IEventDispatcher dispatcher, EventBase @event, object listener)

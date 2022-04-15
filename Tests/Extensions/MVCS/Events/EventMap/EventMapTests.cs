@@ -140,10 +140,37 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMap
             var count02 = 0;
             var count03 = 0;
 
-            void Listener00()                           => count00++;
-            void Listener01(int p1)                     => count01++;
-            void Listener02(int p1, string p2)          => count02++;
-            void Listener03(int p1, string p2, bool p3) => count03++;
+            void Listener00()
+            {
+                count00++;
+                
+                Assert.AreEqual(false, _map.ContainsMapInfo(TestEvent.Event00, Listener00));
+                Assert.AreEqual(false, _dispatcher.ContainsListener(TestEvent.Event00, Listener00));
+            }
+
+            void Listener01(int p1)
+            {
+                count01++;
+                
+                Assert.AreEqual(false, _map.ContainsMapInfo(TestEvent.Event01, Listener01));
+                Assert.AreEqual(false, _dispatcher.ContainsListener(TestEvent.Event01, Listener01));
+            }
+
+            void Listener02(int p1, string p2)
+            {
+                count02++;
+                
+                Assert.AreEqual(false, _map.ContainsMapInfo(TestEvent.Event02, Listener02));
+                Assert.AreEqual(false, _dispatcher.ContainsListener(TestEvent.Event02, Listener02));
+            }
+
+            void Listener03(int p1, string p2, bool p3)
+            {
+                count03++;
+                
+                Assert.AreEqual(false, _map.ContainsMapInfo(TestEvent.Event03, Listener03));
+                Assert.AreEqual(false, _dispatcher.ContainsListener(TestEvent.Event03, Listener03));
+            }
 
             _map.MapOnce(TestEvent.Event00, Listener00);
             _map.MapOnce(TestEvent.Event01, Listener01);
@@ -206,11 +233,38 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Events.EventMap
             var count02 = 0;
             var count03 = 0;
         
-            void Listener00()                           => count00++;
-            void Listener01(int p1)                     => count01++;
-            void Listener02(int p1, string p2)          => count02++;
-            void Listener03(int p1, string p2, bool p3) => count03++;
-        
+            void Listener00()
+            {
+                count00++;
+                
+                Assert.AreEqual(false, _map.ContainsMapInfo(dispatcher, TestEvent.Event00, Listener00));
+                Assert.AreEqual(false, dispatcher.ContainsListener(TestEvent.Event00, Listener00));
+            }
+
+            void Listener01(int p1)
+            {
+                count01++;
+                
+                Assert.AreEqual(false, _map.ContainsMapInfo(dispatcher, TestEvent.Event01, Listener01));
+                Assert.AreEqual(false, dispatcher.ContainsListener(TestEvent.Event01, Listener01));
+            }
+
+            void Listener02(int p1, string p2)
+            {
+                count02++;
+                
+                Assert.AreEqual(false, _map.ContainsMapInfo(dispatcher, TestEvent.Event02, Listener02));
+                Assert.AreEqual(false, dispatcher.ContainsListener(TestEvent.Event02, Listener02));
+            }
+
+            void Listener03(int p1, string p2, bool p3)
+            {
+                count03++;
+                
+                Assert.AreEqual(false, _map.ContainsMapInfo(dispatcher, TestEvent.Event03, Listener03));
+                Assert.AreEqual(false, dispatcher.ContainsListener(TestEvent.Event03, Listener03));
+            }
+
             _map.MapOnce(dispatcher, TestEvent.Event00, Listener00);
             _map.MapOnce(dispatcher, TestEvent.Event01, Listener01);
             _map.MapOnce(dispatcher, TestEvent.Event02, Listener02);
