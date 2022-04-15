@@ -1,4 +1,3 @@
-using Build1.PostMVC.Extensions.MVCS.Commands;
 using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
 using Build1.PostMVC.Extensions.MVCS.Injection.Impl;
 using NUnit.Framework;
@@ -7,7 +6,7 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Commands
 {
     public sealed class CommandReleasingTests
     {
-        private ICommandBinder _binder;
+        private CommandBinder _binder;
         
         [SetUp]
         public void SetUp()

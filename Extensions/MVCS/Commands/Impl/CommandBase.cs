@@ -22,7 +22,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         protected readonly int id;
 
-        private ICommandBinder _commandBinder;
+        private CommandBinder _commandBinder;
 
         protected CommandBase()
         {
@@ -33,7 +33,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
          * Public.
          */
 
-        public void SetCommandBinder(ICommandBinder commandBinder)
+        public void SetCommandBinder(CommandBinder commandBinder)
         {
             _commandBinder = commandBinder;
         }

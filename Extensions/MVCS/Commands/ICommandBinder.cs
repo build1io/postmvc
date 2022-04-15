@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Events.Impl;
 
@@ -25,8 +23,5 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 
         void Break(CommandBindingBase binding);
         void BreakAll(EventBase @event);
-
-        void OnCommandFinish(CommandBase command);
-        void OnCommandFail(CommandBase command, Exception exception);
     }
 }
