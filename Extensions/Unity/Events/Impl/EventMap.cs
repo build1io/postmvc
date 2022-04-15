@@ -12,25 +12,25 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         public void Map(UnityViewDispatcher dispatcher, Event @event, Action listener)
         {
             dispatcher.AddListener(@event, listener);
-            AddMapInfo(dispatcher, @event, listener, dispatcher.RemoveListener);
+            AddMapInfo(dispatcher, @event, listener, false);
         }
 
         public void Map<T1>(UnityViewDispatcher dispatcher, Event<T1> @event, Action<T1> listener)
         {
             dispatcher.AddListener(@event, listener);
-            AddMapInfo(dispatcher, @event, listener, dispatcher.RemoveListener);
+            AddMapInfo(dispatcher, @event, listener, false);
         }
 
         public void Map<T1, T2>(UnityViewDispatcher dispatcher, Event<T1, T2> @event, Action<T1, T2> listener)
         {
             dispatcher.AddListener(@event, listener);
-            AddMapInfo(dispatcher, @event, listener, dispatcher.RemoveListener);
+            AddMapInfo(dispatcher, @event, listener, false);
         }
 
         public void Map<T1, T2, T3>(UnityViewDispatcher dispatcher, Event<T1, T2, T3> @event, Action<T1, T2, T3> listener)
         {
             dispatcher.AddListener(@event, listener);
-            AddMapInfo(dispatcher, @event, listener, dispatcher.RemoveListener);
+            AddMapInfo(dispatcher, @event, listener, false);
         }
 
         /*
@@ -39,30 +39,30 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 
         public void MapOnce(UnityViewDispatcher dispatcher, Event @event, Action listener)
         {
-            var info = AddMapInfo(dispatcher, @event, listener, dispatcher.RemoveListener);
+            var info = AddMapInfo(dispatcher, @event, listener, true);
             dispatcher.AddListenerOnce(@event, listener);
-            dispatcher.AddListenerOnce(@event, () => { RemoveMapInfo(info); });
+            dispatcher.AddListenerOnce(@event, info.OnceListener);
         }
 
         public void MapOnce<T1>(UnityViewDispatcher dispatcher, Event<T1> @event, Action<T1> listener)
         {
-            var info = AddMapInfo(dispatcher, @event, listener, dispatcher.RemoveListener);
+            var info = AddMapInfo(dispatcher, @event, listener, true);
             dispatcher.AddListenerOnce(@event, listener);
-            dispatcher.AddListenerOnce(@event, (p1) => { RemoveMapInfo(info); });
+            dispatcher.AddListenerOnce(@event, info.OnceListener);
         }
 
         public void MapOnce<T1, T2>(UnityViewDispatcher dispatcher, Event<T1, T2> @event, Action<T1, T2> listener)
         {
-            var info = AddMapInfo(dispatcher, @event, listener, dispatcher.RemoveListener);
+            var info = AddMapInfo(dispatcher, @event, listener, true);
             dispatcher.AddListenerOnce(@event, listener);
-            dispatcher.AddListenerOnce(@event, (p1, p2) => { RemoveMapInfo(info); });
+            dispatcher.AddListenerOnce(@event, info.OnceListener);
         }
 
         public void MapOnce<T1, T2, T3>(UnityViewDispatcher dispatcher, Event<T1, T2, T3> @event, Action<T1, T2, T3> listener)
         {
-            var info = AddMapInfo(dispatcher, @event, listener, dispatcher.RemoveListener);
+            var info = AddMapInfo(dispatcher, @event, listener, true);
             dispatcher.AddListenerOnce(@event, listener);
-            dispatcher.AddListenerOnce(@event, (p1, p2, p3) => { RemoveMapInfo(info); });
+            dispatcher.AddListenerOnce(@event, info.OnceListener);
         }
 
         /*

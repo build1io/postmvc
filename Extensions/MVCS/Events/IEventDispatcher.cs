@@ -15,6 +15,11 @@ namespace Build1.PostMVC.Extensions.MVCS.Events
         void AddListenerOnce<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener);
         void AddListenerOnce<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener);
         
+        bool ContainsListener(Event @event, Action listener);
+        bool ContainsListener<T1>(Event<T1> @event, Action<T1> listener);
+        bool ContainsListener<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener);
+        bool ContainsListener<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener);
+        
         void RemoveListener(Event @event, Action listener);
         void RemoveListener<T1>(Event<T1> @event, Action<T1> listener);
         void RemoveListener<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener);

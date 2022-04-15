@@ -118,7 +118,55 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
             if (!listeners.GetInvocationList().Contains(listener))
                 _listenersOnce[@event] = listeners + listener;
         }
+        
+        /*
+         * Contains.
+         */
 
+        public bool ContainsListener(Event @event, Action listener)
+        {
+            if (_listeners.TryGetValue(@event, out var listeners) && listeners != null)
+                return Array.IndexOf(((Action)listeners).GetInvocationList(), listener) != -1;
+            
+            if (_listenersOnce.TryGetValue(@event, out var listenersOnce) && listenersOnce != null)
+                return Array.IndexOf(((Action)listenersOnce).GetInvocationList(), listener) != -1;
+
+            return false;
+        }
+
+        public bool ContainsListener<T1>(Event<T1> @event, Action<T1> listener)
+        {
+            if (_listeners.TryGetValue(@event, out var listeners) && listeners != null)
+                return Array.IndexOf(((Action<T1>)listeners).GetInvocationList(), listener) != -1;
+            
+            if (_listenersOnce.TryGetValue(@event, out var listenersOnce) && listenersOnce != null)
+                return Array.IndexOf(((Action<T1>)listenersOnce).GetInvocationList(), listener) != -1;
+
+            return false;
+        }
+
+        public bool ContainsListener<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)
+        {
+            if (_listeners.TryGetValue(@event, out var listeners) && listeners != null)
+                return Array.IndexOf(((Action<T1, T2>)listeners).GetInvocationList(), listener) != -1;
+            
+            if (_listenersOnce.TryGetValue(@event, out var listenersOnce) && listenersOnce != null)
+                return Array.IndexOf(((Action<T1, T2>)listenersOnce).GetInvocationList(), listener) != -1;
+
+            return false;
+        }
+
+        public bool ContainsListener<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener)
+        {
+            if (_listeners.TryGetValue(@event, out var listeners) && listeners != null)
+                return Array.IndexOf(((Action<T1, T2, T3>)listeners).GetInvocationList(), listener) != -1;
+            
+            if (_listenersOnce.TryGetValue(@event, out var listenersOnce) && listenersOnce != null)
+                return Array.IndexOf(((Action<T1, T2, T3>)listenersOnce).GetInvocationList(), listener) != -1;
+
+            return false;
+        }
+        
         /*
          * Remove.
          */

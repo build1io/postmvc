@@ -20,12 +20,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         protected bool IsResolved { get; set; }
 
-        private readonly int            _id;
-        private          ICommandBinder _commandBinder;
+        protected readonly int id;
+
+        private ICommandBinder _commandBinder;
 
         protected CommandBase()
         {
-            _id = ++Id;
+            id = ++Id;
         }
 
         /*
@@ -115,8 +116,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
          * Dictionary Optimizations.
          */
 
-        public override int  GetHashCode()           { return _id; }
+        public override int  GetHashCode()           { return id; }
         public override bool Equals(object obj)      { return Equals(obj as CommandBase); }
-        public          bool Equals(CommandBase obj) { return obj != null && obj._id == _id; }
+        public          bool Equals(CommandBase obj) { return obj != null && obj.id == id; }
     }
 }

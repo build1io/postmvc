@@ -33,6 +33,11 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
         public void AddListenerOnce<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)             { _dispatcher.AddListenerOnce(@event, listener); }
         public void AddListenerOnce<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener) { _dispatcher.AddListenerOnce(@event, listener); }
 
+        public bool ContainsListener(Event @event, Action listener)                                     { return _dispatcher.ContainsListener(@event, listener); }
+        public bool ContainsListener<T1>(Event<T1> @event, Action<T1> listener)                         { return _dispatcher.ContainsListener(@event, listener); }
+        public bool ContainsListener<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)             { return _dispatcher.ContainsListener(@event, listener); }
+        public bool ContainsListener<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener) { return _dispatcher.ContainsListener(@event, listener); }
+
         public void RemoveListener(Event @event, Action listener)                                     { _dispatcher.RemoveListener(@event, listener); }
         public void RemoveListener<T1>(Event<T1> @event, Action<T1> listener)                         { _dispatcher.RemoveListener(@event, listener); }
         public void RemoveListener<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)             { _dispatcher.RemoveListener(@event, listener); }
@@ -67,7 +72,7 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
             _bindings.Add(unityEvent, binding);
             return (IUnityEventBindingTo<T1>)binding;
         }
-        
+
         protected IUnityEventBindingTo<T1, T2> BindUnityEvent<T1, T2>(UnityEvent<T1, T2> unityEvent)
         {
             if (_bindings.TryGetValue(unityEvent, out var binding))
@@ -76,7 +81,7 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
             _bindings.Add(unityEvent, binding);
             return (IUnityEventBindingTo<T1, T2>)binding;
         }
-        
+
         protected IUnityEventBindingTo<T1, T2, T3> BindUnityEvent<T1, T2, T3>(UnityEvent<T1, T2, T3> unityEvent)
         {
             if (_bindings.TryGetValue(unityEvent, out var binding))
