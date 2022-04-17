@@ -24,6 +24,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             _bindings.Add(_bindings[0].CommandBinder.Bind(@event));
             return this;
         }
+        
+        /*
+         * Params 0.
+         */
 
         public ICommandBinding To<TCommand>() where TCommand : Command, new()
         {
@@ -38,7 +42,65 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
                 binding.To0<TCommand>();
             return this;
         }
+        
+        /*
+         * Params 1.
+         */
 
+        public ICommandBinding To1<TCommand>(int param) where TCommand : Command<int>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+        
+        public ICommandBinding To1<TCommand>(float param) where TCommand : Command<float>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+
+        public ICommandBinding To1<TCommand>(bool param) where TCommand : Command<bool>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+
+        public ICommandBinding To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand, TCP1>(param01);
+            return this;
+        }
+        
+        /*
+         * Params 2.
+         */
+
+        public ICommandBinding To2<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02) where TCommand : Command<TCP1, TCP2>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To2<TCommand, TCP1, TCP2>(param01, param02);
+            return this;
+        }
+
+        /*
+         * Params 3.
+         */
+
+        public ICommandBinding To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To3<TCommand, TCP1, TCP2, TCP3>(param01, param02, param03);
+            return this;
+        }
+
+        /*
+         * Events.
+         */
+        
         public ICommandBinding OnComplete(Event @event)
         {
             foreach (var binding in _bindings)
@@ -66,6 +128,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
                 binding.OnFail(@event);
             return this;
         }
+        
+        /*
+         * Other.
+         */
 
         public ICommandBindingBase InParallel()
         {
@@ -123,11 +189,54 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             _bindings.Add(_bindings[0].CommandBinder.Bind(@event));
             return this;
         }
+        
+        /*
+         * Params 0.
+         */
+        
+        public ICommandBinding<T1> To0<TCommand>() where TCommand : Command, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To0<TCommand>();
+            return this;
+        }
 
         public ICommandBinding<T1> To<TCommand>() where TCommand : Command<T1>, new()
         {
             foreach (var binding in _bindings)
                 binding.To<TCommand>();
+            return this;
+        }
+        
+        /*
+         * Params 1.
+         */
+        
+        public ICommandBinding<T1> To<TCommand>(int param) where TCommand : Command<int>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+        
+        public ICommandBinding<T1> To<TCommand>(float param) where TCommand : Command<float>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+
+        public ICommandBinding<T1> To<TCommand>(bool param) where TCommand : Command<bool>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+
+        public ICommandBinding<T1> To<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To<TCommand, TCP1>(param01);
             return this;
         }
 
@@ -137,14 +246,61 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
                 binding.To1<TCommand>();
             return this;
         }
-
-        public ICommandBinding<T1> To0<TCommand>() where TCommand : Command, new()
+        
+        public ICommandBinding<T1> To1<TCommand>(int param) where TCommand : Command<int>, new()
         {
             foreach (var binding in _bindings)
-                binding.To0<TCommand>();
+                binding.To1<TCommand>(param);
+            return this;
+        }
+        
+        public ICommandBinding<T1> To1<TCommand>(float param) where TCommand : Command<float>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
             return this;
         }
 
+        public ICommandBinding<T1> To1<TCommand>(bool param) where TCommand : Command<bool>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+
+        public ICommandBinding<T1> To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand, TCP1>(param01);
+            return this;
+        }
+        
+        /*
+         * Params 2.
+         */
+
+        public ICommandBinding<T1> To2<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02) where TCommand : Command<TCP1, TCP2>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To2<TCommand, TCP1, TCP2>(param01, param02);
+            return this;
+        }
+
+        /*
+         * Params 3.
+         */
+
+        public ICommandBinding<T1> To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To3<TCommand, TCP1, TCP2, TCP3>(param01, param02, param03);
+            return this;
+        }
+
+        /*
+         * Events.
+         */
+        
         public ICommandBinding<T1> OnComplete(Event<T1> @event)
         {
             foreach (var binding in _bindings)
@@ -186,6 +342,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
                 binding.OnFail(@event);
             return this;
         }
+        
+        /*
+         * Events.
+         */
         
         public ICommandBindingBase InParallel()
         {
@@ -243,6 +403,60 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             _bindings.Add(_bindings[0].CommandBinder.Bind(@event));
             return this;
         }
+        
+        /*
+         * Params 0.
+         */
+        
+        public ICommandBinding<T1, T2> To0<TCommand>() where TCommand : Command, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To0<TCommand>();
+            return this;
+        }
+        
+        /*
+         * Params 1.
+         */
+        
+        public ICommandBinding<T1, T2> To1<TCommand>() where TCommand : Command<T1>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>();
+            return this;
+        }
+        
+        public ICommandBinding<T1, T2> To1<TCommand>(int param) where TCommand : Command<int>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+        
+        public ICommandBinding<T1, T2> To1<TCommand>(float param) where TCommand : Command<float>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+
+        public ICommandBinding<T1, T2> To1<TCommand>(bool param) where TCommand : Command<bool>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+
+        public ICommandBinding<T1, T2> To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand, TCP1>(param01);
+            return this;
+        }
+        
+        /*
+         * Params 2.
+         */
 
         public ICommandBinding<T1, T2> To<TCommand>() where TCommand : Command<T1, T2>, new()
         {
@@ -258,19 +472,27 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             return this;
         }
 
-        public ICommandBinding<T1, T2> To1<TCommand>() where TCommand : Command<T1>, new()
+        public ICommandBinding<T1, T2> To2<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02) where TCommand : Command<TCP1, TCP2>, new()
         {
             foreach (var binding in _bindings)
-                binding.To1<TCommand>();
+                binding.To2<TCommand, TCP1, TCP2>(param01, param02);
             return this;
         }
+        
+        /*
+         * Params 3.
+         */
 
-        public ICommandBinding<T1, T2> To0<TCommand>() where TCommand : Command, new()
+        public ICommandBinding<T1, T2> To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new()
         {
             foreach (var binding in _bindings)
-                binding.To0<TCommand>();
+                binding.To3<TCommand, TCP1, TCP2, TCP3>(param01, param02, param03);
             return this;
         }
+        
+        /*
+         * Events.
+         */
 
         public ICommandBinding<T1, T2> OnComplete(Event<T1, T2> @event)
         {
@@ -328,6 +550,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             return this;
         }
         
+        /*
+         * Other.
+         */
+        
         public ICommandBindingBase InParallel()
         {
             foreach (var binding in _bindings)
@@ -384,18 +610,65 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             _bindings.Add(_bindings[0].CommandBinder.Bind(@event));
             return this;
         }
+        
+        /*
+         * Params 0.
+         */
 
+        public ICommandBinding<T1, T2, T3> To0<TCommand>() where TCommand : Command, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To0<TCommand>();
+            return this;
+        }
+        
+        /*
+         * Params 1.
+         */
+
+        public ICommandBinding<T1, T2, T3> To1<TCommand>() where TCommand : Command<T1>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>();
+            return this;
+        }
+        
+        public ICommandBinding<T1, T2, T3> To1<TCommand>(int param) where TCommand : Command<int>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+        
+        public ICommandBinding<T1, T2, T3> To1<TCommand>(float param) where TCommand : Command<float>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+
+        public ICommandBinding<T1, T2, T3> To1<TCommand>(bool param) where TCommand : Command<bool>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+
+        public ICommandBinding<T1, T2, T3> To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand, TCP1>(param01);
+            return this;
+        }
+        
+        /*
+         * Params 2.
+         */
+        
         public ICommandBinding<T1, T2, T3> To<TCommand>() where TCommand : Command<T1, T2, T3>, new()
         {
             foreach (var binding in _bindings)
                 binding.To<TCommand>();
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> To3<TCommand>() where TCommand : Command<T1, T2, T3>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To3<TCommand>();
             return this;
         }
 
@@ -406,19 +679,34 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             return this;
         }
 
-        public ICommandBinding<T1, T2, T3> To1<TCommand>() where TCommand : Command<T1>, new()
+        public ICommandBinding<T1, T2, T3> To2<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02) where TCommand : Command<TCP1, TCP2>, new()
         {
             foreach (var binding in _bindings)
-                binding.To1<TCommand>();
+                binding.To2<TCommand, TCP1, TCP2>(param01, param02);
+            return this;
+        }
+        
+        /*
+         * Params 3.
+         */
+
+        public ICommandBinding<T1, T2, T3> To3<TCommand>() where TCommand : Command<T1, T2, T3>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To3<TCommand>();
             return this;
         }
 
-        public ICommandBinding<T1, T2, T3> To0<TCommand>() where TCommand : Command, new()
+        public ICommandBinding<T1, T2, T3> To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new()
         {
             foreach (var binding in _bindings)
-                binding.To0<TCommand>();
+                binding.To3<TCommand, TCP1, TCP2, TCP3>(param01, param02, param03);
             return this;
         }
+        
+        /*
+         * Events.
+         */
 
         public ICommandBinding<T1, T2, T3> OnComplete(Event<T1, T2, T3> @event)
         {
@@ -489,6 +777,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
                 binding.OnFail(@event);
             return this;
         }
+        
+        /*
+         * Other.
+         */
         
         public ICommandBindingBase InParallel()
         {

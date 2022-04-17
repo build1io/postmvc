@@ -5,7 +5,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 {
     public abstract class CommandParamsBase
     {
-        public abstract void ExecuteCommand(CommandBase commandBase);
+        public abstract bool TryExecuteCommand(CommandBase commandBase);
         public abstract void DispatchParams(IEventDispatcher dispatcher, EventBase @event);
     }
 }

@@ -5,15 +5,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 {
     internal sealed class CommandParams : CommandParamsBase
     {
-        public override void ExecuteCommand(CommandBase commandBase)
+        public override bool TryExecuteCommand(CommandBase commandBase)
         {
             switch (commandBase)
             {
                 case Command command00:
                     command00.Execute();
-                    return;
+                    return true;
+                
                 default:
-                    throw new CommandBinderException(CommandBinderExceptionType.IncompatibleCommand);
+                    return false;
             }
         }
         
@@ -30,19 +31,21 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
     {
         public T1 Param01 { get; internal set; }
 
-        public override void ExecuteCommand(CommandBase commandBase)
+        public override bool TryExecuteCommand(CommandBase commandBase)
         {
             switch (commandBase)
             {
                 case Command<T1> command01:
                     command01.Param01 = Param01;
                     command01.Execute(Param01);
-                    return;
+                    return true;
+                
                 case Command command00:
                     command00.Execute();
-                    return;
+                    return true;
+                
                 default:
-                    throw new CommandBinderException(CommandBinderExceptionType.IncompatibleCommand);
+                    return false;
             }
         }
         
@@ -67,7 +70,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         public T1 Param01 { get; internal set; }
         public T2 Param02 { get; internal set; }
         
-        public override void ExecuteCommand(CommandBase commandBase)
+        public override bool TryExecuteCommand(CommandBase commandBase)
         {
             switch (commandBase)
             {
@@ -75,16 +78,19 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                     command02.Param01 = Param01;
                     command02.Param02 = Param02;
                     command02.Execute(Param01, Param02);
-                    return;
+                    return true;
+                
                 case Command<T1> command01:
                     command01.Param01 = Param01;
                     command01.Execute(Param01);
-                    return;
+                    return true;
+                
                 case Command command00:
                     command00.Execute();
-                    return;
+                    return true;
+                
                 default:
-                    throw new CommandBinderException(CommandBinderExceptionType.IncompatibleCommand);
+                    return false;
             }
         }
         
@@ -113,7 +119,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         public T2 Param02 { get; internal set; }
         public T3 Param03 { get; internal set; }
         
-        public override void ExecuteCommand(CommandBase commandBase)
+        public override bool TryExecuteCommand(CommandBase commandBase)
         {
             switch (commandBase)
             {
@@ -122,21 +128,25 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                     command03.Param02 = Param02;
                     command03.Param03 = Param03;
                     command03.Execute(Param01, Param02, Param03);
-                    return;
+                    return true;
+                
                 case Command<T1, T2> command02:
                     command02.Param01 = Param01;
                     command02.Param02 = Param02;
                     command02.Execute(Param01, Param02);
-                    return;
+                    return true;
+                
                 case Command<T1> command01:
                     command01.Param01 = Param01;
                     command01.Execute(Param01);
-                    return;
+                    return true;
+                
                 case Command command00:
                     command00.Execute();
-                    return;
+                    return true;
+                
                 default:
-                    throw new CommandBinderException(CommandBinderExceptionType.IncompatibleCommand);
+                    return false;
             }
         }
         
