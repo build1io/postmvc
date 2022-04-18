@@ -52,7 +52,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
                 throw new Exception("AssetsController already initialized.");
 
             #if UNITY_WEBGL && !UNITY_EDITOR
-            _assetsAgentBase = AgentsController.Create<AssetsAgentWebGL>();
+            _agent = AgentsController.Create<AssetsAgentWebGL>();
             #else
             _agent = AgentsController.Create<AssetsAgentDefault>();
             #endif
