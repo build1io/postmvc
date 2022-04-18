@@ -58,24 +58,34 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         
         internal sealed override void InternalExecute(CommandParamsBase param, CommandParamsBase paramAdditional)
         {
-            if (param is CommandParams<T1, T2> @params)
+            if (paramAdditional != null)
             {
-                Param01 = @params.Param01;
-                Param02 = @params.Param02;
-            }
-            else if (paramAdditional is CommandParams<T1, T2> paramsOverride)
-            {
-                Param01 = paramsOverride.Param01;
-                Param02 = paramsOverride.Param02;
-            }
-            else if (param is CommandParams<T1> params01 && paramAdditional is CommandParams<T2> params02)
-            {
-                Param01 = params01.Param01;
-                Param02 = params02.Param01;
+                if (param is CommandParams<T1> params01 && paramAdditional is CommandParams<T2> params02)
+                {
+                    Param01 = params01.Param01;
+                    Param02 = params02.Param01;
+                }
+                else if (paramAdditional is CommandParams<T1, T2> paramsOverride)
+                {
+                    Param01 = paramsOverride.Param01;
+                    Param02 = paramsOverride.Param02;
+                }
+                else
+                {
+                    throw new CommandBinderException(CommandBinderExceptionType.IncompatibleCommand);    
+                }
             }
             else
             {
-                throw new CommandBinderException(CommandBinderExceptionType.IncompatibleCommand);    
+                if (param is CommandParams<T1, T2> @params)
+                {
+                    Param01 = @params.Param01;
+                    Param02 = @params.Param02;
+                }
+                else
+                {
+                    throw new CommandBinderException(CommandBinderExceptionType.IncompatibleCommand);    
+                }
             }
             
             Execute(Param01, Param02);
@@ -101,33 +111,43 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         
         internal sealed override void InternalExecute(CommandParamsBase param, CommandParamsBase paramAdditional)
         {
-            if (param is CommandParams<T1, T2, T3> @params)
+            if (paramAdditional != null)
             {
-                Param01 = @params.Param01;
-                Param02 = @params.Param02;
-                Param03 = @params.Param03;
-            }
-            else if (paramAdditional is CommandParams<T1, T2, T3> paramsOverride)
-            {
-                Param01 = paramsOverride.Param01;
-                Param02 = paramsOverride.Param02;
-                Param03 = paramsOverride.Param03;
-            }
-            else if (param is CommandParams<T1> params01 && paramAdditional is CommandParams<T2, T3> params02)
-            {
-                Param01 = params01.Param01;
-                Param02 = params02.Param01;
-                Param03 = params02.Param02;
-            }
-            else if (param is CommandParams<T1, T2> params03 && paramAdditional is CommandParams<T3> params04)
-            {
-                Param01 = params03.Param01;
-                Param02 = params03.Param02;
-                Param03 = params04.Param01;
+                if (param is CommandParams<T1> params01 && paramAdditional is CommandParams<T2, T3> params02)
+                {
+                    Param01 = params01.Param01;
+                    Param02 = params02.Param01;
+                    Param03 = params02.Param02;
+                }
+                else if (param is CommandParams<T1, T2> params03 && paramAdditional is CommandParams<T3> params04)
+                {
+                    Param01 = params03.Param01;
+                    Param02 = params03.Param02;
+                    Param03 = params04.Param01;
+                }
+                else if (paramAdditional is CommandParams<T1, T2, T3> paramsOverride)
+                {
+                    Param01 = paramsOverride.Param01;
+                    Param02 = paramsOverride.Param02;
+                    Param03 = paramsOverride.Param03;
+                }
+                else
+                {
+                    throw new CommandBinderException(CommandBinderExceptionType.IncompatibleCommand);    
+                }
             }
             else
             {
-                throw new CommandBinderException(CommandBinderExceptionType.IncompatibleCommand);    
+                if (param is CommandParams<T1, T2, T3> @params)
+                {
+                    Param01 = @params.Param01;
+                    Param02 = @params.Param02;
+                    Param03 = @params.Param03;
+                }
+                else
+                {
+                    throw new CommandBinderException(CommandBinderExceptionType.IncompatibleCommand);    
+                }
             }
             
             Execute(Param01, Param02, Param03);
