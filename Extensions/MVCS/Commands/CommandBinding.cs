@@ -61,6 +61,24 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
          * 2 param.
          */
 
+        public ICommandBinding To2<TCommand, TCP1>(TCP1 param01, int param02) where TCommand : Command<TCP1, int>, new()
+        {
+            AddCommand<TCommand, TCP1, int>(param01, param02);
+            return this;
+        }
+
+        public ICommandBinding To2<TCommand, TCP1>(TCP1 param01, float param02) where TCommand : Command<TCP1, float>, new()
+        {
+            AddCommand<TCommand, TCP1, float>(param01, param02);
+            return this;
+        }
+
+        public ICommandBinding To2<TCommand, TCP1>(TCP1 param01, bool param02) where TCommand : Command<TCP1, bool>, new()
+        {
+            AddCommand<TCommand, TCP1, bool>(param01, param02);
+            return this;
+        }
+
         public ICommandBinding To2<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02) where TCommand : Command<TCP1, TCP2>, new()
         {
             AddCommand<TCommand, TCP1, TCP2>(param01, param02);
@@ -202,6 +220,24 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         public ICommandBinding<T1> To2<TCommand>(bool param01) where TCommand : Command<T1, bool>, new()
         {
             AddCommand<TCommand, bool>(param01);
+            return this;
+        }
+
+        public ICommandBinding<T1> To2<TCommand, TCP1>(TCP1 param01, int param02) where TCommand : Command<TCP1, int>, new()
+        {
+            AddCommand<TCommand, TCP1, int>(param01, param02);
+            return this;
+        }
+
+        public ICommandBinding<T1> To2<TCommand, TCP1>(TCP1 param01, float param02) where TCommand : Command<TCP1, float>, new()
+        {
+            AddCommand<TCommand, TCP1, float>(param01, param02);
+            return this;
+        }
+
+        public ICommandBinding<T1> To2<TCommand, TCP1>(TCP1 param01, bool param02) where TCommand : Command<TCP1, bool>, new()
+        {
+            AddCommand<TCommand, TCP1, bool>(param01, param02);
             return this;
         }
 

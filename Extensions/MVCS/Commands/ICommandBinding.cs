@@ -15,7 +15,12 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         ICommandBinding To1<TCommand>(bool param) where TCommand : Command<bool>, new();
 
         ICommandBinding To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new();
+        
+        ICommandBinding To2<TCommand, TCP1>(TCP1 param01, int param02) where TCommand : Command<TCP1, int>, new();
+        ICommandBinding To2<TCommand, TCP1>(TCP1 param01, float param02) where TCommand : Command<TCP1, float>, new();
+        ICommandBinding To2<TCommand, TCP1>(TCP1 param01, bool param02) where TCommand : Command<TCP1, bool>, new();
         ICommandBinding To2<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02) where TCommand : Command<TCP1, TCP2>, new();
+        
         ICommandBinding To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new();
 
         ICommandBinding OnComplete(Event @event);
@@ -45,6 +50,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         ICommandBinding<T1> To2<TCommand>(int param01) where TCommand : Command<T1, int>, new();
         ICommandBinding<T1> To2<TCommand>(float param01) where TCommand : Command<T1, float>, new();
         ICommandBinding<T1> To2<TCommand>(bool param01) where TCommand : Command<T1, bool>, new();
+        ICommandBinding<T1> To2<TCommand, TCP1>(TCP1 param01, int param02) where TCommand : Command<TCP1, int>, new();
+        ICommandBinding<T1> To2<TCommand, TCP1>(TCP1 param01, float param02) where TCommand : Command<TCP1, float>, new();
+        ICommandBinding<T1> To2<TCommand, TCP1>(TCP1 param01, bool param02) where TCommand : Command<TCP1, bool>, new();
         ICommandBinding<T1> To2<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02) where TCommand : Command<TCP1, TCP2>, new();
 
         ICommandBinding<T1> To3<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02) where TCommand : Command<T1, TCP1, TCP2>, new();
