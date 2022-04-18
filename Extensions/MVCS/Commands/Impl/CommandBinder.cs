@@ -386,15 +386,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             try
             {
                 if (binding.Params != null && binding.Params.TryGetValue(command.Index, out var commandParam))
-                {
-                    if (!commandParam.TryExecuteCommand(command))
-                        throw new CommandBinderException(CommandBinderExceptionType.IncompatibleCommand);
-                }
+                    command.InternalExecute(param, commandParam);
                 else
-                {
-                    if (!param.TryExecuteCommand(command))
-                        throw new CommandBinderException(CommandBinderExceptionType.IncompatibleCommand);
-                }
+                    command.InternalExecute(param, null);
             }
             catch (Exception exception)
             {

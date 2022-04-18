@@ -3,22 +3,9 @@ using Build1.PostMVC.Extensions.MVCS.Events.Impl;
 
 namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 {
-    internal sealed class CommandParams : CommandParamsBase
+    internal class CommandParams : CommandParamsBase
     {
-        public override bool TryExecuteCommand(CommandBase commandBase)
-        {
-            switch (commandBase)
-            {
-                case Command command00:
-                    command00.Execute();
-                    return true;
-                
-                default:
-                    return false;
-            }
-        }
-        
-        public override void DispatchParams(IEventDispatcher dispatcher, EventBase @event)
+        internal override void DispatchParams(IEventDispatcher dispatcher, EventBase @event)
         {
             if (@event is Event event0)
                 dispatcher.Dispatch(event0);
@@ -27,29 +14,11 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         }
     }
     
-    internal sealed class CommandParams<T1> : CommandParamsBase
+    internal class CommandParams<T1> : CommandParams
     {
-        public T1 Param01 { get; internal set; }
+        internal T1 Param01 { get; set; }
 
-        public override bool TryExecuteCommand(CommandBase commandBase)
-        {
-            switch (commandBase)
-            {
-                case Command<T1> command01:
-                    command01.Param01 = Param01;
-                    command01.Execute(Param01);
-                    return true;
-                
-                case Command command00:
-                    command00.Execute();
-                    return true;
-                
-                default:
-                    return false;
-            }
-        }
-        
-        public override void DispatchParams(IEventDispatcher dispatcher, EventBase @event)
+        internal override void DispatchParams(IEventDispatcher dispatcher, EventBase @event)
         {
             switch (@event)
             {
@@ -65,36 +34,11 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         }
     }
     
-    internal sealed class CommandParams<T1, T2> : CommandParamsBase
+    internal class CommandParams<T1, T2> : CommandParams<T1>
     {
-        public T1 Param01 { get; internal set; }
-        public T2 Param02 { get; internal set; }
+        internal T2 Param02 { get; set; }
         
-        public override bool TryExecuteCommand(CommandBase commandBase)
-        {
-            switch (commandBase)
-            {
-                case Command<T1, T2> command02:
-                    command02.Param01 = Param01;
-                    command02.Param02 = Param02;
-                    command02.Execute(Param01, Param02);
-                    return true;
-                
-                case Command<T1> command01:
-                    command01.Param01 = Param01;
-                    command01.Execute(Param01);
-                    return true;
-                
-                case Command command00:
-                    command00.Execute();
-                    return true;
-                
-                default:
-                    return false;
-            }
-        }
-        
-        public override void DispatchParams(IEventDispatcher dispatcher, EventBase @event)
+        internal override void DispatchParams(IEventDispatcher dispatcher, EventBase @event)
         {
             switch (@event)
             {
@@ -113,44 +57,11 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         }
     }
     
-    internal sealed class CommandParams<T1, T2, T3> : CommandParamsBase
+    internal class CommandParams<T1, T2, T3> : CommandParams<T1, T2>
     {
-        public T1 Param01 { get; internal set; }
-        public T2 Param02 { get; internal set; }
-        public T3 Param03 { get; internal set; }
+        internal T3 Param03 { get; set; }
         
-        public override bool TryExecuteCommand(CommandBase commandBase)
-        {
-            switch (commandBase)
-            {
-                case Command<T1, T2, T3> command03:
-                    command03.Param01 = Param01;
-                    command03.Param02 = Param02;
-                    command03.Param03 = Param03;
-                    command03.Execute(Param01, Param02, Param03);
-                    return true;
-                
-                case Command<T1, T2> command02:
-                    command02.Param01 = Param01;
-                    command02.Param02 = Param02;
-                    command02.Execute(Param01, Param02);
-                    return true;
-                
-                case Command<T1> command01:
-                    command01.Param01 = Param01;
-                    command01.Execute(Param01);
-                    return true;
-                
-                case Command command00:
-                    command00.Execute();
-                    return true;
-                
-                default:
-                    return false;
-            }
-        }
-        
-        public override void DispatchParams(IEventDispatcher dispatcher, EventBase @event)
+        internal override void DispatchParams(IEventDispatcher dispatcher, EventBase @event)
         {
             switch (@event)
             {

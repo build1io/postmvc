@@ -8,17 +8,17 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         private static int Id;
 
-        public int                Index      { get; private set; } = DefaultIndex;
-        public CommandBindingBase Binding    { get; private set; }
-        public CommandParamsBase  Params     { get; private set; }
-        public Exception          Exception  { get; protected set; }
-        public bool               IsExecuted { get; private set; }
-        public bool               IsRetained { get; protected set; }
-        public bool               IsBreak    { get; protected set; }
-        public bool               IsFailed   { get; protected set; }
-        public bool               IsClean    => Index == DefaultIndex;
+        internal int                Index      { get; private set; } = DefaultIndex;
+        internal CommandBindingBase Binding    { get; private set; }
+        internal CommandParamsBase  Params     { get; private set; }
+        internal Exception          Exception  { get; set; }
+        internal bool               IsExecuted { get; private set; }
+        internal bool               IsRetained { get; set; }
+        internal bool               IsBreak    { get; set; }
+        internal bool               IsFailed   { get; set; }
+        internal bool               IsClean    => Index == DefaultIndex;
 
-        protected bool IsResolved { get; set; }
+        internal bool IsResolved { get; set; }
 
         protected readonly int id;
 
@@ -33,12 +33,12 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
          * Public.
          */
 
-        public void SetCommandBinder(CommandBinder commandBinder)
+        internal void SetCommandBinder(CommandBinder commandBinder)
         {
             _commandBinder = commandBinder;
         }
 
-        public void Setup(int index, CommandBindingBase binding, CommandParamsBase param)
+        internal void Setup(int index, CommandBindingBase binding, CommandParamsBase param)
         {
             Index = index;
             Binding = binding;
@@ -46,7 +46,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             IsResolved = false;
         }
 
-        public void PostExecute()
+        internal void PostExecute()
         {
             IsExecuted = true;
 
@@ -54,7 +54,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 IsResolved = true;
         }
 
-        public virtual void Reset()
+        internal virtual void Reset()
         {
             Index = DefaultIndex;
             Exception = default;
@@ -63,6 +63,12 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             IsBreak = false;
             IsFailed = false;
         }
+
+        /*
+         * Public.
+         */
+
+        internal abstract void InternalExecute(CommandParamsBase param, CommandParamsBase paramAdditional);
 
         /*
          * Protected.
