@@ -80,6 +80,23 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
                 yield return null;
             }
 
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                onProgress.Invoke(info, request.downloadProgress, request.downloadedBytes);
+                onComplete.Invoke(info, DownloadHandlerAssetBundle.GetContent(request));
+                yield break;
+            }
+            
+            var isAndroidStorageError = request.error.Contains("Unable to write data");
+            var isIOSStorageError = request.error.Contains("Data Processing Error, see Download Handler error") &&
+                                    request.downloadHandler.error.Contains("Failed to decompress data for the AssetBundle");
+
+            if (isAndroidStorageError || isIOSStorageError)
+            {
+                onError.Invoke(info, new AssetsException(AssetsExceptionType.BundleLoadingStorageError, request.error));
+                yield break;
+            }
+            
             switch (request.result)
             {
                 case UnityWebRequest.Result.ConnectionError:
@@ -90,10 +107,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
                     break;
                 case UnityWebRequest.Result.DataProcessingError:
                     onError.Invoke(info, new AssetsException(AssetsExceptionType.BundleLoadingProcessingError, request.error));
-                    break;
-                case UnityWebRequest.Result.Success:
-                    onProgress.Invoke(info, request.downloadProgress, request.downloadedBytes);
-                    onComplete.Invoke(info, DownloadHandlerAssetBundle.GetContent(request));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
