@@ -13,6 +13,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         
         public AssetsException(AssetsExceptionType type, string message) : base($"{type} [{message}]")
         {
+            this.type = type;
         }
     }
 }
