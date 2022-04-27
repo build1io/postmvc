@@ -7,5 +7,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups.Animation
     {
         public abstract void AnimateShow(IPopupView view, TweenCallback onComplete);
         public abstract void AnimateHide(IPopupView view, TweenCallback onComplete);
+        public abstract void KillAnimations(IPopupView view);
     }
 }

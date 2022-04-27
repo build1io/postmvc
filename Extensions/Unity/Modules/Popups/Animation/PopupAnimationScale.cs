@@ -31,5 +31,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups.Animation
                 .SetEase(hideEasing)
                 .OnComplete(onComplete);
         }
+
+        public override void KillAnimations(IPopupView view)
+        {
+            view.Content.DOKill(true);
+        }
     }
 }

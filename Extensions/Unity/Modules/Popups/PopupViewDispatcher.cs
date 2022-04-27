@@ -39,6 +39,19 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
             OnShownImpl();
         }
 
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+
+            if (animationObject)
+            {
+                if (raycastBlocker)
+                    raycastBlocker.SetActive(false);
+             
+                animationObject.KillAnimations(this);
+            }
+        }
+        
         /*
          * Public.
          */
