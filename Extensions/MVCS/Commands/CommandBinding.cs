@@ -449,6 +449,12 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             return this;
         }
 
+        public ICommandBinding<T1, T2> To3<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02) where TCommand : Command<T1, TCP1, TCP2>, new()
+        {
+            AddCommand<TCommand, TCP1, TCP2>(param01, param02);
+            return this;
+        }
+
         public ICommandBinding<T1, T2> To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new()
         {
             AddCommand<TCommand, TCP1, TCP2, TCP3>(param01, param02, param03);
