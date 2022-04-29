@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Cache;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.U2D;
@@ -22,6 +23,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
          */
 
         public abstract void LoadAsync(AssetBundleInfo info,
+                                       Func<AssetBundleInfo, AssetBundleCacheInfo> onCacheInfoGet,
+                                       Action<AssetBundleInfo> onCacheInfoClean,
+                                       Action<string, AssetBundleInfo> onCacheInfoRecord,
                                        Action<AssetBundleInfo, float, ulong> onProgress,
                                        Action<AssetBundleInfo, AssetBundle> onComplete,
                                        Action<AssetBundleInfo, AssetsException> onError);
@@ -60,33 +64,57 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
         }
 
         protected IEnumerator LoadRemoteAssetBundleCoroutine(AssetBundleInfo info,
+                                                             Func<AssetBundleInfo, AssetBundleCacheInfo> onCacheInfoGet,
+                                                             Action<AssetBundleInfo> onCacheInfoClean,
+                                                             Action<string, AssetBundleInfo> onCacheInfoRecord,
                                                              Action<AssetBundleInfo, float, ulong> onProgress,
                                                              Action<AssetBundleInfo, AssetBundle> onComplete,
                                                              Action<AssetBundleInfo, AssetsException> onError)
         {
+            if (info.IsCacheEnabled && !string.IsNullOrWhiteSpace(info.CacheId) && onCacheInfoGet != null && onCacheInfoClean != null)
+            {
+                var cacheInfo = onCacheInfoGet.Invoke(info);
+                if (cacheInfo != null)
+                {
+                    // If URL or version is different, we unload cache and info.
+                    if (cacheInfo.BundleUrl != info.BundleUrl || cacheInfo.BundleVersion != info.BundleVersion)
+                    {
+                        Caching.ClearAllCachedVersions(cacheInfo.BundleName);
+                        
+                        onCacheInfoClean.Invoke(info);
+                    }
+                }
+            }
+            
             var request = info.IsCacheEnabled
                               ? UnityWebRequestAssetBundle.GetAssetBundle(info.BundleUrl, info.BundleVersion, 0)
                               : UnityWebRequestAssetBundle.GetAssetBundle(info.BundleUrl);
 
             request.SendWebRequest();
-            
+
             while (!request.isDone)
             {
                 onProgress.Invoke(info, request.downloadProgress, request.downloadedBytes);
-                
+
                 if (info.IsAborted)
                     request.Abort();
-                
+
                 yield return null;
             }
 
             if (request.result == UnityWebRequest.Result.Success)
             {
                 onProgress.Invoke(info, request.downloadProgress, request.downloadedBytes);
-                onComplete.Invoke(info, DownloadHandlerAssetBundle.GetContent(request));
+
+                var assetBundle = DownloadHandlerAssetBundle.GetContent(request);
+                
+                if (info.IsCacheEnabled && !string.IsNullOrWhiteSpace(info.CacheId) && onCacheInfoRecord != null)
+                    onCacheInfoRecord.Invoke(assetBundle.name, info);    
+                
+                onComplete.Invoke(info, assetBundle);
                 yield break;
             }
-            
+
             var isAndroidStorageError = request.error.Contains("Unable to write data");
             var isIOSStorageError = request.error.Contains("Data Processing Error, see Download Handler error") &&
                                     request.downloadHandler.error.Contains("Failed to decompress data for the AssetBundle");
@@ -96,7 +124,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
                 onError.Invoke(info, new AssetsException(AssetsExceptionType.BundleLoadingStorageError, request.error));
                 yield break;
             }
-            
+
             switch (request.result)
             {
                 case UnityWebRequest.Result.ConnectionError:

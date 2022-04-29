@@ -8,6 +8,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         public string BundleId        { get; private set; }
         public string BundleUrl       { get; private set; }
         public uint   BundleVersion   { get; private set; }
+        public string CacheId         { get; private set; }
         public float  LoadingProgress { get; private set; }
         public ulong  DownloadedBytes { get; private set; }
 
@@ -104,18 +105,32 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
             {
                 BundleId = bundleUrl,
                 BundleUrl = bundleUrl,
+                IsCacheEnabled = false,
                 IsEmbedBundle = false
             };
         }
 
-        public static AssetBundleInfo FromUrl(string bundleUrl, bool cacheEnabled, uint version)
+        public static AssetBundleInfo FromUrlCached(string bundleUrl, uint version)
         {
             return new AssetBundleInfo
             {
                 BundleId = bundleUrl,
                 BundleUrl = bundleUrl,
                 BundleVersion = version,
-                IsCacheEnabled = cacheEnabled,
+                IsCacheEnabled = true,
+                IsEmbedBundle = false
+            };
+        }
+        
+        public static AssetBundleInfo FromUrlCached(string bundleUrl, uint version, string cacheId)
+        {
+            return new AssetBundleInfo
+            {
+                BundleId = bundleUrl,
+                BundleUrl = bundleUrl,
+                BundleVersion = version,
+                CacheId = cacheId,
+                IsCacheEnabled = true,
                 IsEmbedBundle = false
             };
         }

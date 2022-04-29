@@ -30,7 +30,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         void LoadRemoteBundle(string url, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError);
         
         void LoadRemoteOrCachedBundle(string url, uint version);
+        void LoadRemoteOrCachedBundle(string url, uint version, string cacheId);
         void LoadRemoteOrCachedBundle(string url, uint version, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError);
+        void LoadRemoteOrCachedBundle(string url, uint version, string cacheId, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError);
 
         /*
          * Loading by Info.
@@ -63,6 +65,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
 
         AssetBundleInfo GetBundle(Enum identifier);
         AssetBundleInfo GetBundle(string identifier);
+
+        /*
+         * Cache.
+         */
+
+        long GetCachedFilesSize();
+        void CleanCache();
 
         /*
          * Assets.

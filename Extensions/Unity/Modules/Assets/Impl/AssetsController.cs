@@ -4,7 +4,9 @@ using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Agents;
 using Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents;
+using Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Cache;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging;
+using UnityEngine;
 using UnityEngine.U2D;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
@@ -14,6 +16,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         [Log(LogLevel.Warning)] public ILog              Log              { get; set; }
         [Inject]                public IEventDispatcher  Dispatcher       { get; set; }
         [Inject]                public IAgentsController AgentsController { get; set; }
+        [Inject]                public IInjectionBinder  InjectionBinder  { get; set; }
 
         public AssetsAtlasProcessingMode AtlasProcessingMode = AssetsAtlasProcessingMode.Strict;
 
@@ -21,7 +24,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         private readonly List<AssetBundleInfo>               _bundlesLoaded;
         private readonly Dictionary<string, AssetBundleInfo> _bundleByAtlasId;
 
-        private AssetsAgentBase _agent;
+        private AssetsAgentBase             _agent;
+        private AssetBundlesCacheController _cacheController;
 
         public AssetsController()
         {
@@ -40,6 +44,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         public void PreDestroy()
         {
             DisposeAgent();
+            DisposeCache();
         }
 
         /*
@@ -49,7 +54,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         private void InitializeAgent()
         {
             if (_agent != null)
-                throw new Exception("AssetsController already initialized.");
+                throw new AssetsException(AssetsExceptionType.AgentAlreadyInitialised);
 
             #if UNITY_WEBGL && !UNITY_EDITOR
             _agent = AgentsController.Create<AssetsAgentWebGL>();
@@ -67,6 +72,24 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
             _agent.AtlasRequested -= OnAtlasRequested;
             AgentsController.Destroy(ref _agent);
+        }
+
+        /*
+         * Cache.
+         */
+
+        private void TryInitializeCache()
+        {
+            _cacheController ??= InjectionBinder.Construct<AssetBundlesCacheController>(true);
+        }
+
+        private void DisposeCache()
+        {
+            if (_cacheController == null)
+                return;
+
+            _cacheController.Destroy(InjectionBinder, true);
+            _cacheController = null;
         }
 
         /*
@@ -137,14 +160,28 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         public void LoadRemoteOrCachedBundle(string url, uint version)
         {
             if (!_bundles.TryGetValue(url, out var info))
-                info = AssetBundleInfo.FromUrl(url, true, version);
+                info = AssetBundleInfo.FromUrlCached(url, version);
+            LoadBundle(info, null, null);
+        }
+
+        public void LoadRemoteOrCachedBundle(string url, uint version, string cacheId)
+        {
+            if (!_bundles.TryGetValue(url, out var info))
+                info = AssetBundleInfo.FromUrlCached(url, version, cacheId);
             LoadBundle(info, null, null);
         }
 
         public void LoadRemoteOrCachedBundle(string url, uint version, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
         {
             if (!_bundles.TryGetValue(url, out var info))
-                info = AssetBundleInfo.FromUrl(url, true, version);
+                info = AssetBundleInfo.FromUrlCached(url, version);
+            LoadBundle(info, onComplete, onError);
+        }
+
+        public void LoadRemoteOrCachedBundle(string url, uint version, string cacheId, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
+        {
+            if (!_bundles.TryGetValue(url, out var info))
+                info = AssetBundleInfo.FromUrlCached(url, version, cacheId);
             LoadBundle(info, onComplete, onError);
         }
 
@@ -160,14 +197,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         public void LoadBundle(AssetBundleInfo info, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
         {
             Log.Debug(i => $"Load bundle: {i}", info);
-            
+
             if (_bundles.TryGetValue(info.BundleId, out var infoAdded))
             {
                 if (info != infoAdded)
                 {
                     Log.Warn(i => $"Bundle with the same id already added. Original bundle used. BundleId: {i}", info.BundleId);
 
-                    info = infoAdded;    
+                    info = infoAdded;
                 }
             }
             else
@@ -185,11 +222,24 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             }
 
             _agent.LoadAsync(info,
+                             (bundleInfo) =>
+                             {
+                                 TryInitializeCache();
+                                 return _cacheController.GetBundleCacheInfo(bundleInfo.CacheId);
+                             },
+                             (bundleInfo) =>
+                             {
+                                 _cacheController.CleanBundleCacheInfo(bundleInfo.CacheId);
+                             },
+                             (bundleName, bundleInfo) =>
+                             {
+                                 _cacheController.RecordCacheInfo(bundleInfo.CacheId, bundleName, bundleInfo.BundleUrl, bundleInfo.BundleVersion);
+                             },
                              (bundleInfo, progress, downloadedBytes) =>
                              {
                                  Log.Debug((p, n) => $"Bundle progress: {p} {n}", progress, bundleInfo.ToString());
 
-                                 info.SetLoadingProgress(progress, downloadedBytes);
+                                 bundleInfo.SetLoadingProgress(progress, downloadedBytes);
 
                                  Dispatcher.Dispatch(AssetsEvent.BundleLoadingProgress, bundleInfo);
                              },
@@ -207,11 +257,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
                                  Log.Error(exception);
 
                                  SetBundleUnloaded(bundleInfo);
-                                 
+
                                  onError?.Invoke(exception);
                                  Dispatcher.Dispatch(AssetsEvent.BundleLoadingFail, bundleInfo, exception);
                              });
-            
+
             info.SetLoading();
         }
 
@@ -349,12 +399,37 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             asset = (T)info.Bundle.LoadAsset(assetName, typeof(T));
             return asset != null;
         }
+        
+        /*
+         * Cache.
+         */
+
+        public long GetCachedFilesSize()
+        {
+            long size = 0;
+            var paths = new List<string>();
+            
+            Caching.GetAllCachePaths(paths);
+
+            foreach (var path in paths)
+            {
+                var cache = Caching.GetCacheByPath(path);
+                size += cache.spaceOccupied;
+            }
+
+            return size;
+        }
+
+        public void CleanCache()
+        {
+            Caching.ClearCache();
+        }
 
         /*
          * Helpers.
          */
 
-        private void SetBundleLoaded(AssetBundleInfo info, UnityEngine.AssetBundle unityBundle)
+        private void SetBundleLoaded(AssetBundleInfo info, AssetBundle unityBundle)
         {
             info.SetLoaded(unityBundle);
 

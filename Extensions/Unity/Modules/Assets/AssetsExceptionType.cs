@@ -2,19 +2,22 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
 {
     public enum AssetsExceptionType
     {
-        UnknownBundleType            = 1,
-        UnknownBundle                = 2,
-        BundleNotFound               = 3,
-        BundleLoadingNetworkError    = 4,
-        BundleLoadingHttpError       = 5,
-        BundleLoadingProcessingError = 6,
-        BundleLoadingStorageError    = 7,
-        BundleNotLoaded              = 8,
-        BundleLoadingAborted         = 9,
+        AgentAlreadyInitialised = 1,
 
-        AssetNotFound = 10,
+        UnknownBundleType = 10,
+        UnknownBundle     = 11,
 
-        AtlasNotFound        = 20,
-        AtlasBundleNotLoaded = 21
+        BundleNotFound               = 20,
+        BundleLoadingNetworkError    = 21,
+        BundleLoadingHttpError       = 22,
+        BundleLoadingProcessingError = 23,
+        BundleLoadingStorageError    = 24,
+        BundleNotLoaded              = 25,
+        BundleLoadingAborted         = 26,
+
+        AssetNotFound = 30,
+
+        AtlasNotFound        = 40,
+        AtlasBundleNotLoaded = 41
     }
 }

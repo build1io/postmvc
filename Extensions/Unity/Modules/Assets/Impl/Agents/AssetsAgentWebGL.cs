@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Cache;
 using UnityEngine;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
@@ -7,6 +8,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
     internal sealed class AssetsAgentWebGL : AssetsAgentBase
     {
         public override void LoadAsync(AssetBundleInfo info,
+                                       Func<AssetBundleInfo, AssetBundleCacheInfo> onCacheInfoGet,
+                                       Action<AssetBundleInfo> onCacheInfoClean,
+                                       Action<string, AssetBundleInfo> onCacheInfoRecord,
                                        Action<AssetBundleInfo, float, ulong> onProgress,
                                        Action<AssetBundleInfo, AssetBundle> onComplete,
                                        Action<AssetBundleInfo, AssetsException> onError)
@@ -16,7 +20,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
             else if (!info.IsRemoteBundle)
                 throw new AssetsException(AssetsExceptionType.UnknownBundleType);
 
-            StartCoroutine(LoadRemoteAssetBundleCoroutine(info, onProgress, onComplete, onError));
+            StartCoroutine(LoadRemoteAssetBundleCoroutine(info, null, null, null, onProgress, onComplete, onError));
         }
     }
 }
