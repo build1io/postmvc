@@ -18,10 +18,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Cache
         private Dictionary<string, AssetBundleCacheInfo> _infos;
         private string                                   _infosFilesPath;
         
-        // TODO: save cache size
-        // TODO: ability to clean cache by user request
-        // TODO: check what bundle is in cache
-
         [PostConstruct]
         public void PostConstruct()
         {
@@ -62,7 +58,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Cache
             _infos.Remove(cacheId);
         }
 
-        public void RecordCacheInfo(string cacheId, string bundleName, string url, uint version)
+        public void RecordCacheInfo(string cacheId, string bundleName, string url, uint version, ulong sizeBytes)
         {
             var info = GetBundleCacheInfo(cacheId);
             if (info != null)
@@ -72,7 +68,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Cache
                 {
                     Log.Debug("RecordCacheInfo: Updating cache info.");
                     
-                    info.Update(bundleName, url, version);
+                    info.Update(bundleName, url, version, sizeBytes);
                     SaveCacheInfo();
                 }
                 else
@@ -84,7 +80,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Cache
             {
                 Log.Debug("RecordCacheInfo: Adding cache info.");
                 
-                _infos.Add(cacheId, new AssetBundleCacheInfo(cacheId, bundleName, url, version));
+                _infos.Add(cacheId, new AssetBundleCacheInfo(cacheId, bundleName, url, version, sizeBytes));
                 SaveCacheInfo();
             }
         }

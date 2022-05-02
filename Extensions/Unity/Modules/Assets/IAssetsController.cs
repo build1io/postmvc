@@ -69,9 +69,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         /*
          * Cache.
          */
-
-        long GetCachedFilesSize();
-        void CleanCache();
+        
+        ulong GetBundleCacheSizeByCacheId(string cacheId);
+        ulong GetCachedFilesSizeBytes();
+        void  CleanCache();
 
         /*
          * Assets.

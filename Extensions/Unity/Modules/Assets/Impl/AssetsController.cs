@@ -233,7 +233,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
                              },
                              (bundleName, bundleInfo) =>
                              {
-                                 _cacheController.RecordCacheInfo(bundleInfo.CacheId, bundleName, bundleInfo.BundleUrl, bundleInfo.BundleVersion);
+                                 _cacheController.RecordCacheInfo(bundleInfo.CacheId, bundleName, bundleInfo.BundleUrl, bundleInfo.BundleVersion, bundleInfo.DownloadedBytes);
                              },
                              (bundleInfo, progress, downloadedBytes) =>
                              {
@@ -404,9 +404,15 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
          * Cache.
          */
 
-        public long GetCachedFilesSize()
+        public ulong GetBundleCacheSizeByCacheId(string cacheId)
         {
-            long size = 0;
+            TryInitializeCache();
+            return _cacheController.GetBundleCacheInfo(cacheId)?.BundleSizeBytes ?? 0;
+        }
+        
+        public ulong GetCachedFilesSizeBytes()
+        {
+            ulong size = 0;
             var paths = new List<string>();
             
             Caching.GetAllCachePaths(paths);
@@ -414,7 +420,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             foreach (var path in paths)
             {
                 var cache = Caching.GetCacheByPath(path);
-                size += cache.spaceOccupied;
+                size += (ulong)cache.spaceOccupied;
             }
 
             return size;
