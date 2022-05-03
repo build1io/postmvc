@@ -121,7 +121,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Agents
 
             if (isAndroidStorageError || isIOSStorageError)
             {
-                onError.Invoke(info, new AssetsException(AssetsExceptionType.BundleLoadingStorageError, request.error));
+                onError.Invoke(info, new AssetsException(AssetsExceptionType.BundleLoadingStorageError, request.downloadHandler.error));
                 yield break;
             }
 

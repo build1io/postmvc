@@ -8,7 +8,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl.Cache
         [JsonProperty("n")] public string BundleName      { get; private set; }
         [JsonProperty("u")] public string BundleUrl       { get; private set; }
         [JsonProperty("v")] public uint   BundleVersion   { get; private set; }
-        [JsonProperty("v")] public ulong  BundleSizeBytes { get; private set; }
+        [JsonProperty("s")] public ulong  BundleSizeBytes { get; private set; }
 
         public AssetBundleCacheInfo(string cacheId, string bundleName, string bundleUrl, uint bundleVersion, ulong bundleSizeBytes)
         {
