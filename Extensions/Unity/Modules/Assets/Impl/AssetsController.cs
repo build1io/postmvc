@@ -20,7 +20,15 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public AssetsAtlasProcessingMode AtlasProcessingMode = AssetsAtlasProcessingMode.Strict;
 
+        public AssetBundleInfoSetting BundleInfoSettings = AssetBundleInfoSetting.RequestMissingInfo |
+                                                           AssetBundleInfoSetting.CacheInfo |
+                                                           AssetBundleInfoSetting.CreateMissingInfo;
+
+        public event Func<string, AssetBundleInfo> OnBundleInfoRequest;
+
+        private readonly Dictionary<Enum, string>            _ids;
         private readonly Dictionary<string, AssetBundleInfo> _bundles;
+        private readonly Dictionary<string, AssetBundleInfo> _bundlesInfoCache;
         private readonly List<AssetBundleInfo>               _bundlesLoaded;
         private readonly Dictionary<string, AssetBundleInfo> _bundleByAtlasId;
 
@@ -29,7 +37,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public AssetsController()
         {
+            _ids = new Dictionary<Enum, string>();
             _bundles = new Dictionary<string, AssetBundleInfo>();
+            _bundlesInfoCache = new Dictionary<string, AssetBundleInfo>();
             _bundlesLoaded = new List<AssetBundleInfo>();
             _bundleByAtlasId = new Dictionary<string, AssetBundleInfo>();
         }
@@ -75,30 +85,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         }
 
         /*
-         * Cache.
-         */
-
-        private void TryInitializeCache()
-        {
-            _cacheController ??= InjectionBinder.Construct<AssetBundlesCacheController>(true);
-        }
-
-        private void DisposeCache()
-        {
-            if (_cacheController == null)
-                return;
-
-            _cacheController.Destroy(InjectionBinder, true);
-            _cacheController = null;
-        }
-
-        /*
          * Check.
          */
 
         public bool CheckBundleLoaded(Enum identifier)
         {
-            return CheckBundleLoaded(AssetBundleInfo.EnumToStringIdentifier(identifier));
+            return CheckBundleLoaded(GetBundleStringId(identifier));
         }
 
         public bool CheckBundleLoaded(string identifier)
@@ -108,35 +100,24 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public bool CheckBundleLoaded(AssetBundleInfo info)
         {
-            return info.IsLoaded;
+            return _bundles.TryGetValue(info.BundleId, out var infoInner) && infoInner.IsLoaded;
         }
 
         /*
          * Embed.
          */
 
-        public void LoadEmbedBundle(Enum identifier)
-        {
-            LoadEmbedBundle(AssetBundleInfo.EnumToStringIdentifier(identifier), null, null);
-        }
-
-        public void LoadEmbedBundle(string identifier)
-        {
-            if (!_bundles.TryGetValue(identifier, out var info))
-                info = AssetBundleInfo.FromId(identifier);
-            LoadBundle(info, null, null);
-        }
+        public void LoadEmbedBundle(Enum identifier)   { LoadEmbedBundle(GetBundleStringId(identifier), null, null); }
+        public void LoadEmbedBundle(string identifier) { LoadBundle(GetBundleInfoById(identifier), null, null); }
 
         public void LoadEmbedBundle(Enum identifier, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
         {
-            LoadEmbedBundle(AssetBundleInfo.EnumToStringIdentifier(identifier), onComplete, onError);
+            LoadEmbedBundle(GetBundleStringId(identifier), onComplete, onError);
         }
 
         public void LoadEmbedBundle(string identifier, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
         {
-            if (!_bundles.TryGetValue(identifier, out var info))
-                info = AssetBundleInfo.FromId(identifier);
-            LoadBundle(info, onComplete, onError);
+            LoadBundle(GetBundleInfoById(identifier), onComplete, onError);
         }
 
         /*
@@ -145,44 +126,32 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public void LoadRemoteBundle(string url)
         {
-            if (!_bundles.TryGetValue(url, out var info))
-                info = AssetBundleInfo.FromUrl(url);
-            LoadBundle(info, null, null);
+            LoadBundle(GetBundleInfoByUrl(url), null, null);
         }
 
         public void LoadRemoteBundle(string url, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
         {
-            if (!_bundles.TryGetValue(url, out var info))
-                info = AssetBundleInfo.FromUrl(url);
-            LoadBundle(info, onComplete, onError);
+            LoadBundle(GetBundleInfoByUrl(url), onComplete, onError);
         }
 
         public void LoadRemoteOrCachedBundle(string url, uint version)
         {
-            if (!_bundles.TryGetValue(url, out var info))
-                info = AssetBundleInfo.FromUrlCached(url, version);
-            LoadBundle(info, null, null);
+            LoadBundle(GetBundleInfoByUrlCached(url, version, null), null, null);
         }
 
         public void LoadRemoteOrCachedBundle(string url, uint version, string cacheId)
         {
-            if (!_bundles.TryGetValue(url, out var info))
-                info = AssetBundleInfo.FromUrlCached(url, version, cacheId);
-            LoadBundle(info, null, null);
+            LoadBundle(GetBundleInfoByUrlCached(url, version, cacheId), null, null);
         }
 
         public void LoadRemoteOrCachedBundle(string url, uint version, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
         {
-            if (!_bundles.TryGetValue(url, out var info))
-                info = AssetBundleInfo.FromUrlCached(url, version);
-            LoadBundle(info, onComplete, onError);
+            LoadBundle(GetBundleInfoByUrlCached(url, version, null), onComplete, onError);
         }
 
         public void LoadRemoteOrCachedBundle(string url, uint version, string cacheId, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError)
         {
-            if (!_bundles.TryGetValue(url, out var info))
-                info = AssetBundleInfo.FromUrlCached(url, version, cacheId);
-            LoadBundle(info, onComplete, onError);
+            LoadBundle(GetBundleInfoByUrlCached(url, version, cacheId), onComplete, onError);
         }
 
         /*
@@ -209,7 +178,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             }
             else
             {
-                Log.Debug(i => $"Bundle added: {i}", info.BundleId);
+                Log.Debug(i => $"Bundle info registered. BundleId: {i}", info.BundleId);
 
                 _bundles.Add(info.BundleId, info);
             }
@@ -227,14 +196,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
                                  TryInitializeCache();
                                  return _cacheController.GetBundleCacheInfo(bundleInfo.CacheId);
                              },
-                             (bundleInfo) =>
-                             {
-                                 _cacheController.CleanBundleCacheInfo(bundleInfo.CacheId);
-                             },
-                             (bundleName, bundleInfo) =>
-                             {
-                                 _cacheController.RecordCacheInfo(bundleInfo.CacheId, bundleName, bundleInfo.BundleUrl, bundleInfo.BundleVersion, bundleInfo.DownloadedBytes);
-                             },
+                             (bundleInfo) => { _cacheController.CleanBundleCacheInfo(bundleInfo.CacheId); },
+                             (bundleName, bundleInfo) => { _cacheController.RecordCacheInfo(bundleInfo.CacheId, bundleName, bundleInfo.BundleUrl, bundleInfo.BundleVersion, bundleInfo.DownloadedBytes); },
                              (bundleInfo, progress, downloadedBytes) =>
                              {
                                  Log.Debug((p, n) => $"Bundle progress: {p} {n}", progress, bundleInfo.ToString());
@@ -271,12 +234,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public void AbortBundleLoading(Enum identifier)
         {
-            AbortBundleLoading(AssetBundleInfo.EnumToStringIdentifier(identifier));
+            AbortBundleLoading(GetBundleStringId(identifier));
         }
 
         public void AbortBundleLoading(string identifier)
         {
-            if (!_bundles.TryGetValue(identifier, out var info))
+            if (!TryGetBundleInfo(identifier, out var info))
                 throw new AssetsException(AssetsExceptionType.UnknownBundle);
 
             AbortBundleLoading(info);
@@ -302,12 +265,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public void UnloadBundle(Enum identifier, bool unloadObjects)
         {
-            UnloadBundle(AssetBundleInfo.EnumToStringIdentifier(identifier), unloadObjects);
+            UnloadBundle(GetBundleStringId(identifier), unloadObjects);
         }
 
         public void UnloadBundle(string identifier, bool unloadObjects)
         {
-            if (!_bundles.TryGetValue(identifier, out var info))
+            if (!TryGetBundleInfo(identifier, out var info))
                 throw new AssetsException(AssetsExceptionType.UnknownBundle, identifier);
             UnloadBundle(info, unloadObjects);
         }
@@ -330,17 +293,17 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         }
 
         /*
-         * Getting.
+         * Getting Bundle.
          */
 
         public AssetBundleInfo GetBundle(Enum identifier)
         {
-            return GetBundle(AssetBundleInfo.EnumToStringIdentifier(identifier));
+            return GetBundle(GetBundleStringId(identifier));
         }
 
         public AssetBundleInfo GetBundle(string identifier)
         {
-            if (!_bundles.TryGetValue(identifier, out var info))
+            if (!TryGetBundleInfo(identifier, out var info))
                 throw new AssetsException(AssetsExceptionType.UnknownBundle, identifier);
 
             if (!info.IsLoaded)
@@ -355,12 +318,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public T GetAsset<T>(Enum identifier, string assetName) where T : UnityEngine.Object
         {
-            return GetAsset<T>(AssetBundleInfo.EnumToStringIdentifier(identifier), assetName);
+            return GetAsset<T>(GetBundleStringId(identifier), assetName);
         }
 
         public T GetAsset<T>(string identifier, string assetName) where T : UnityEngine.Object
         {
-            if (!_bundles.TryGetValue(identifier, out var info))
+            if (!TryGetBundleInfo(identifier, out var info))
                 throw new AssetsException(AssetsExceptionType.UnknownBundle, identifier);
 
             return GetAsset<T>(info, assetName);
@@ -380,12 +343,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public bool TryGetAsset<T>(Enum identifier, string assetName, out T asset) where T : UnityEngine.Object
         {
-            return TryGetAsset(AssetBundleInfo.EnumToStringIdentifier(identifier), assetName, out asset);
+            return TryGetAsset(GetBundleStringId(identifier), assetName, out asset);
         }
 
         public bool TryGetAsset<T>(string identifier, string assetName, out T asset) where T : UnityEngine.Object
         {
-            if (!_bundles.TryGetValue(identifier, out var info))
+            if (!TryGetBundleInfo(identifier, out var info))
                 throw new AssetsException(AssetsExceptionType.UnknownBundle, identifier);
 
             return TryGetAsset(info, assetName, out asset);
@@ -399,7 +362,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             asset = (T)info.Bundle.LoadAsset(assetName, typeof(T));
             return asset != null;
         }
-        
+
         /*
          * Cache.
          */
@@ -409,12 +372,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             TryInitializeCache();
             return _cacheController.GetBundleCacheInfo(cacheId)?.BundleSizeBytes ?? 0;
         }
-        
+
         public ulong GetCachedFilesSizeBytes()
         {
             ulong size = 0;
             var paths = new List<string>();
-            
+
             Caching.GetAllCachePaths(paths);
 
             foreach (var path in paths)
@@ -431,9 +394,102 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             Caching.ClearCache();
         }
 
+        private void TryInitializeCache()
+        {
+            _cacheController ??= InjectionBinder.Construct<AssetBundlesCacheController>(true);
+        }
+
+        private void DisposeCache()
+        {
+            if (_cacheController == null)
+                return;
+
+            _cacheController.Destroy(InjectionBinder, true);
+            _cacheController = null;
+        }
+
+        /*
+         * Bundle Info.
+         */
+
+        private AssetBundleInfo GetBundleInfoById(string identifier)
+        {
+            if (TryGetBundleInfo(identifier, out var info))
+                return info;
+
+            if ((BundleInfoSettings & AssetBundleInfoSetting.CreateMissingInfo) == AssetBundleInfoSetting.CreateMissingInfo)
+                info = AssetBundleInfo.FromId(identifier);
+
+            return info;
+        }
+
+        private AssetBundleInfo GetBundleInfoByUrl(string url)
+        {
+            if (TryGetBundleInfo(url, out var info))
+                return info;
+
+            if ((BundleInfoSettings & AssetBundleInfoSetting.CreateMissingInfo) == AssetBundleInfoSetting.CreateMissingInfo)
+                info = AssetBundleInfo.FromUrl(url);
+
+            return info;
+        }
+
+        private AssetBundleInfo GetBundleInfoByUrlCached(string url, uint version, string cacheId)
+        {
+            if (TryGetBundleInfo(url, out var info))
+                return info;
+
+            if ((BundleInfoSettings & AssetBundleInfoSetting.CreateMissingInfo) == AssetBundleInfoSetting.CreateMissingInfo)
+                info = AssetBundleInfo.FromUrlCached(url, version, cacheId);
+
+            return info;
+        }
+
+        private bool TryGetBundleInfo(string identifier, out AssetBundleInfo info)
+        {
+            if (_bundles.TryGetValue(identifier, out info))
+            {
+                Log.Debug(i => $"Bundle info found. {i}", info);
+                return true;
+            }
+
+            if (_bundlesInfoCache.TryGetValue(identifier, out info))
+            {
+                Log.Debug(i => $"Bundle info found in info cache. {i}", info);
+                return true;
+            }
+
+            if ((BundleInfoSettings & AssetBundleInfoSetting.RequestMissingInfo) == AssetBundleInfoSetting.RequestMissingInfo && OnBundleInfoRequest != null)
+            {
+                Log.Debug(i => $"Requesting bundle info: {i}", identifier);
+
+                info = OnBundleInfoRequest.Invoke(identifier);
+
+                if (info != null && (BundleInfoSettings & AssetBundleInfoSetting.CacheInfo) == AssetBundleInfoSetting.CacheInfo)
+                {
+                    Log.Debug(i => $"Bundle info saved to cache. {i}", info);
+
+                    _bundlesInfoCache.Add(identifier, info);
+                }
+            }
+
+            return info != null;
+        }
+
         /*
          * Helpers.
          */
+
+        private string GetBundleStringId(Enum identifier)
+        {
+            if (_ids.TryGetValue(identifier, out var id))
+                return id;
+
+            id = AssetBundleInfo.EnumToStringIdentifier(identifier);
+            _ids.Add(identifier, id);
+
+            return id;
+        }
 
         private void SetBundleLoaded(AssetBundleInfo info, AssetBundle unityBundle)
         {
@@ -452,7 +508,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
         {
             info.Clean();
 
-            _bundles.Remove(info.BundleId);
+            // _bundles.Remove(info.BundleId);
             _bundlesLoaded.Remove(info);
 
             if (!info.HasAtlases)

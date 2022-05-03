@@ -1,6 +1,7 @@
 using System;
 using Build1.PostMVC.Extensions.MVCS.Mediation;
 using Build1.PostMVC.Extensions.Unity.Mediation;
+using Build1.PostMVC.Extensions.Unity.Modules.Assets;
 using Build1.PostMVC.Extensions.Unity.Modules.Device;
 using Build1.PostMVC.Extensions.Unity.Modules.UI;
 
@@ -8,6 +9,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.HUD
 {
     public sealed class HUDControlConfig : UIControlConfiguration
     {
+        public HUDControlConfig(AssetBundleInfo bundleInfo, 
+                                string prefabName, 
+                                int appLayerId) : base(bundleInfo, prefabName, appLayerId) { }
+        
         public HUDControlConfig(Enum bundleId, 
                                 string prefabName, 
                                 int appLayerId) : base(bundleId, prefabName, appLayerId) { }

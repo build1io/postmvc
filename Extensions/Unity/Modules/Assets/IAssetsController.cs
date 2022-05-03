@@ -4,6 +4,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
 {
     public interface IAssetsController
     {
+        event Func<string, AssetBundleInfo> OnBundleInfoRequest;
+
         /*
          * Check.
          */
@@ -28,7 +30,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
 
         void LoadRemoteBundle(string url);
         void LoadRemoteBundle(string url, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError);
-        
+
         void LoadRemoteOrCachedBundle(string url, uint version);
         void LoadRemoteOrCachedBundle(string url, uint version, string cacheId);
         void LoadRemoteOrCachedBundle(string url, uint version, Action<AssetBundleInfo> onComplete, Action<AssetsException> onError);
@@ -48,7 +50,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         void AbortBundleLoading(Enum identifier);
         void AbortBundleLoading(string identifier);
         void AbortBundleLoading(AssetBundleInfo info);
-        
+
         /*
          * Unloading.
          */
@@ -69,7 +71,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         /*
          * Cache.
          */
-        
+
         ulong GetBundleCacheSizeByCacheId(string cacheId);
         ulong GetCachedFilesSizeBytes();
         void  CleanCache();
