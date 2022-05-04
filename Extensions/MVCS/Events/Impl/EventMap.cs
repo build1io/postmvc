@@ -24,10 +24,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
          * Map.
          */
 
-        public void Map(Event @event, Action listener)                                     { AddMapInfo(_dispatcher, @event, listener, false).Bind(); }
-        public void Map<T1>(Event<T1> @event, Action<T1> listener)                         { AddMapInfo(_dispatcher, @event, listener, false).Bind(); }
-        public void Map<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)             { AddMapInfo(_dispatcher, @event, listener, false).Bind(); }
-        public void Map<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener) { AddMapInfo(_dispatcher, @event, listener, false).Bind(); }
+        public void Map(Event @event, Action listener)                                     { AddMapInfo(@event, listener, false).Bind(); }
+        public void Map<T1>(Event<T1> @event, Action<T1> listener)                         { AddMapInfo(@event, listener, false).Bind(); }
+        public void Map<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)             { AddMapInfo(@event, listener, false).Bind(); }
+        public void Map<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener) { AddMapInfo(@event, listener, false).Bind(); }
 
         public void Map(IEventDispatcher dispatcher, Event @event, Action listener)                                     { AddMapInfo(dispatcher, @event, listener, false).Bind(); }
         public void Map<T1>(IEventDispatcher dispatcher, Event<T1> @event, Action<T1> listener)                         { AddMapInfo(dispatcher, @event, listener, false).Bind(); }
@@ -38,10 +38,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
          * Map Once.
          */
 
-        public void MapOnce(Event @event, Action listener)                                     { AddMapInfo(_dispatcher, @event, listener, true).Bind(); }
-        public void MapOnce<T1>(Event<T1> @event, Action<T1> listener)                         { AddMapInfo(_dispatcher, @event, listener, true).Bind(); }
-        public void MapOnce<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)             { AddMapInfo(_dispatcher, @event, listener, true).Bind(); }
-        public void MapOnce<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener) { AddMapInfo(_dispatcher, @event, listener, true).Bind(); }
+        public void MapOnce(Event @event, Action listener)                                     { AddMapInfo(@event, listener, true).Bind(); }
+        public void MapOnce<T1>(Event<T1> @event, Action<T1> listener)                         { AddMapInfo(@event, listener, true).Bind(); }
+        public void MapOnce<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener)             { AddMapInfo(@event, listener, true).Bind(); }
+        public void MapOnce<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener) { AddMapInfo(@event, listener, true).Bind(); }
 
         public void MapOnce(IEventDispatcher dispatcher, Event @event, Action listener)                                     { AddMapInfo(dispatcher, @event, listener, true).Bind(); }
         public void MapOnce<T1>(IEventDispatcher dispatcher, Event<T1> @event, Action<T1> listener)                         { AddMapInfo(dispatcher, @event, listener, true).Bind(); }
@@ -140,36 +140,72 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         public bool ContainsMapInfo<T1, T2, T3>(IEventDispatcher dispatcher, Event<T1, T2, T3> @event, Action<T1, T2, T3> listener) { return ContainsMapInfoImpl(dispatcher, @event, listener); }
 
         /*
-         * Add Map Info.
+         * Add Map Info Exact.
          */
 
-        internal EventMapInfo AddMapInfo(IEventDispatcher dispatcher, Event @event, Action listener, bool isOnceScenario)
+        internal EventMapInfoExact AddMapInfo(Event @event, Action listener, bool isOnceScenario)
         {
-            var info = _infosPool.Take();
+            var info = _infosPool.TakeExact();
+            info.Setup(_dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
+            _infos.Add(info);
+            return info;
+        }
+
+        internal EventMapInfoExact<T1> AddMapInfo<T1>(Event<T1> @event, Action<T1> listener, bool isOnceScenario)
+        {
+            var info = _infosPool.TakeExact<T1>();
+            info.Setup(_dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
+            _infos.Add(info);
+            return info;
+        }
+
+        internal EventMapInfoExact<T1, T2> AddMapInfo<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener, bool isOnceScenario)
+        {
+            var info = _infosPool.TakeExact<T1, T2>();
+            info.Setup(_dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
+            _infos.Add(info);
+            return info;
+        }
+
+        internal EventMapInfoExact<T1, T2, T3> AddMapInfo<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener, bool isOnceScenario)
+        {
+            var info = _infosPool.TakeExact<T1, T2, T3>();
+            info.Setup(_dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
+            _infos.Add(info);
+            return info;
+        }
+        
+        /*
+         * Add Map Info by Interface Dispatcher.
+         */
+        
+        private EventMapInfoInterface AddMapInfo(IEventDispatcher dispatcher, Event @event, Action listener, bool isOnceScenario)
+        {
+            var info = _infosPool.TakeInterface();
             info.Setup(dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
             _infos.Add(info);
             return info;
         }
 
-        internal EventMapInfo<T1> AddMapInfo<T1>(IEventDispatcher dispatcher, Event<T1> @event, Action<T1> listener, bool isOnceScenario)
+        private EventMapInfoInterface<T1> AddMapInfo<T1>(IEventDispatcher dispatcher, Event<T1> @event, Action<T1> listener, bool isOnceScenario)
         {
-            var info = _infosPool.Take<T1>();
+            var info = _infosPool.TakeInterface<T1>();
             info.Setup(dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
             _infos.Add(info);
             return info;
         }
 
-        internal EventMapInfo<T1, T2> AddMapInfo<T1, T2>(IEventDispatcher dispatcher, Event<T1, T2> @event, Action<T1, T2> listener, bool isOnceScenario)
+        private EventMapInfoInterface<T1, T2> AddMapInfo<T1, T2>(IEventDispatcher dispatcher, Event<T1, T2> @event, Action<T1, T2> listener, bool isOnceScenario)
         {
-            var info = _infosPool.Take<T1, T2>();
+            var info = _infosPool.TakeInterface<T1, T2>();
             info.Setup(dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
             _infos.Add(info);
             return info;
         }
 
-        internal EventMapInfo<T1, T2, T3> AddMapInfo<T1, T2, T3>(IEventDispatcher dispatcher, Event<T1, T2, T3> @event, Action<T1, T2, T3> listener, bool isOnceScenario)
+        private EventMapInfoInterface<T1, T2, T3> AddMapInfo<T1, T2, T3>(IEventDispatcher dispatcher, Event<T1, T2, T3> @event, Action<T1, T2, T3> listener, bool isOnceScenario)
         {
-            var info = _infosPool.Take<T1, T2, T3>();
+            var info = _infosPool.TakeInterface<T1, T2, T3>();
             info.Setup(dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
             _infos.Add(info);
             return info;

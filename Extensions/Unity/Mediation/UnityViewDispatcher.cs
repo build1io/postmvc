@@ -10,7 +10,7 @@ namespace Build1.PostMVC.Extensions.Unity.Mediation
 {
     public abstract class UnityViewDispatcher : UnityView, IEventDispatcher
     {
-        private readonly IEventDispatcher                                  _dispatcher;
+        private readonly EventDispatcher                                   _dispatcher;
         private readonly Dictionary<UnityEventBase, UnityEventBindingBase> _bindings;
 
         protected UnityViewDispatcher()
