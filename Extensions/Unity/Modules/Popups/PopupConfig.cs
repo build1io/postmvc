@@ -1,5 +1,6 @@
 using System;
 using Build1.PostMVC.Extensions.MVCS.Mediation;
+using Build1.PostMVC.Extensions.Unity.Mediation;
 using Build1.PostMVC.Extensions.Unity.Modules.Assets;
 using Build1.PostMVC.Extensions.Unity.Modules.Device;
 using Build1.PostMVC.Extensions.Unity.Modules.UI;
@@ -20,14 +21,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
         public PopupConfig(DevicePlatform platform, DeviceType deviceType, AssetBundleInfo bundleInfo, string prefabName, int appLayerId) : base(platform, deviceType, bundleInfo, prefabName, appLayerId) { }
         public PopupConfig(DevicePlatform platform, DeviceType deviceType, Enum bundleId, string prefabName, int appLayerId) : base(platform, deviceType, bundleId, prefabName, appLayerId) { }
 
-        public new PopupConfig AddBinding<V, M>() where V : IPopupView
+        public new PopupConfig AddBinding<V, M>() where V : IUnityView
                                                   where M : Mediator
         {
             base.AddBinding<V, M>();
             return this;
         }
 
-        public new PopupConfig AddBinding<V, I, M>() where V : IPopupView, I
+        public new PopupConfig AddBinding<V, I, M>() where V : IUnityView, I
                                                      where M : Mediator
         {
             base.AddBinding<V, I, M>();
