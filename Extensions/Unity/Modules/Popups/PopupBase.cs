@@ -3,7 +3,7 @@ using Build1.PostMVC.Extensions.Unity.Modules.UI;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
 {
-    public abstract class PopupBase : UIControl<PopupConfig>
+    public abstract class PopupBase : UIControl<PopupConfigBase>
     {
         public readonly Type dataType;
 
