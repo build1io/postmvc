@@ -111,7 +111,19 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Device.Impl
             var autorotateToPortraitUpsideDown = (orientations & DeviceScreenOrientation.PortraitUpsideDown) == DeviceScreenOrientation.PortraitUpsideDown;
             var autorotateToLandscapeLeft = (orientations & DeviceScreenOrientation.LandscapeLeft) == DeviceScreenOrientation.LandscapeLeft;
             var autorotateToLandscapeRight = (orientations & DeviceScreenOrientation.LandscapeRight) == DeviceScreenOrientation.LandscapeRight;
-
+            
+            if (Screen.orientation != ScreenOrientation.AutoRotation)
+            {
+                if (autorotateToPortrait)
+                    Screen.orientation = ScreenOrientation.Portrait;
+                else if (autorotateToLandscapeLeft)
+                    Screen.orientation = ScreenOrientation.LandscapeLeft;
+                else if (autorotateToLandscapeRight)
+                    Screen.orientation = ScreenOrientation.LandscapeRight;
+                else if (autorotateToPortraitUpsideDown)
+                    Screen.orientation = ScreenOrientation.PortraitUpsideDown;
+            }
+            
             Screen.autorotateToPortrait = autorotateToPortrait;
             Screen.autorotateToPortraitUpsideDown = autorotateToPortraitUpsideDown;
             Screen.autorotateToLandscapeLeft = autorotateToLandscapeLeft;
