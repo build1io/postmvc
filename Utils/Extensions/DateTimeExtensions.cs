@@ -6,9 +6,10 @@ namespace Build1.PostMVC.Utils.Extensions
     {
         public enum SecondsFormat
         {
-            Timer         = 1,
-            TimerLettered = 2,
-            OneValue      = 3
+            Timer                  = 1,
+            TimerLettered          = 2,
+            OneValue               = 3,
+            TimerWithMinifiedHours = 4
         }
 
         public static long ToUnixTimestamp(this DateTime dateTime)
@@ -32,6 +33,11 @@ namespace Build1.PostMVC.Utils.Extensions
                     return span.Days > 0
                                ? $"{(int)span.TotalHours}:{span:mm\\:ss}"
                                : span.ToString(span.Hours > 0 ? "hh\\:mm\\:ss" : "mm\\:ss");
+
+                case SecondsFormat.TimerWithMinifiedHours:
+                    return span.Days > 0
+                               ? $"{(int)span.TotalHours}:{span:mm\\:ss}"
+                               : span.ToString(span.Hours > 0 ? "h\\:mm\\:ss" : "mm\\:ss");
                 
                 case SecondsFormat.TimerLettered:
                     return $"{(int)span.TotalHours}h {span.Minutes}m {span:ss}s";
