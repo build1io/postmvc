@@ -97,15 +97,18 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
         protected static string FormatException(string prefix, Exception exception)
         {
+            if (exception.InnerException == null)
+                return $"{prefix}: {exception.GetType().Name}: {exception.Message}";
+            
             var builder = new StringBuilder($"{prefix}: {FormatExceptionNoInner(exception)}");
+            
             var innerException = exception.InnerException;
             while (innerException != null)
             {
-                builder.AppendLine($"");
+                builder.AppendLine("");
+                
                 foreach (var line in FormatExceptionNoInner(innerException).Split('\n'))
-                {
                     builder.AppendLine($"        {line}");
-                }
 
                 innerException = innerException.InnerException;
             }
@@ -113,7 +116,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             return builder.ToString();
         }
 
-        protected static string FormatExceptionNoInner(Exception exception)
+        private static string FormatExceptionNoInner(Exception exception)
         {
             return $"{exception.GetType().Name}: {exception.Message} at \n{exception.StackTrace}\n";
         }
