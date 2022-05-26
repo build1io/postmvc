@@ -77,6 +77,27 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
             Bundle = null;
         }
 
+        internal void Update(AssetBundleInfo info)
+        {
+            if (BundleId != info.BundleId)
+                throw new AssetsException(AssetsExceptionType.BundleInfoUpdateError);
+            
+            BundleUrl = info.BundleUrl;
+            BundleVersion = info.BundleVersion;
+            CacheId = info.CacheId;
+            LoadingProgress = info.LoadingProgress;
+            DownloadedBytes = info.DownloadedBytes;
+
+            AtlasesNames = info.AtlasesNames;
+            Bundle = info.Bundle;
+
+            IsEmbedBundle = info.IsEmbedBundle;
+            IsLoading = info.IsLoading;
+            IsAborted = info.IsAborted;
+
+            IsCacheEnabled = info.IsCacheEnabled;
+        }
+
         public string[] GetAllScenePaths() { return Bundle.GetAllScenePaths(); }
         public string[] GetAllAssetNames() { return Bundle.GetAllAssetNames(); }
 

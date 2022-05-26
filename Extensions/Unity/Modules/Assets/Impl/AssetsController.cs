@@ -26,6 +26,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public event Func<string, AssetBundleInfo> OnBundleInfoRequest;
 
+        private bool BundleInfoRequestingEnabled => (BundleInfoSettings & AssetBundleInfoSetting.RequestMissingInfo) == AssetBundleInfoSetting.RequestMissingInfo;
+        private bool BundleInfoCachingEnabled    => (BundleInfoSettings & AssetBundleInfoSetting.CacheInfo) == AssetBundleInfoSetting.CacheInfo;
+        
         private readonly Dictionary<Enum, string>            _ids;
         private readonly Dictionary<string, AssetBundleInfo> _bundles;
         private readonly Dictionary<string, AssetBundleInfo> _bundlesInfoCache;
@@ -171,9 +174,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             {
                 if (info != infoAdded)
                 {
-                    Log.Warn(i => $"Bundle with the same id already added. Original bundle used. BundleId: {i}", info.BundleId);
+                    Log.Warn(i => $"Bundle with the same id already added. Replacing added info and updating it. BundleId: {i}", info.BundleId);
 
-                    info = infoAdded;
+                    info.Update(infoAdded);
+                    
+                    _bundles[info.BundleId] = info;
                 }
             }
             else
@@ -239,7 +244,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public void AbortBundleLoading(string identifier)
         {
-            if (!TryGetBundleInfo(identifier, out var info))
+            if (!TryGetBundleInfo(identifier, BundleInfoRequestingEnabled, BundleInfoCachingEnabled, out var info))
                 throw new AssetsException(AssetsExceptionType.UnknownBundle);
 
             AbortBundleLoading(info);
@@ -270,7 +275,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public void UnloadBundle(string identifier, bool unloadObjects)
         {
-            if (!TryGetBundleInfo(identifier, out var info))
+            if (!TryGetBundleInfo(identifier, BundleInfoRequestingEnabled, BundleInfoCachingEnabled, out var info))
                 throw new AssetsException(AssetsExceptionType.UnknownBundle, identifier);
             UnloadBundle(info, unloadObjects);
         }
@@ -303,13 +308,23 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public AssetBundleInfo GetBundle(string identifier)
         {
-            if (!TryGetBundleInfo(identifier, out var info))
+            if (!TryGetBundleInfo(identifier, BundleInfoRequestingEnabled, BundleInfoCachingEnabled, out var info))
                 throw new AssetsException(AssetsExceptionType.UnknownBundle, identifier);
 
             if (!info.IsLoaded)
                 throw new AssetsException(AssetsExceptionType.BundleNotLoaded, info.BundleId);
 
             return info;
+        }
+
+        public bool TryGetBundle(Enum identifier, out AssetBundleInfo info)
+        {
+            return TryGetBundle(GetBundleStringId(identifier), out info);
+        }
+
+        public bool TryGetBundle(string identifier, out AssetBundleInfo info)
+        {
+            return TryGetBundleInfo(identifier, false, false, out info);
         }
 
         /*
@@ -323,7 +338,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public T GetAsset<T>(string identifier, string assetName) where T : UnityEngine.Object
         {
-            if (!TryGetBundleInfo(identifier, out var info))
+            if (!TryGetBundleInfo(identifier, BundleInfoRequestingEnabled, BundleInfoCachingEnabled, out var info))
                 throw new AssetsException(AssetsExceptionType.UnknownBundle, identifier);
 
             return GetAsset<T>(info, assetName);
@@ -348,7 +363,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public bool TryGetAsset<T>(string identifier, string assetName, out T asset) where T : UnityEngine.Object
         {
-            if (!TryGetBundleInfo(identifier, out var info))
+            if (!TryGetBundleInfo(identifier, BundleInfoRequestingEnabled, BundleInfoCachingEnabled, out var info))
                 throw new AssetsException(AssetsExceptionType.UnknownBundle, identifier);
 
             return TryGetAsset(info, assetName, out asset);
@@ -414,7 +429,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         private AssetBundleInfo GetBundleInfoById(string identifier)
         {
-            if (TryGetBundleInfo(identifier, out var info))
+            if (TryGetBundleInfo(identifier, BundleInfoRequestingEnabled, BundleInfoCachingEnabled, out var info))
                 return info;
 
             if ((BundleInfoSettings & AssetBundleInfoSetting.CreateMissingInfo) == AssetBundleInfoSetting.CreateMissingInfo)
@@ -425,7 +440,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         private AssetBundleInfo GetBundleInfoByUrl(string url)
         {
-            if (TryGetBundleInfo(url, out var info))
+            if (TryGetBundleInfo(url, BundleInfoRequestingEnabled, BundleInfoCachingEnabled, out var info))
                 return info;
 
             if ((BundleInfoSettings & AssetBundleInfoSetting.CreateMissingInfo) == AssetBundleInfoSetting.CreateMissingInfo)
@@ -436,7 +451,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         private AssetBundleInfo GetBundleInfoByUrlCached(string url, uint version, string cacheId)
         {
-            if (TryGetBundleInfo(url, out var info))
+            if (TryGetBundleInfo(url, BundleInfoRequestingEnabled, BundleInfoCachingEnabled, out var info))
                 return info;
 
             if ((BundleInfoSettings & AssetBundleInfoSetting.CreateMissingInfo) == AssetBundleInfoSetting.CreateMissingInfo)
@@ -445,7 +460,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
             return info;
         }
 
-        private bool TryGetBundleInfo(string identifier, out AssetBundleInfo info)
+        private bool TryGetBundleInfo(string identifier, bool request, bool cache, out AssetBundleInfo info)
         {
             if (_bundles.TryGetValue(identifier, out info))
             {
@@ -459,13 +474,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
                 return true;
             }
 
-            if ((BundleInfoSettings & AssetBundleInfoSetting.RequestMissingInfo) == AssetBundleInfoSetting.RequestMissingInfo && OnBundleInfoRequest != null)
+            if (request && OnBundleInfoRequest != null)
             {
                 Log.Debug(i => $"Requesting bundle info: {i}", identifier);
 
                 info = OnBundleInfoRequest.Invoke(identifier);
 
-                if (info != null && (BundleInfoSettings & AssetBundleInfoSetting.CacheInfo) == AssetBundleInfoSetting.CacheInfo)
+                if (info != null && cache)
                 {
                     Log.Debug(i => $"Bundle info saved to cache. {i}", info);
 

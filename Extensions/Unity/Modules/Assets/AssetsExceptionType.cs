@@ -18,6 +18,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         AssetNotFound = 30,
 
         AtlasNotFound        = 40,
-        AtlasBundleNotLoaded = 41
+        AtlasBundleNotLoaded = 41,
+        
+        BundleInfoUpdateError = 50
     }
 }

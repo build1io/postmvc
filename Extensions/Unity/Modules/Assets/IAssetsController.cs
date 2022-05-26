@@ -68,6 +68,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         AssetBundleInfo GetBundle(Enum identifier);
         AssetBundleInfo GetBundle(string identifier);
 
+        bool TryGetBundle(Enum identifier, out AssetBundleInfo info);
+        bool TryGetBundle(string identifier, out AssetBundleInfo info);
+        
         /*
          * Cache.
          */
