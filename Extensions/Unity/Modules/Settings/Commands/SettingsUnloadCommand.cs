@@ -14,7 +14,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Settings.Commands
 
         public override void Execute()
         {
-            Log.Debug("Execute");
+            if (!SettingsController.IsLoaded)
+            {
+                Log.Debug("Settings not loaded");
+                return;
+            }
+            
+            Log.Debug("Unloading settings...");
 
             Retain();
 
@@ -26,7 +32,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Settings.Commands
 
         private void OnSuccess()
         {
-            Log.Debug("OnSuccess");
+            Log.Debug("Done");
 
             Dispatcher.RemoveListener(SettingsEvent.UnloadSuccess, OnSuccess);
             Dispatcher.RemoveListener(SettingsEvent.UnloadFail, OnFail);
