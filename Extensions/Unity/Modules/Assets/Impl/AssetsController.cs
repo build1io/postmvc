@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Agents;
@@ -293,8 +294,22 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets.Impl
 
         public void UnloadAllBundles(bool unloadObjects)
         {
-            foreach (var bundle in _bundlesLoaded)
-                UnloadBundle(bundle, unloadObjects);
+            for (var i = _bundlesLoaded.Count - 1; i >= 0; i--)
+                UnloadBundle(_bundlesLoaded[i], unloadObjects);
+        }
+
+        public void UnloadAllBundles(bool unloadObjects, params Enum[] except)
+        {
+            var exceptStringIdentifiers = new List<string>(except.Length); 
+            foreach (var item in except)
+                exceptStringIdentifiers.Add(GetBundleStringId(item));
+            
+            for (var i = _bundlesLoaded.Count - 1; i >= 0; i--)
+            {
+                var bundle = _bundlesLoaded[i];
+                if (!exceptStringIdentifiers.Contains(bundle.BundleId))
+                    UnloadBundle(bundle, unloadObjects);
+            }
         }
 
         /*

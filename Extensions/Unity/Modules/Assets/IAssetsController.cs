@@ -60,6 +60,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Assets
         void UnloadBundle(AssetBundleInfo bundleInfo, bool unloadObjects);
 
         void UnloadAllBundles(bool unloadObjects);
+        void UnloadAllBundles(bool unloadObjects, params Enum[] except);
 
         /*
          * Getting.
