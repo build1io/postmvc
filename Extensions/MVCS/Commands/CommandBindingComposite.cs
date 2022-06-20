@@ -367,6 +367,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
             return this;
         }
         
+        public ICommandBinding<T1> To3<TCommand, TCP1>(TCP1 param01, bool param02) where TCommand : Command<T1, TCP1, bool>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To3<TCommand, TCP1, bool>(param01, param02);
+            return this;
+        }
+        
         public ICommandBinding<T1> To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new()
         {
             foreach (var binding in _bindings)
