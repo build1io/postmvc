@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Injection;
@@ -161,9 +162,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Settings.Impl
 
                 if (bool.TryParse(value, out var valueBool))
                     _settingsValues[setting.key] = valueBool;
-                else if (int.TryParse(value, out var valueInt))
+                else if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var valueInt))
                     _settingsValues[setting.key] = valueInt;
-                else if (float.TryParse(value, out var valueFloat))
+                else if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var valueFloat))
                     _settingsValues[setting.key] = valueFloat;
             }
 
