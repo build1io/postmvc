@@ -11,8 +11,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
 {
     public sealed class AppController : IAppController
     {
-        public const string BuildNumberFileName = "build-number";
-
         [Log(LogLevel.Warning)] public  ILog              Log              { get; set; }
         [Inject]                public  IEventDispatcher  Dispatcher       { get; set; }
         [Inject]                public  IContext          Context          { get; set; }
@@ -20,7 +18,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
 
         public string PersistentDataPath { get; private set; }
         public string Version            => Application.version;
-        public int    BuildNumber        { get; private set; }
 
         public bool IsPaused  { get; private set; }
         public bool IsFocused { get; private set; }
@@ -32,7 +29,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
         private void PostConstruct()
         {
             PersistentDataPath = GetPersistentDataPath();
-            BuildNumber = GetBuildNumber();
 
             _mainSceneName = GetMainSceneName();
 
@@ -41,7 +37,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
             _agent.Focus += OnFocus;
             _agent.Quitting += OnQuitting;
 
-            Log.Debug((s, b) => $"MainScene: \"{s}\" BuildNumber: {b}", _mainSceneName, BuildNumber);
+            Log.Debug(s => $"MainScene: \"{s}\"", _mainSceneName);
         }
 
         [PreDestroy]
@@ -113,14 +109,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.App.Impl
         /*
          * Static.
          */
-
-        public static int GetBuildNumber()
-        {
-            var text = Resources.Load<TextAsset>(BuildNumberFileName);
-            if (text != null && int.TryParse(text.text, out var buildNumber))
-                return buildNumber;
-            return 0;
-        }
 
         public static string GetPersistentDataPath()
         {
