@@ -29,21 +29,26 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.InternetReachability.Impl
          * Public.
          */
         
+        public void Check(Action<bool> onComplete, int timeout)
+        {
+            _coroutineProvider.StartCoroutine(CheckImpl(onComplete, timeout));
+        }
+        
         public void Check(Action<bool> onComplete)
         {
-            _coroutineProvider.StartCoroutine(CheckImpl(onComplete));
+            _coroutineProvider.StartCoroutine(CheckImpl(onComplete, 3));
         }
         
         /*
          * Private.
          */
         
-        private IEnumerator CheckImpl(Action<bool> onComplete)
+        private IEnumerator CheckImpl(Action<bool> onComplete, int timeout)
         {
             bool result;
             using (var request = UnityWebRequest.Head("https://google.com"))
             {
-                request.timeout = 5;
+                request.timeout = timeout;
                 yield return request.SendWebRequest();
                 result = request.responseCode == 200;
             }
