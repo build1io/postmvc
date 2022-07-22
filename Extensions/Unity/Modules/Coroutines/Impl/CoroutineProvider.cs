@@ -51,7 +51,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Coroutines.Impl
         {
             if (routine == null) 
                 return;
-            _coroutineProvider.StopCoroutine(routine);
+            
+            if (_coroutineProvider)
+                _coroutineProvider.StopCoroutine(routine);
+            
             routine = null;
         }
     }
