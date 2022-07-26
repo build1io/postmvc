@@ -15,37 +15,37 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
         public override void Debug(string message)
         {
             if (CheckLevel(LogLevel.Debug))
-                DebugImpl(FormatMessage(message));
+                UnityEngine.Debug.Log(FormatMessage(message));
         }
 
         public override void Debug(Exception exception)
         {
             if (CheckLevel(LogLevel.Debug))
-                DebugImpl(FormatException(exception));
+                UnityEngine.Debug.Log(FormatException(exception));
         }
 
         public override void Debug(Func<string> callback)
         {
             if (CheckLevel(LogLevel.Debug))
-                DebugImpl(FormatMessage(callback.Invoke()));
+                UnityEngine.Debug.Log(FormatMessage(callback.Invoke()));
         }
 
         public override void Debug<T1>(Func<T1, string> callback, T1 param01)
         {
             if (CheckLevel(LogLevel.Debug))
-                DebugImpl(FormatMessage(callback.Invoke(param01)));
+                UnityEngine.Debug.Log(FormatMessage(callback.Invoke(param01)));
         }
 
         public override void Debug<T1, T2>(Func<T1, T2, string> callback, T1 param01, T2 param02)
         {
             if (CheckLevel(LogLevel.Debug))
-                DebugImpl(FormatMessage(callback.Invoke(param01, param02)));
+                UnityEngine.Debug.Log(FormatMessage(callback.Invoke(param01, param02)));
         }
 
         public override void Debug<T1, T2, T3>(Func<T1, T2, T3, string> callback, T1 param01, T2 param02, T3 param03)
         {
             if (CheckLevel(LogLevel.Debug))
-                DebugImpl(FormatMessage(callback.Invoke(param01, param02, param03)));
+                UnityEngine.Debug.Log(FormatMessage(callback.Invoke(param01, param02, param03)));
         }
 
         public override void Debug(Action<ILogDebug> callback)
@@ -71,12 +71,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             if (CheckLevel(LogLevel.Debug))
                 callback.Invoke(this, param01, param02, param03);
         }
-        
-        private static void DebugImpl(string message)
-        {
-            UnityEngine.Debug.Log(message);
-        }
-        
+
         /*
          * Warning.
          */
@@ -84,37 +79,37 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
         public override void Warn(string message)
         {
             if (CheckLevel(LogLevel.Warning))
-                WarningImpl(FormatMessage(message));
+                UnityEngine.Debug.LogWarning(FormatMessage(message));
         }
 
         public override void Warn(Exception exception)
         {
             if (CheckLevel(LogLevel.Warning))
-                WarningImpl(FormatException(exception));
+                UnityEngine.Debug.LogWarning(FormatException(exception));
         }
 
         public override void Warn(Func<string> callback)
         {
             if (CheckLevel(LogLevel.Warning))
-                WarningImpl(FormatMessage(callback.Invoke()));
+                UnityEngine.Debug.LogWarning(FormatMessage(callback.Invoke()));
         }
 
         public override void Warn<T1>(Func<T1, string> callback, T1 param01)
         {
             if (CheckLevel(LogLevel.Warning))
-                WarningImpl(FormatMessage(callback.Invoke(param01)));
+                UnityEngine.Debug.LogWarning(FormatMessage(callback.Invoke(param01)));
         }
 
         public override void Warn<T1, T2>(Func<T1, T2, string> callback, T1 param01, T2 param02)
         {
             if (CheckLevel(LogLevel.Warning))
-                WarningImpl(FormatMessage(callback.Invoke(param01, param02)));
+                UnityEngine.Debug.LogWarning(FormatMessage(callback.Invoke(param01, param02)));
         }
 
         public override void Warn<T1, T2, T3>(Func<T1, T2, T3, string> callback, T1 param01, T2 param02, T3 param03)
         {
             if (CheckLevel(LogLevel.Warning))
-                WarningImpl(FormatMessage(callback.Invoke(param01, param02, param03)));
+                UnityEngine.Debug.LogWarning(FormatMessage(callback.Invoke(param01, param02, param03)));
         }
 
         public override void Warn(Action<ILogWarn> callback)
@@ -140,12 +135,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             if (CheckLevel(LogLevel.Warning))
                 callback.Invoke(this, param01, param02, param03);
         }
-        
-        private static void WarningImpl(string message)
-        {
-            UnityEngine.Debug.LogWarning(message);
-        }
-        
+
         /*
          * Error.
          */
@@ -153,37 +143,37 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
         public override void Error(string message)
         {
             if (CheckLevel(LogLevel.Error))
-                ErrorImpl(FormatMessage(message));
+                UnityEngine.Debug.LogError(FormatMessage(message));
         }
 
         public override void Error(Exception exception)
         {
             if (CheckLevel(LogLevel.Error))
-                ErrorImpl(FormatException(exception));
+                UnityEngine.Debug.LogError(FormatException(exception));
         }
 
         public override void Error(Func<string> callback)
         {
             if (CheckLevel(LogLevel.Error))
-                ErrorImpl(FormatMessage(callback.Invoke()));
+                UnityEngine.Debug.LogError(FormatMessage(callback.Invoke()));
         }
 
         public override void Error<T1>(Func<T1, string> callback, T1 param01)
         {
             if (CheckLevel(LogLevel.Error))
-                ErrorImpl(FormatMessage(callback.Invoke(param01)));
+                UnityEngine.Debug.LogError(FormatMessage(callback.Invoke(param01)));
         }
 
         public override void Error<T1, T2>(Func<T1, T2, string> callback, T1 param01, T2 param02)
         {
             if (CheckLevel(LogLevel.Error))
-                ErrorImpl(FormatMessage(callback.Invoke(param01, param02)));
+                UnityEngine.Debug.LogError(FormatMessage(callback.Invoke(param01, param02)));
         }
 
         public override void Error<T1, T2, T3>(Func<T1, T2, T3, string> callback, T1 param01, T2 param02, T3 param03)
         {
             if (CheckLevel(LogLevel.Error))
-                ErrorImpl(FormatMessage(callback.Invoke(param01, param02, param03)));
+                UnityEngine.Debug.LogError(FormatMessage(callback.Invoke(param01, param02, param03)));
         }
 
         public override void Error(Action<ILogError> callback)
@@ -208,11 +198,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
         {
             if (CheckLevel(LogLevel.Error))
                 callback.Invoke(this, param01, param02, param03);
-        }
-        
-        private static void ErrorImpl(string message)
-        {
-            UnityEngine.Debug.LogError(message);
         }
     }
 }
