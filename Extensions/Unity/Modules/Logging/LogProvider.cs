@@ -37,7 +37,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             }
             else
             {
-                log = GetLog(parent.GetType(), attribute.logLevel);
+                log = GetLog(parent, attribute.logLevel);
                 _usedInstances.Add(log);
             }
 
@@ -59,17 +59,21 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             var log = GetLog(typeof(T).Name, level);
 
             if (typeof(MonoBehaviour).IsAssignableFrom(typeof(T)))
-                log.Warn("You're instantiating a logger in a MonoBehavior. This may end up in script instantiation exception on a device. Consider inheriting of component from UnityView and injecting a logger.");
+            {
+                log.Warn("You're getting a logger during MonoBehavior instantiation. " +
+                         "This may end up in script instantiation exception on a device. " +
+                         "Consider inheriting of component from UnityView and injecting a logger.");    
+            }
             
             return log;
         }
 
-        public static ILog GetLog(Type type, LogLevel level)
+        public static ILog GetLog(object owner, LogLevel level)
         {
-            return GetLog(type.Name, level);
+            return GetLog(owner.GetType().Name, level);
         }
 
-        public static ILog GetLog(string prefix, LogLevel level)
+        private static ILog GetLog(string prefix, LogLevel level)
         {
             if (GlobalLogLevelOverride != LogLevel.None)
                 level = GlobalLogLevelOverride;
