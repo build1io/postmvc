@@ -41,7 +41,7 @@ namespace Build1.PostMVC.Extensions.Unity
             injectionBinder.Bind<IUnityViewEventProcessor>().To<UnityViewEventProcessor>().AsSingleton();
 
             // TODO: move to PostMVCUnityApp module.
-            injectionBinder.Bind<ILog>().ToProvider<LogProvider>().ByAttribute<Log>();
+            injectionBinder.Bind<ILog>().ToProvider<LogProvider>().ByAttribute<LogAttribute>();
             injectionBinder.Bind<IAgentsController>().To<AgentsController>().AsSingleton();
             injectionBinder.Bind<IAppController>().To<AppController>().AsSingleton().ConstructOnStart();
             injectionBinder.Bind<IAssetsController>().To<AssetsController>().AsSingleton();

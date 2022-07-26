@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl;
+using UnityEngine;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 {
-    public sealed class LogProvider : InjectionProvider<Log, ILog>
+    public sealed class LogProvider : InjectionProvider<LogAttribute, ILog>
     {
         public static LogLevel GlobalLogLevelOverride  = LogLevel.None;
         public static bool     ForceLogsInReleaseBuild = false;
@@ -23,7 +24,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
          * Public.
          */
 
-        public override ILog TakeInstance(object parent, Log attribute)
+        public override ILog TakeInstance(object parent, LogAttribute attribute)
         {
             ILog log;
 
@@ -55,7 +56,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 
         public static ILog GetLog<T>(LogLevel level)
         {
-            return GetLog(typeof(T).Name, level);
+            var log = GetLog(typeof(T).Name, level);
+
+            if (typeof(MonoBehaviour).IsAssignableFrom(typeof(T)))
+                log.Warn("You're instantiating a logger in a MonoBehavior. This may end up in script instantiation exception on a device. Consider inheriting of component from UnityView and injecting a logger.");
+            
+            return log;
         }
 
         public static ILog GetLog(Type type, LogLevel level)
