@@ -3,16 +3,16 @@ using Build1.PostMVC.Extensions.MVCS.Injection.Api;
 
 namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 {
-    internal sealed class InjectionBinding : IInjectionBinding, IInjectionBindingTo, IInjectionBindingToBinding,
-                                             IInjectionBindingToProvider, IInjectionBindingToProviderInstance,
-                                             IInjectionBindingToType, IInjectionBindingToTypeConstructOnStart,
-                                             IInjectionBindingToValue, IInjectionBindingToValueConstruct
+    internal class InjectionBinding : IInjectionBinding, IInjectionBindingTo, IInjectionBindingToBinding,
+                                      IInjectionBindingToProvider, IInjectionBindingToProviderInstance,
+                                      IInjectionBindingToType, IInjectionBindingToTypeConstructOnStart,
+                                      IInjectionBindingToValue, IInjectionBindingToValueConstruct
     {
         public Type                 Key                { get; }
-        public object               Value              { get; private set; }
-        public InjectionBindingType BindingType        { get; private set; }
-        public InjectionMode        InjectionMode      { get; private set; }
-        public bool                 ToConstruct        { get; private set; }
+        public object               Value              { get; protected set; }
+        public InjectionBindingType BindingType        { get; protected set; }
+        public InjectionMode        InjectionMode      { get; protected set; }
+        public bool                 ToConstruct        { get; protected set; }
         public bool                 ToConstructOnStart { get; private set; }
 
         public Type InjectionAttribute { get; private set; } = typeof(Inject);
@@ -28,15 +28,6 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
         public void SetValue(object value)
         {
             Value = value;
-        }
-
-        public IInjectionBindingToType To<T>() where T : class, new()
-        {
-            Value = typeof(T);
-            BindingType = InjectionBindingType.Type;
-            InjectionMode = InjectionMode.Factory;
-            ToConstruct = true;
-            return this;
         }
 
         public IInjectionBindingToValue To(object value)
@@ -117,6 +108,22 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
         public override string ToString()
         {
             return Key.ToString();
+        }
+    }
+
+    internal sealed class InjectionBinding<T> : InjectionBinding, IInjectionBindingTo<T>
+    {
+        public InjectionBinding(Type key) : base(key)
+        {
+        }
+        
+        public IInjectionBindingToType To<I>() where I : T, new()
+        {
+            Value = typeof(I);
+            BindingType = InjectionBindingType.Type;
+            InjectionMode = InjectionMode.Factory;
+            ToConstruct = true;
+            return this;
         }
     }
 }

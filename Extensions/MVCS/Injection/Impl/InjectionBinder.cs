@@ -27,9 +27,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
          * Bindings.
          */
 
-        public IInjectionBindingTo Bind<T>()
+        public IInjectionBindingTo<T> Bind<T>()
         {
-            return Bind(typeof(T));
+            var type = typeof(T);
+            
+            if (_bindings.ContainsKey(type))
+                throw new InjectionException(InjectionExceptionType.BindingAlreadyRegistered, type.FullName);
+            
+            var binding = new InjectionBinding<T>(type);
+            _bindings.Add(type, binding);
+            return binding;
         }
 
         public IInjectionBindingTo Bind(Type type)
@@ -48,9 +55,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             _bindings.Add(binding.Key, binding);
         }
 
-        public IInjectionBindingTo Rebind<T>()
+        public IInjectionBindingTo<T> Rebind<T>()
         {
-            return Rebind(typeof(T));
+            Unbind<T>();
+            return Bind<T>();
         }
 
         public IInjectionBindingTo Rebind(Type type)
