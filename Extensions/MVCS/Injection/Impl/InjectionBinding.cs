@@ -74,7 +74,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 
         public IInjectionBindingToValueConstruct ConstructValue()
         {
-            ToConstruct = Injector.CheckTypeCanBeConstructed(Value.GetType());
+            ToConstruct = InjectionBinder.CheckTypeCanBeConstructed(Value.GetType());
             return this;
         }
 
