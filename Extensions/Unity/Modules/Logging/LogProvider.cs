@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl;
 using UnityEngine;
@@ -8,8 +9,15 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 {
     public sealed class LogProvider : InjectionProvider<LogAttribute, ILog>
     {
-        public static LogLevel GlobalLogLevelOverride  = LogLevel.None;
-        public static bool     ForceLogsInReleaseBuild = false;
+        public static bool ForceAllLogs   = false;
+        public static bool RecordLogs     = false;
+        public static bool PrintLogs      = false;
+        public static uint FlushThreshold = 256;
+
+        private static readonly StringBuilder _records = new();
+        private static          int           _recordsCount;
+
+        public static event Action<string> OnFlush;
 
         private readonly Stack<ILog> _availableInstances;
         private readonly List<ILog>  _usedInstances;
@@ -21,7 +29,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
         }
 
         /*
-         * Public.
+         * Instances.
          */
 
         public override ILog TakeInstance(object parent, LogAttribute attribute)
@@ -32,7 +40,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             {
                 log = _availableInstances.Pop();
                 log.SetPrefix(parent.GetType().Name);
-                log.SetLevel(GlobalLogLevelOverride != LogLevel.None ? GlobalLogLevelOverride : attribute.logLevel);
+                log.SetLevel(ForceAllLogs ? LogLevel.All : attribute.logLevel);
                 _usedInstances.Add(log);
             }
             else
@@ -51,50 +59,72 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
         }
 
         /*
-         * Static.
+         * Loggers creation.
          */
 
         public static ILog GetLog<T>(LogLevel level)
         {
-            var log = GetLog(typeof(T).Name, level);
+            var log = GetImpl(typeof(T).Name, level);
 
             if (typeof(MonoBehaviour).IsAssignableFrom(typeof(T)))
             {
                 log.Warn("You're getting a logger during MonoBehavior instantiation. " +
                          "This may end up in script instantiation exception on a device. " +
-                         "Consider inheriting of component from UnityView and injecting a logger.");    
+                         "Consider inheriting of component from UnityView and injecting a logger.");
             }
-            
+
             return log;
         }
 
         public static ILog GetLog(object owner, LogLevel level)
         {
-            return GetLog(owner.GetType().Name, level);
+            return GetImpl(owner.GetType().Name, level);
         }
 
-        private static ILog GetLog(string prefix, LogLevel level)
+        private static ILog GetImpl(string prefix, LogLevel level)
         {
-            if (GlobalLogLevelOverride != LogLevel.None)
-                level = GlobalLogLevelOverride;
+            if (ForceAllLogs)
+                level = LogLevel.All;
 
-            #if UNITY_WEBGL && !UNITY_EDITOR
-            
-            return new LogWebGL(prefix, level);
+            // Debug.isDebugBuild is always true in Editor.
+            if (Debug.isDebugBuild || ForceAllLogs || PrintLogs || RecordLogs)
+            {
+                #if UNITY_WEBGL && !UNITY_EDITOR
+                return new LogWebGL(prefix, level, Debug.isDebugBuild || PrintLogs, RecordLogs);
 
-            #elif UNITY_EDITOR
+                #else
 
-            return new LogDebug(prefix, level);
+                return new LogDefault(prefix, level, Debug.isDebugBuild || PrintLogs, RecordLogs);
 
-            #else
-            
-            // Always returns true in Editor.
-            if (UnityEngine.Debug.isDebugBuild || ForceLogsInReleaseBuild)
-                return new LogDebug(prefix, level);
+                #endif
+            }
 
             return new LogVoid(prefix, level);
+        }
 
-            #endif
+        /*
+         * Log Records.
+         */
+
+        internal static void RecordMessage(string message)
+        {
+            _records.AppendLine(message);
+            _recordsCount++;
+
+            if (_recordsCount >= FlushThreshold)
+                FlushLogs();
+        }
+
+        public static string FlushLogs()
+        {
+            var logs = _records.ToString();
+
+            _records.Clear();
+            _recordsCount = 0;
+
+            OnFlush?.Invoke(logs);
+
+            return logs;
         }
     }
 }

@@ -5,13 +5,17 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 {
     internal abstract class LogBase : ILog, ILogDebug, ILogWarn, ILogError
     {
-        private string   _prefix;
-        private LogLevel _level;
+        private            string   _prefix;
+        private            LogLevel _level;
+        protected readonly bool     _print;
+        protected readonly bool     _record;
 
-        protected LogBase(string prefix, LogLevel mode)
+        protected LogBase(string prefix, LogLevel mode, bool print, bool record)
         {
             _prefix = prefix;
             _level = mode;
+            _print = print;
+            _record = record;
         }
 
         /*
@@ -86,6 +90,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
         protected string FormatMessage(object message)        { return FormatMessage(_prefix, message); }
         protected string FormatException(Exception exception) { return FormatException(_prefix, exception); }
 
+        protected void RecordMessage(string message)
+        {
+            LogProvider.RecordMessage(message);
+        }
+        
         /*
          * Static.
          */
@@ -99,14 +108,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
         {
             if (exception.InnerException == null)
                 return $"{prefix}: {exception.GetType().Name}: {exception.Message}";
-            
+
             var builder = new StringBuilder($"{prefix}: {FormatExceptionNoInner(exception)}");
-            
+
             var innerException = exception.InnerException;
             while (innerException != null)
             {
                 builder.AppendLine("");
-                
+
                 foreach (var line in FormatExceptionNoInner(innerException).Split('\n'))
                     builder.AppendLine($"        {line}");
 
