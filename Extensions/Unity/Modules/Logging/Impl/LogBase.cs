@@ -5,17 +5,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 {
     internal abstract class LogBase : ILog, ILogDebug, ILogWarn, ILogError
     {
-        private            string   _prefix;
-        private            LogLevel _level;
-        protected readonly bool     _print;
-        protected readonly bool     _record;
+        private string   _prefix;
+        private LogLevel _level;
 
-        protected LogBase(string prefix, LogLevel mode, bool print, bool record)
+        protected LogBase(string prefix, LogLevel mode)
         {
             _prefix = prefix;
             _level = mode;
-            _print = print;
-            _record = record;
         }
 
         /*
@@ -90,11 +86,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
         protected string FormatMessage(object message)        { return FormatMessage(_prefix, message); }
         protected string FormatException(Exception exception) { return FormatException(_prefix, exception); }
 
-        protected void RecordMessage(string message)
-        {
-            LogProvider.RecordMessage(message);
-        }
-        
         /*
          * Static.
          */

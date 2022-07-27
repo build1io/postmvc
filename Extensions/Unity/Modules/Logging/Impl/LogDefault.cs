@@ -4,7 +4,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 {
     internal sealed class LogDefault : LogBase
     {
-        public LogDefault(string prefix, LogLevel level, bool print, bool record) : base(prefix, level, print, record)
+        public LogDefault(string prefix, LogLevel level) : base(prefix, level)
         {
         }
         
@@ -19,11 +19,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             message = FormatMessage(message);
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.Log(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Debug(Exception exception)
@@ -33,11 +33,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatException(exception);
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.Log(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Debug(Func<string> callback)
@@ -47,11 +47,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke());
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.Log(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Debug<T1>(Func<T1, string> callback, T1 param01)
@@ -61,11 +61,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01));
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.Log(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Debug<T1, T2>(Func<T1, T2, string> callback, T1 param01, T2 param02)
@@ -75,11 +75,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01, param02));
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.Log(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Debug<T1, T2, T3>(Func<T1, T2, T3, string> callback, T1 param01, T2 param02, T3 param03)
@@ -89,11 +89,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01, param02, param03));
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.Log(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Debug(Action<ILogDebug> callback)
@@ -131,11 +131,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             message = FormatMessage(message);
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.LogWarning(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Warn(Exception exception)
@@ -145,11 +145,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatException(exception);
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.LogWarning(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Warn(Func<string> callback)
@@ -159,11 +159,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke());
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.LogWarning(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Warn<T1>(Func<T1, string> callback, T1 param01)
@@ -173,11 +173,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01));
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.LogWarning(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Warn<T1, T2>(Func<T1, T2, string> callback, T1 param01, T2 param02)
@@ -187,11 +187,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01, param02));
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.LogWarning(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Warn<T1, T2, T3>(Func<T1, T2, T3, string> callback, T1 param01, T2 param02, T3 param03)
@@ -201,11 +201,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01, param02, param03));
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.LogWarning(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Warn(Action<ILogWarn> callback)
@@ -243,11 +243,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             message = FormatMessage(message);
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.LogError(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Error(Exception exception)
@@ -257,11 +257,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatException(exception);
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.LogError(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Error(Func<string> callback)
@@ -271,11 +271,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke());
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.LogError(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Error<T1>(Func<T1, string> callback, T1 param01)
@@ -285,11 +285,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01));
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.LogError(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Error<T1, T2>(Func<T1, T2, string> callback, T1 param01, T2 param02)
@@ -299,11 +299,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01, param02));
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.LogError(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Error<T1, T2, T3>(Func<T1, T2, T3, string> callback, T1 param01, T2 param02, T3 param03)
@@ -313,11 +313,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01, param02, param03));
             
-            if (_print)
+            if (LogProvider.Print)
                 UnityEngine.Debug.LogError(message);
             
-            if (_record)
-                RecordMessage(message);
+            if (LogProvider.Record)
+                LogProvider.RecordMessage(message);
         }
 
         public override void Error(Action<ILogError> callback)

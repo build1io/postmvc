@@ -4,7 +4,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 {
     internal sealed class LogVoid : LogBase
     {
-        public LogVoid(string prefix, LogLevel level) : base(prefix, level, false, false)
+        public LogVoid(string prefix, LogLevel level) : base(prefix, level)
         {
         }
 
