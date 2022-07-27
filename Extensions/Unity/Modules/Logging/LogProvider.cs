@@ -99,6 +99,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             if (ForceAll || Print || Record)
             {
                 #if UNITY_WEBGL && !UNITY_EDITOR
+                
                 return new LogWebGL(prefix, level);
 
                 #else
@@ -108,7 +109,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
                 #endif
             }
 
-            return new LogVoid(prefix, level);
+            return new LogVoid();
         }
 
         /*
