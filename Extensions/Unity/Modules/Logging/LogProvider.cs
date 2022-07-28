@@ -16,7 +16,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
         public static bool Print          = true;
         public static bool Record         = false;
         public static bool SaveToFile     = false;
-        public static byte FlushThreshold = 255;
+        public static byte FlushThreshold = 128;
         public static byte RecordsHistory = 10;
 
         private static readonly StringBuilder _records = new();
