@@ -21,8 +21,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.Log(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -35,8 +34,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.Log(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -49,8 +47,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.Log(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -63,8 +60,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.Log(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -77,8 +73,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.Log(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -91,8 +86,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.Log(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -133,8 +127,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.LogWarning(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -147,8 +140,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.LogWarning(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -161,8 +153,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.LogWarning(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -175,8 +166,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.LogWarning(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -189,8 +179,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.LogWarning(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -203,8 +192,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.LogWarning(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -245,8 +233,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.LogError(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -259,8 +246,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.LogError(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -273,8 +259,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.LogError(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -287,8 +272,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.LogError(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -301,8 +285,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.LogError(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -315,8 +298,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             
             if (LogProvider.Print)
                 UnityEngine.Debug.LogError(message);
-            
-            if (LogProvider.Record)
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 

@@ -13,13 +13,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
     public sealed class LogProvider : InjectionProvider<LogAttribute, ILog>
     {
         public static bool ForceAll       = false;
-        public static bool Print          = false;
+        public static bool Print          = true;
         public static bool Record         = false;
         public static bool SaveToFile     = false;
         public static byte FlushThreshold = 255;
         public static byte RecordsHistory = 10;
-
-        // TODO: handle 3rd party logs
 
         private static readonly StringBuilder _records = new();
         private static          int           _recordsCount;
@@ -29,6 +27,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 
         private readonly Stack<ILog> _availableInstances;
         private readonly List<ILog>  _usedInstances;
+
+        static LogProvider()
+        {
+            Application.logMessageReceivedThreaded += OnLogReceived;
+        }
 
         public LogProvider()
         {
@@ -94,8 +97,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             if (ForceAll)
                 level = LogLevel.All;
 
-            Print = Print || Debug.isDebugBuild; 
-
             // Debug.isDebugBuild is always true in Editor.
             if (ForceAll || Print || Record)
             {
@@ -119,11 +120,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 
         internal static void RecordMessage(string message)
         {
-            _records.AppendLine(message);
-            _recordsCount++;
+            lock (_records)
+            {
+                _records.AppendLine(message);
+                _recordsCount++;
 
-            if (FlushThreshold > 0 && _recordsCount >= FlushThreshold)
-                FlushLogs();
+                if (FlushThreshold > 0 && _recordsCount >= FlushThreshold)
+                    FlushLogs();    
+            }
         }
         
         public static string GetLog()
@@ -215,7 +219,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
                 if (!Directory.Exists(folderPath))
                     Directory.CreateDirectory(folderPath);
 
-                var fileName = $"{_recordsDate:MM.dd.yyyy hh.mm.ss tt}.log";
+                var fileName = $"{_recordsDate:MM.dd.yyyy HH.mm.ss}.log";
                 var filePath = Path.Combine(folderPath, fileName);
 
                 if (File.Exists(filePath))
@@ -250,6 +254,21 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 
             for (var i = RecordsHistory; i < files.Length; i++)
                 files.ElementAt(i).Delete();
+        }
+        
+        /*
+         * 3rd Party Logs.
+         */
+        
+        private static void OnLogReceived(string logString, string stackTrace, LogType type)
+        {
+            if (!Record)
+                return;
+            
+            if (type is LogType.Error or LogType.Exception)
+                RecordMessage($"{logString}\n{stackTrace}");
+            else
+                RecordMessage(logString);
         }
     }
 }
