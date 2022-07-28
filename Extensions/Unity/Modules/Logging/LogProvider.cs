@@ -13,12 +13,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
     public sealed class LogProvider : InjectionProvider<LogAttribute, ILog>
     {
         public static bool ForceAll       = false;
-        public static bool Print          = Debug.isDebugBuild;
+        public static bool Print          = false;
         public static bool Record         = false;
         public static bool SaveToFile     = false;
         public static byte FlushThreshold = 255;
         public static byte RecordsHistory = 10;
-        
+
         // TODO: implement old files cleanup when writing a new file
         // TODO: handle 3rd party logs
 
@@ -94,6 +94,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
         {
             if (ForceAll)
                 level = LogLevel.All;
+
+            Print = Print || Debug.isDebugBuild; 
 
             // Debug.isDebugBuild is always true in Editor.
             if (ForceAll || Print || Record)
