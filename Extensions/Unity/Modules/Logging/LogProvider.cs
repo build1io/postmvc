@@ -19,7 +19,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
         public static byte FlushThreshold = 255;
         public static byte RecordsHistory = 10;
 
-        // TODO: implement old files cleanup when writing a new file
         // TODO: handle 3rd party logs
 
         private static readonly StringBuilder _records = new();
@@ -143,7 +142,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             _recordsCount = 0;
 
             if (SaveToFile)
-                AppendFile(logs);
+                WriteToFile(logs);
 
             OnFlush?.Invoke(logs);
         }
@@ -196,7 +195,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
          * Saving to File.
          */
 
-        private static void AppendFile(string logs)
+        private static void WriteToFile(string logs)
         {
             try
             {
@@ -205,18 +204,45 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
                 if (!Directory.Exists(folderPath))
                     Directory.CreateDirectory(folderPath);
 
-                var fileName = $"{_recordsDate:MM.dd.yyyy hh.mm tt}.log";
+                var fileName = $"{_recordsDate:MM.dd.yyyy hh.mm.ss tt}.log";
                 var filePath = Path.Combine(folderPath, fileName);
 
                 if (File.Exists(filePath))
+                {
                     File.AppendAllText(filePath, logs);
+                }
                 else
+                {
                     File.WriteAllText(filePath, logs);
+
+                    DeleteOldFiles();
+                }
             }
             catch
             {
                 // Ignore.
             }
+        }
+
+        private static void DeleteOldFiles()
+        {
+            if (RecordsHistory == 0)
+                return;
+            
+            var folderPath = Path.Combine(PathUtil.GetPersistentDataPath(), "Logs");
+            if (!Directory.Exists(folderPath))
+                return;
+            
+            var directory = new DirectoryInfo(folderPath);
+            var files = directory.GetFiles()
+                                 .OrderByDescending(f => f.LastWriteTime)
+                                 .ToArray();
+            
+            if (files.Length <= RecordsHistory)
+                return;
+
+            for (var i = RecordsHistory; i < files.Length; i++)
+                files.ElementAt(i).Delete();
         }
     }
 }
