@@ -142,7 +142,16 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             _recordsCount = 0;
 
             if (SaveToFile)
-                WriteToFile(logs);
+            {
+                WriteToFile(logs, out var newFileCreated);
+                
+                if (newFileCreated)
+                    DeleteOldFiles();
+            }
+            else if (RecordsHistory == 0)
+            {
+                DeleteOldFiles();
+            }
 
             OnFlush?.Invoke(logs);
         }
@@ -195,8 +204,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
          * Saving to File.
          */
 
-        private static void WriteToFile(string logs)
+        private static void WriteToFile(string logs, out bool newFileCreated)
         {
+            newFileCreated = false;
+            
             try
             {
                 var folderPath = Path.Combine(PathUtil.GetPersistentDataPath(), "Logs");
@@ -214,8 +225,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
                 else
                 {
                     File.WriteAllText(filePath, logs);
-
-                    DeleteOldFiles();
+                    newFileCreated = true;
                 }
             }
             catch
@@ -226,9 +236,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 
         private static void DeleteOldFiles()
         {
-            if (RecordsHistory == 0)
-                return;
-            
             var folderPath = Path.Combine(PathUtil.GetPersistentDataPath(), "Logs");
             if (!Directory.Exists(folderPath))
                 return;
