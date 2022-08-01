@@ -338,8 +338,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
 
                 if (binding.TriggerValuesSet &&
-                    !EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01) &&
-                    !EqualityComparer<T2>.Default.Equals(binding.TriggerValue02, param02))
+                    (!EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01) ||
+                    !EqualityComparer<T2>.Default.Equals(binding.TriggerValue02, param02)))
                     continue;
 
                 if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke(param01, param02))
@@ -370,10 +370,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
 
-                if (binding.TriggerValuesSet &&
-                    !EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01) &&
-                    !EqualityComparer<T2>.Default.Equals(binding.TriggerValue02, param02) &&
-                    !EqualityComparer<T3>.Default.Equals(binding.TriggerValue03, param03))
+                if (binding.TriggerValuesSet && 
+                    (!EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01) ||
+                    !EqualityComparer<T2>.Default.Equals(binding.TriggerValue02, param02) ||
+                    !EqualityComparer<T3>.Default.Equals(binding.TriggerValue03, param03)))
                     continue;
 
                 if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke(param01, param02, param03))
