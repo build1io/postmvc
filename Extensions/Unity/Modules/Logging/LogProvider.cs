@@ -12,12 +12,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 {
     public sealed class LogProvider : InjectionProvider<LogAttribute, ILog>
     {
-        public static bool ForceAll       = false;
-        public static bool Print          = true;
-        public static bool Record         = false;
-        public static bool SaveToFile     = false;
-        public static byte FlushThreshold = 128;
-        public static byte RecordsHistory = 10;
+        public static LogLevel ForceLevel     = LogLevel.None;
+        public static LogLevel MinLevel       = LogLevel.Debug;
+        public static bool     Print          = true;
+        public static bool     Record         = false;
+        public static bool     SaveToFile     = false;
+        public static byte     FlushThreshold = 128;
+        public static byte     RecordsHistory = 10;
 
         private static readonly StringBuilder _records = new();
         private static          int           _recordsCount;
@@ -51,7 +52,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             {
                 log = _availableInstances.Pop();
                 log.SetPrefix(parent.GetType().Name);
-                log.SetLevel(ForceAll ? LogLevel.All : attribute.logLevel);
+                log.SetLevel(ForceLevel != LogLevel.None ? ForceLevel : attribute.logLevel);
                 _usedInstances.Add(log);
             }
             else
@@ -94,11 +95,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 
         private static ILog GetImpl(string prefix, LogLevel level)
         {
-            if (ForceAll)
-                level = LogLevel.All;
+            if (ForceLevel != LogLevel.None) // Using force level if it was set.
+                level = ForceLevel;
+            else if (level > LogLevel.None && level < MinLevel) // Filtering logs by min log level (could be set different for production environment).
+                level = MinLevel;
 
-            // Debug.isDebugBuild is always true in Editor.
-            if (ForceAll || Print || Record)
+            if (level != LogLevel.None && (Print || Record))
             {
                 #if UNITY_WEBGL && !UNITY_EDITOR
                 
@@ -118,18 +120,18 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
          * Log Records.
          */
 
-        internal static void RecordMessage(string message)
+        internal static void RecordMessage(string message, bool forceFlush)
         {
             lock (_records)
             {
                 _records.AppendLine(message);
                 _recordsCount++;
 
-                if (FlushThreshold > 0 && _recordsCount >= FlushThreshold)
-                    FlushLogs();    
+                if (forceFlush || (FlushThreshold > 0 && _recordsCount >= FlushThreshold))
+                    FlushLogs();
             }
         }
-        
+
         public static string GetLog()
         {
             return _recordsCount > 0 ? _records.ToString() : string.Empty;
@@ -139,7 +141,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
         {
             if (_recordsCount < 1)
                 return;
-            
+
             var logs = _records.ToString();
 
             _records.Clear();
@@ -148,7 +150,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             if (SaveToFile)
             {
                 WriteToFile(logs, out var newFileCreated);
-                
+
                 if (newFileCreated)
                     DeleteOldFiles();
             }
@@ -165,7 +167,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             var folderPath = Path.Combine(PathUtil.GetPersistentDataPath(), "Logs");
             if (!Directory.Exists(folderPath))
                 return null;
-            
+
             var paths = Directory.EnumerateFiles(folderPath, "*.log", SearchOption.TopDirectoryOnly).ToArray();
             var infos = new List<LogFile>(paths.Length);
 
@@ -180,7 +182,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             var folderPath = Path.Combine(PathUtil.GetPersistentDataPath(), "Logs");
             if (!Directory.Exists(folderPath))
                 return null;
-            
+
             var directory = new DirectoryInfo(folderPath);
             var file = directory.GetFiles()
                                 .OrderByDescending(f => f.LastWriteTime)
@@ -199,9 +201,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 
             foreach (var file in directory.GetFiles())
                 file.Delete();
-            
+
             foreach (var dir in directory.GetDirectories())
-                dir.Delete(true); 
+                dir.Delete(true);
         }
 
         /*
@@ -211,7 +213,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
         private static void WriteToFile(string logs, out bool newFileCreated)
         {
             newFileCreated = false;
-            
+
             try
             {
                 var folderPath = Path.Combine(PathUtil.GetPersistentDataPath(), "Logs");
@@ -243,32 +245,30 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             var folderPath = Path.Combine(PathUtil.GetPersistentDataPath(), "Logs");
             if (!Directory.Exists(folderPath))
                 return;
-            
+
             var directory = new DirectoryInfo(folderPath);
             var files = directory.GetFiles()
                                  .OrderByDescending(f => f.LastWriteTime)
                                  .ToArray();
-            
+
             if (files.Length <= RecordsHistory)
                 return;
 
             for (var i = RecordsHistory; i < files.Length; i++)
                 files.ElementAt(i).Delete();
         }
-        
+
         /*
          * 3rd Party Logs.
          */
-        
+
         private static void OnLogReceived(string logString, string stackTrace, LogType type)
         {
             if (!Record)
                 return;
-            
-            if (type is LogType.Error or LogType.Exception)
-                RecordMessage($"{logString}\n{stackTrace}");
-            else
-                RecordMessage(logString);
+
+            var isError = type is LogType.Error or LogType.Exception;
+            RecordMessage(isError ? $"{logString}\n{stackTrace}\n" : logString, isError);
         }
     }
 }

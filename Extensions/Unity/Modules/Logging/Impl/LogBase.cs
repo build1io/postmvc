@@ -92,13 +92,13 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
         protected static string FormatMessage(string prefix, object message)
         {
-            return $"{prefix}: {message}";
+            return $"{prefix}: {message}\n";
         }
 
         protected static string FormatException(string prefix, Exception exception)
         {
             if (exception.InnerException == null)
-                return $"{prefix}: {exception.GetType().Name}: {exception.Message}";
+                return $"{prefix}: {exception.GetType().Name}: {exception.Message}\n";
 
             var builder = new StringBuilder($"{prefix}: {FormatExceptionNoInner(exception)}");
 
