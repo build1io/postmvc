@@ -1,78 +1,27 @@
-#if UNITY_WEBGL
-
 using System;
-using System.Collections.Specialized;
-using System.Web;
-using System.Runtime.InteropServices;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 {
-    internal sealed class LogWebGL : LogBase
+    internal sealed class LogDefault : LogBase
     {
-        [DllImport("__Internal")]
-        private static extern void LogDebug(string message);
-
-        [DllImport("__Internal")]
-        private static extern void LogWarning(string message);
-
-        [DllImport("__Internal")]
-        private static extern void LogError(string message);
-
-        [DllImport("__Internal")]
-        private static extern string GetUrlParameters();
-
-        private static bool Print => _logLevelOverride != LogLevel.None || LogProvider.Print;
+        public LogDefault(string prefix, LogLevel level) : base(prefix, level)
+        {
+        }
         
-        private static readonly NameValueCollection _urlParams;
-        private static readonly LogLevel            _logLevelOverride;
-
-        static LogWebGL()
-        {
-            _urlParams = HttpUtility.ParseQueryString(GetUrlParameters().ToLower());
-
-            try
-            {
-                var logLevelString = _urlParams["loglevel"];
-                if (string.IsNullOrWhiteSpace(logLevelString))
-                    return;
-                
-                var logLevel = (LogLevel)Enum.Parse(typeof(LogLevel), logLevelString, true);
-                if (!Enum.IsDefined(typeof(LogLevel), logLevel))
-                    return;
-                
-                _logLevelOverride = logLevel;
-                LogDebug(FormatMessage(nameof(LogWebGL), $"Global log level overridden to {_logLevelOverride}"));
-            }
-            catch (Exception exception)
-            {
-                LogError(FormatException(nameof(LogWebGL), exception));
-            }
-        }
-
-        public LogWebGL(string prefix, LogLevel level, bool print, bool record) : base(prefix, ValidateLogLevel(level))
-        {
-        }
-
-        private static LogLevel ValidateLogLevel(LogLevel logLevel)
-        {
-            return _logLevelOverride != LogLevel.None ? _logLevelOverride : logLevel;
-        }
-
         /*
          * Debug.
          */
-
+        
         public override void Debug(string message)
         {
             if (!CheckLevel(LogLevel.Debug))
                 return;
 
-            message = FormatMessage(message); 
+            message = FormatMessage(message);
             
-            if (Print)
-                LogDebug(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.Log(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -81,12 +30,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             if (!CheckLevel(LogLevel.Debug))
                 return;
 
-            var message = FormatException(exception); 
+            var message = FormatException(exception);
             
-            if (Print)
-                LogDebug(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.Log(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -97,10 +45,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke());
             
-            if (Print)
-                LogDebug(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.Log(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -109,12 +56,11 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             if (!CheckLevel(LogLevel.Debug))
                 return;
 
-            var message = FormatMessage(callback.Invoke(param01)); 
+            var message = FormatMessage(callback.Invoke(param01));
             
-            if (Print)
-                LogDebug(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.Log(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -125,10 +71,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01, param02));
             
-            if (Print)
-                LogDebug(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.Log(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -139,10 +84,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01, param02, param03));
             
-            if (Print)
-                LogDebug(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.Log(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -181,10 +125,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             message = FormatMessage(message);
             
-            if (Print)
-                LogWarning(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.LogWarning(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -195,10 +138,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatException(exception);
             
-            if (Print)
-                LogWarning(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.LogWarning(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -209,10 +151,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke());
             
-            if (Print)
-                LogWarning(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.LogWarning(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -223,10 +164,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01));
             
-            if (Print)
-                LogWarning(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.LogWarning(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -237,10 +177,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01, param02));
             
-            if (Print)
-                LogWarning(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.LogWarning(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -251,10 +190,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01, param02, param03));
             
-            if (Print)
-                LogWarning(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.LogWarning(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -293,10 +231,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             message = FormatMessage(message);
             
-            if (Print)
-                LogError(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.LogError(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -307,10 +244,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatException(exception);
             
-            if (Print)
-                LogError(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.LogError(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -321,10 +257,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke());
             
-            if (Print)
-                LogError(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.LogError(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -335,10 +270,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01));
             
-            if (Print)
-                LogError(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.LogError(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -349,10 +283,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01, param02));
             
-            if (Print)
-                LogError(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.LogError(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -363,10 +296,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
 
             var message = FormatMessage(callback.Invoke(param01, param02, param03));
             
-            if (Print)
-                LogError(message);
-            
-            if (LogProvider.Record)
+            if (LogProvider.Print)
+                UnityEngine.Debug.LogError(message);
+            else if (LogProvider.Record)
                 LogProvider.RecordMessage(message);
         }
 
@@ -395,5 +327,3 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
         }
     }
 }
-
-#endif

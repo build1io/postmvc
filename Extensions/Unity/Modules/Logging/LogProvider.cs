@@ -1,17 +1,37 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using Build1.PostMVC.Extensions.MVCS.Injection;
 using Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl;
+using Build1.PostMVC.Extensions.Unity.Utils.Path;
+using UnityEngine;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 {
-    public sealed class LogProvider : InjectionProvider<Log, ILog>
+    public sealed class LogProvider : InjectionProvider<LogAttribute, ILog>
     {
-        public static LogLevel GlobalLogLevelOverride  = LogLevel.None;
-        public static bool     ForceLogsInReleaseBuild = false;
+        public static bool ForceAll       = false;
+        public static bool Print          = true;
+        public static bool Record         = false;
+        public static bool SaveToFile     = false;
+        public static byte FlushThreshold = 128;
+        public static byte RecordsHistory = 10;
+
+        private static readonly StringBuilder _records = new();
+        private static          int           _recordsCount;
+        private static readonly DateTime      _recordsDate = DateTime.UtcNow;
+
+        public static event Action<string> OnFlush;
 
         private readonly Stack<ILog> _availableInstances;
         private readonly List<ILog>  _usedInstances;
+
+        static LogProvider()
+        {
+            Application.logMessageReceivedThreaded += OnLogReceived;
+        }
 
         public LogProvider()
         {
@@ -20,10 +40,10 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
         }
 
         /*
-         * Public.
+         * Provider.
          */
 
-        public override ILog TakeInstance(object parent, Log attribute)
+        public override ILog TakeInstance(object parent, LogAttribute attribute)
         {
             ILog log;
 
@@ -31,12 +51,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
             {
                 log = _availableInstances.Pop();
                 log.SetPrefix(parent.GetType().Name);
-                log.SetLevel(GlobalLogLevelOverride != LogLevel.None ? GlobalLogLevelOverride : attribute.logLevel);
+                log.SetLevel(ForceAll ? LogLevel.All : attribute.logLevel);
                 _usedInstances.Add(log);
             }
             else
             {
-                log = GetLog(parent.GetType(), attribute.logLevel);
+                log = GetLog(parent, attribute.logLevel);
                 _usedInstances.Add(log);
             }
 
@@ -50,41 +70,205 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
         }
 
         /*
-         * Static.
+         * Loggers creation.
          */
 
         public static ILog GetLog<T>(LogLevel level)
         {
-            return GetLog(typeof(T).Name, level);
+            var log = GetImpl(typeof(T).Name, level);
+
+            if (typeof(MonoBehaviour).IsAssignableFrom(typeof(T)))
+            {
+                log.Warn("You're getting a logger during MonoBehavior instantiation. " +
+                         "This may end up in script instantiation exception on a device. " +
+                         "Consider inheriting of component from UnityView and injecting a logger.");
+            }
+
+            return log;
         }
 
-        public static ILog GetLog(Type type, LogLevel level)
+        public static ILog GetLog(object owner, LogLevel level)
         {
-            return GetLog(type.Name, level);
+            return GetImpl(owner.GetType().Name, level);
         }
 
-        public static ILog GetLog(string prefix, LogLevel level)
+        private static ILog GetImpl(string prefix, LogLevel level)
         {
-            if (GlobalLogLevelOverride != LogLevel.None)
-                level = GlobalLogLevelOverride;
+            if (ForceAll)
+                level = LogLevel.All;
 
-            #if UNITY_WEBGL && !UNITY_EDITOR
+            // Debug.isDebugBuild is always true in Editor.
+            if (ForceAll || Print || Record)
+            {
+                #if UNITY_WEBGL && !UNITY_EDITOR
+                
+                return new LogWebGL(prefix, level);
+
+                #else
+
+                return new LogDefault(prefix, level);
+
+                #endif
+            }
+
+            return new LogVoid();
+        }
+
+        /*
+         * Log Records.
+         */
+
+        internal static void RecordMessage(string message)
+        {
+            lock (_records)
+            {
+                _records.AppendLine(message);
+                _recordsCount++;
+
+                if (FlushThreshold > 0 && _recordsCount >= FlushThreshold)
+                    FlushLogs();    
+            }
+        }
+        
+        public static string GetLog()
+        {
+            return _recordsCount > 0 ? _records.ToString() : string.Empty;
+        }
+
+        public static void FlushLogs()
+        {
+            if (_recordsCount < 1)
+                return;
             
-            return new LogWebGL(prefix, level);
+            var logs = _records.ToString();
 
-            #elif UNITY_EDITOR
+            _records.Clear();
+            _recordsCount = 0;
 
-            return new LogDebug(prefix, level);
+            if (SaveToFile)
+            {
+                WriteToFile(logs, out var newFileCreated);
+                
+                if (newFileCreated)
+                    DeleteOldFiles();
+            }
+            else if (RecordsHistory == 0)
+            {
+                DeleteOldFiles();
+            }
 
-            #else
+            OnFlush?.Invoke(logs);
+        }
+
+        public static List<LogFile> GetLogFiles()
+        {
+            var folderPath = Path.Combine(PathUtil.GetPersistentDataPath(), "Logs");
+            if (!Directory.Exists(folderPath))
+                return null;
             
-            // Always returns true in Editor.
-            if (UnityEngine.Debug.isDebugBuild || ForceLogsInReleaseBuild)
-                return new LogDebug(prefix, level);
+            var paths = Directory.EnumerateFiles(folderPath, "*.log", SearchOption.TopDirectoryOnly).ToArray();
+            var infos = new List<LogFile>(paths.Length);
 
-            return new LogVoid(prefix, level);
+            foreach (var path in paths)
+                infos.Add(new LogFile(path));
 
-            #endif
+            return infos;
+        }
+
+        public static LogFile GetLastLogFile()
+        {
+            var folderPath = Path.Combine(PathUtil.GetPersistentDataPath(), "Logs");
+            if (!Directory.Exists(folderPath))
+                return null;
+            
+            var directory = new DirectoryInfo(folderPath);
+            var file = directory.GetFiles()
+                                .OrderByDescending(f => f.LastWriteTime)
+                                .First();
+
+            return new LogFile(Path.Combine(folderPath, file.FullName));
+        }
+
+        public static void DeleteLogFiles()
+        {
+            var folderPath = Path.Combine(PathUtil.GetPersistentDataPath(), "Logs");
+            if (!Directory.Exists(folderPath))
+                return;
+
+            var directory = new DirectoryInfo(folderPath);
+
+            foreach (var file in directory.GetFiles())
+                file.Delete();
+            
+            foreach (var dir in directory.GetDirectories())
+                dir.Delete(true); 
+        }
+
+        /*
+         * Saving to File.
+         */
+
+        private static void WriteToFile(string logs, out bool newFileCreated)
+        {
+            newFileCreated = false;
+            
+            try
+            {
+                var folderPath = Path.Combine(PathUtil.GetPersistentDataPath(), "Logs");
+
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
+
+                var fileName = $"{_recordsDate:MM.dd.yyyy HH.mm.ss}.log";
+                var filePath = Path.Combine(folderPath, fileName);
+
+                if (File.Exists(filePath))
+                {
+                    File.AppendAllText(filePath, logs);
+                }
+                else
+                {
+                    File.WriteAllText(filePath, logs);
+                    newFileCreated = true;
+                }
+            }
+            catch
+            {
+                // Ignore.
+            }
+        }
+
+        private static void DeleteOldFiles()
+        {
+            var folderPath = Path.Combine(PathUtil.GetPersistentDataPath(), "Logs");
+            if (!Directory.Exists(folderPath))
+                return;
+            
+            var directory = new DirectoryInfo(folderPath);
+            var files = directory.GetFiles()
+                                 .OrderByDescending(f => f.LastWriteTime)
+                                 .ToArray();
+            
+            if (files.Length <= RecordsHistory)
+                return;
+
+            for (var i = RecordsHistory; i < files.Length; i++)
+                files.ElementAt(i).Delete();
+        }
+        
+        /*
+         * 3rd Party Logs.
+         */
+        
+        private static void OnLogReceived(string logString, string stackTrace, LogType type)
+        {
+            if (!Record)
+                return;
+            
+            if (type is LogType.Error or LogType.Exception)
+                RecordMessage($"{logString}\n{stackTrace}");
+            else
+                RecordMessage(logString);
         }
     }
 }

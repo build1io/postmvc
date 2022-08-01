@@ -4,6 +4,11 @@ namespace Build1.PostMVC.Extensions.Unity.Utils.Path
 {
     public static class PathUtil
     {
+        public static string GetPersistentDataPath()
+        {
+            return GetPath(PathAttribute.Internal | PathAttribute.Persistent | PathAttribute.Canonical);
+        }
+        
         public static string GetPath(PathAttribute pathAttribute)
         {
             #if UNITY_ANDROID && !UNITY_EDITOR

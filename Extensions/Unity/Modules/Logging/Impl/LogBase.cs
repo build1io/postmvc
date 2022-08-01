@@ -99,14 +99,14 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
         {
             if (exception.InnerException == null)
                 return $"{prefix}: {exception.GetType().Name}: {exception.Message}";
-            
+
             var builder = new StringBuilder($"{prefix}: {FormatExceptionNoInner(exception)}");
-            
+
             var innerException = exception.InnerException;
             while (innerException != null)
             {
                 builder.AppendLine("");
-                
+
                 foreach (var line in FormatExceptionNoInner(innerException).Split('\n'))
                     builder.AppendLine($"        {line}");
 
