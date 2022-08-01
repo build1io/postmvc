@@ -119,6 +119,17 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         }
 
         /*
+         * Triggering.
+         */
+
+        public ICommandBinding TriggerCondition(Func<bool> predicate)
+        {
+            foreach (var binding in _bindings)
+                binding.TriggerCondition(predicate);
+            return this;
+        }
+        
+        /*
          * Events.
          */
         
@@ -378,6 +389,24 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         {
             foreach (var binding in _bindings)
                 binding.To3<TCommand, TCP1, TCP2, TCP3>(param01, param02, param03);
+            return this;
+        }
+        
+        /*
+         * Triggering.
+         */
+
+        public ICommandBinding<T1> TriggerValue(T1 value01)
+        {
+            foreach (var binding in _bindings)
+                binding.TriggerValue(value01);
+            return this;
+        }
+
+        public ICommandBinding<T1> TriggerCondition(Func<T1, bool> predicate)
+        {
+            foreach (var binding in _bindings)
+                binding.TriggerCondition(predicate);
             return this;
         }
 
@@ -669,6 +698,24 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         {
             foreach (var binding in _bindings)
                 binding.To3<TCommand, TCP1, TCP2, TCP3>(param01, param02, param03);
+            return this;
+        }
+        
+        /*
+         * Triggering.
+         */
+
+        public ICommandBinding<T1, T2> TriggerValues(T1 value01, T2 value02)
+        {
+            foreach (var binding in _bindings)
+                binding.TriggerValues(value01, value02);
+            return this;
+        }
+
+        public ICommandBinding<T1, T2> TriggerCondition(Func<T1, T2, bool> predicate)
+        {
+            foreach (var binding in _bindings)
+                binding.TriggerCondition(predicate);
             return this;
         }
         
@@ -988,6 +1035,24 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         {
             foreach (var binding in _bindings)
                 binding.To3<TCommand, TCP1, TCP2, TCP3>(param01, param02, param03);
+            return this;
+        }
+        
+        /*
+         * Triggering.
+         */
+
+        public ICommandBinding<T1, T2, T3> TriggerValues(T1 value01, T2 value02, T3 value03)
+        {
+            foreach (var binding in _bindings)
+                binding.TriggerValues(value01, value02, value03);
+            return this;
+        }
+
+        public ICommandBinding<T1, T2, T3> TriggerCondition(Func<T1, T2, T3, bool> predicate)
+        {
+            foreach (var binding in _bindings)
+                binding.TriggerCondition(predicate);
             return this;
         }
         
