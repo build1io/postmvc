@@ -1,14 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Build1.PostMVC.Extensions.Unity.Modules.Logging;
 
 namespace Build1.PostMVC.Utils.Pooling
 {
     public class Pool<T> where T : class
     {
-        private readonly ILog log = LogProvider.GetLog<Pool<T>>(LogLevel.None);
-
         private readonly Dictionary<Type, Stack<T>>   _availableInstances;
         private readonly Dictionary<Type, HashSet<T>> _usedInstances;
 
@@ -58,23 +54,15 @@ namespace Build1.PostMVC.Utils.Pooling
             var availableInstances = GetAvailableInstances(typeof(TF), true);
             if (availableInstances.Count > 0)
             {
-                log.Debug("Taking existing...");
-
                 instance = (TF)availableInstances.Pop();
                 usedInstances.Add(instance);
-
-                log.Debug(LogInstances);
 
                 isNewInstance = false;
                 return instance;
             }
 
-            log.Debug("Creating instance...");
-
             instance = Activator.CreateInstance<TF>();
             usedInstances.Add(instance);
-
-            log.Debug(LogInstances);
 
             isNewInstance = true;
             return instance;
@@ -92,23 +80,15 @@ namespace Build1.PostMVC.Utils.Pooling
             var availableInstances = GetAvailableInstances(instanceType, true);
             if (availableInstances.Count > 0)
             {
-                log.Debug("Taking existing...");
-
                 instance = availableInstances.Pop();
                 usedInstances.Add(instance);
-
-                log.Debug(LogInstances);
 
                 isNewInstance = false;
                 return instance;
             }
 
-            log.Debug("Creating instance...");
-
             instance = (T)Activator.CreateInstance(instanceType);
             usedInstances.Add(instance);
-
-            log.Debug(LogInstances);
 
             isNewInstance = true;
             return instance;
@@ -138,9 +118,6 @@ namespace Build1.PostMVC.Utils.Pooling
                 return;
 
             GetAvailableInstances(commandType, false).Push(instance);
-
-            log.Debug("Returning instance...");
-            log.Debug(LogInstances);
         }
 
         /*
@@ -163,14 +140,6 @@ namespace Build1.PostMVC.Utils.Pooling
             usedInstances = new HashSet<T>();
             _usedInstances.Add(type, usedInstances);
             return usedInstances;
-        }
-
-        private void LogInstances(ILogDebug log)
-        {
-            var used = _usedInstances.Values.Sum(instances => instances.Count);
-            var available = _availableInstances.Values.Sum(instances => instances.Count);
-
-            log.Debug($"Used: {used} Available: {available}");
         }
     }
 }
