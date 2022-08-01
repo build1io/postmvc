@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using Build1.PostMVC.Extensions.MVCS.Events;
@@ -20,8 +21,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         private readonly CommandParams NoParams = new CommandParams();
 
-        private readonly Dictionary<EventBase, List<CommandBindingBase>> _bindings;
-        private readonly List<CommandBindingBase>                        _bindingsToUnbind;
+        private readonly Dictionary<EventBase, IList> _bindings;
+        private readonly List<CommandBindingBase>     _bindingsToUnbind;
 
         private readonly Pool<CommandBase>      _commandsPool;
         private readonly Dictionary<Type, bool> _commandsPoolableData;
@@ -29,12 +30,12 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         public CommandBinder()
         {
-            _bindings = new Dictionary<EventBase, List<CommandBindingBase>>();
+            _bindings = new Dictionary<EventBase, IList>();
             _bindingsToUnbind = new List<CommandBindingBase>(8);
 
             _commandsPool = new Pool<CommandBase>();
             _commandsPoolableData = new Dictionary<Type, bool>(64);
-            
+
             CommandsParamsPool = new Pool<CommandParamsBase>();
         }
 
@@ -42,40 +43,44 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
          * Binding.
          */
 
-        public CommandBinding Bind(Event type)
+        public CommandBinding Bind(Event @event)
         {
-            var binding = new CommandBinding(type, this);
-            AddBinding(type, binding);
-            return binding;
-        }
-
-        public CommandBinding<T1> Bind<T1>(Event<T1> type)
-        {
-            var binding = new CommandBinding<T1>(type, this);
-            AddBinding(type, binding);
-            return binding;
-        }
-
-        public CommandBinding<T1, T2> Bind<T1, T2>(Event<T1, T2> type)
-        {
-            var binding = new CommandBinding<T1, T2>(type, this);
-            AddBinding(type, binding);
-            return binding;
-        }
-
-        public CommandBinding<T1, T2, T3> Bind<T1, T2, T3>(Event<T1, T2, T3> type)
-        {
-            var binding = new CommandBinding<T1, T2, T3>(type, this);
-            AddBinding(type, binding);
-            return binding;
-        }
-
-        private void AddBinding(EventBase key, CommandBindingBase binding)
-        {
-            if (!_bindings.ContainsKey(key))
-                _bindings[key] = new List<CommandBindingBase> { binding };
+            var binding = new CommandBinding(@event, this);
+            if (_bindings.TryGetValue(@event, out var bindings))
+                ((List<CommandBinding>)bindings).Add(binding);
             else
-                _bindings[key].Add(binding);
+                _bindings[@event] = new List<CommandBinding> { binding };
+            return binding;
+        }
+
+        public CommandBinding<T1> Bind<T1>(Event<T1> @event)
+        {
+            var binding = new CommandBinding<T1>(@event, this);
+            if (_bindings.TryGetValue(@event, out var bindings))
+                ((List<CommandBinding<T1>>)bindings).Add(binding);
+            else
+                _bindings[@event] = new List<CommandBinding<T1>> { binding };
+            return binding;
+        }
+
+        public CommandBinding<T1, T2> Bind<T1, T2>(Event<T1, T2> @event)
+        {
+            var binding = new CommandBinding<T1, T2>(@event, this);
+            if (_bindings.TryGetValue(@event, out var bindings))
+                ((List<CommandBinding<T1, T2>>)bindings).Add(binding);
+            else
+                _bindings[@event] = new List<CommandBinding<T1, T2>> { binding };
+            return binding;
+        }
+
+        public CommandBinding<T1, T2, T3> Bind<T1, T2, T3>(Event<T1, T2, T3> @event)
+        {
+            var binding = new CommandBinding<T1, T2, T3>(@event, this);
+            if (_bindings.TryGetValue(@event, out var bindings))
+                ((List<CommandBinding<T1, T2, T3>>)bindings).Add(binding);
+            else
+                _bindings[@event] = new List<CommandBinding<T1, T2, T3>> { binding };
+            return binding;
         }
 
         /*
@@ -84,23 +89,24 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         public void Unbind(CommandBindingBase binding)
         {
-            if (!_bindings.TryGetValue(binding.Event, out var bindings) || !bindings.Remove(binding))
+            if (!_bindings.TryGetValue(binding.Event, out var bindings) || !bindings.Contains(binding))
                 return;
 
+            bindings.Remove(binding);
             binding.Dispose();
-            
+
             if (bindings.Count == 0)
                 UnbindAll(binding.Event);
         }
 
         public void UnbindAll(EventBase type)
         {
-            if (!_bindings.TryGetValue(type, out var bindings)) 
+            if (!_bindings.TryGetValue(type, out var bindings))
                 return;
-            
-            foreach (var binding in bindings)
+
+            foreach (CommandBindingBase binding in bindings)
                 binding.Dispose();
-                
+
             _bindings.Remove(type);
         }
 
@@ -108,17 +114,17 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         {
             foreach (var bindings in _bindings.Values)
             {
-                foreach (var binding in bindings)
+                foreach (CommandBindingBase binding in bindings)
                     binding.Dispose();
             }
-            
+
             _bindings.Clear();
         }
 
         public void UnbindOnQuit()
         {
             foreach (var bindingsList in _bindings.Values)
-            foreach (var binding in bindingsList)
+            foreach (CommandBindingBase binding in bindingsList)
                 if (binding.IsUnbindOnQuit)
                     _bindingsToUnbind.Add(binding);
             UnbindScheduled();
@@ -151,16 +157,34 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
          * Get.
          */
 
-        public IList<CommandBindingBase> GetBindings(EventBase type)
+        public IList<CommandBinding> GetBindings(Event @event)
         {
-            _bindings.TryGetValue(type, out var bindings);
-            return bindings;
+            _bindings.TryGetValue(@event, out var bindings);
+            return (List<CommandBinding>)bindings;
+        }
+
+        public IList<CommandBinding<T1>> GetBindings<T1>(Event<T1> @event)
+        {
+            _bindings.TryGetValue(@event, out var bindings);
+            return (List<CommandBinding<T1>>)bindings;
+        }
+
+        public IList<CommandBinding<T1, T2>> GetBindings<T1, T2>(Event<T1, T2> @event)
+        {
+            _bindings.TryGetValue(@event, out var bindings);
+            return (List<CommandBinding<T1, T2>>)bindings;
+        }
+
+        public IList<CommandBinding<T1, T2, T3>> GetBindings<T1, T2, T3>(Event<T1, T2, T3> @event)
+        {
+            _bindings.TryGetValue(@event, out var bindings);
+            return (List<CommandBinding<T1, T2, T3>>)bindings;
         }
 
         /*
          * On Command Finish.
          */
-        
+
         public void OnCommandFinish(CommandBase command)
         {
             if (command.IsExecuted)
@@ -246,9 +270,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
          * Event Processing.
          */
 
-        public void ProcessEvent(Event type)
+        public void ProcessEvent(Event @event)
         {
-            var bindings = GetBindings(type);
+            var bindings = GetBindings(@event);
             if (bindings == null)
                 return;
 
@@ -258,6 +282,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             {
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
+
+                if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke())
+                    continue;
 
                 binding.StartExecution();
                 ProcessBindingCommand(binding, 0, NoParams);
@@ -279,6 +306,12 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             {
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
+
+                if (binding.TriggerValuesSet && !EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01))
+                    continue;
+
+                if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke(param01))
+                    continue;
 
                 var param = CommandsParamsPool.Take<CommandParams<T1>>();
                 param.Param01 = param01;
@@ -303,6 +336,14 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             {
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
+
+                if (binding.TriggerValuesSet &&
+                    !EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01) &&
+                    !EqualityComparer<T2>.Default.Equals(binding.TriggerValue02, param02))
+                    continue;
+
+                if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke(param01, param02))
+                    continue;
 
                 var param = CommandsParamsPool.Take<CommandParams<T1, T2>>();
                 param.Param01 = param01;
@@ -329,6 +370,15 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
 
+                if (binding.TriggerValuesSet &&
+                    !EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01) &&
+                    !EqualityComparer<T2>.Default.Equals(binding.TriggerValue02, param02) &&
+                    !EqualityComparer<T3>.Default.Equals(binding.TriggerValue03, param03))
+                    continue;
+
+                if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke(param01, param02, param03))
+                    continue;
+
                 var param = CommandsParamsPool.Take<CommandParams<T1, T2, T3>>();
                 param.Param01 = param01;
                 param.Param02 = param02;
@@ -354,11 +404,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         public void BreakAll(EventBase @event)
         {
-            var bindings = GetBindings(@event);
-            if (bindings == null)
+            if (!_bindings.TryGetValue(@event, out var bindings))
                 return;
 
-            foreach (var binding in bindings)
+            foreach (CommandBindingBase binding in bindings)
             {
                 if (binding.IsExecuting)
                     binding.RegisterBreak();

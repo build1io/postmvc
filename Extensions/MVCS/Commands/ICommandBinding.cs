@@ -1,3 +1,4 @@
+using System;
 using Build1.PostMVC.Extensions.MVCS.Events;
 
 namespace Build1.PostMVC.Extensions.MVCS.Commands
@@ -22,7 +23,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         ICommandBinding To2<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02) where TCommand : Command<TCP1, TCP2>, new();
         
         ICommandBinding To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new();
-
+        
+        ICommandBinding TriggerCondition(Func<bool> predicate);
+        
         ICommandBinding OnComplete(Event @event);
         ICommandBinding OnBreak(Event @event);
     }
@@ -59,6 +62,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         ICommandBinding<T1> To3<TCommand, TCP1>(TCP1 param01, bool param02) where TCommand : Command<T1, TCP1, bool>, new();
         ICommandBinding<T1> To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new();
 
+        ICommandBinding<T1> TriggerValue(T1 value01);
+        ICommandBinding<T1> TriggerCondition(Func<T1, bool> predicate);
+        
         ICommandBinding<T1> OnComplete(Event<T1> @event);
         ICommandBinding<T1> OnComplete(Event @event);
 
@@ -104,6 +110,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         ICommandBinding<T1, T2> To3<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02) where TCommand : Command<T1, TCP1, TCP2>, new();
         ICommandBinding<T1, T2> To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new();
 
+        ICommandBinding<T1, T2> TriggerValues(T1 value01, T2 value02);
+        ICommandBinding<T1, T2> TriggerCondition(Func<T1, T2, bool> predicate);
+        
         ICommandBinding<T1, T2> OnComplete(Event<T1, T2> @event);
         ICommandBinding<T1, T2> OnComplete(Event<T1> @event);
         ICommandBinding<T1, T2> OnComplete(Event @event);
@@ -149,6 +158,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         ICommandBinding<T1, T2, T3> To3<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02) where TCommand : Command<T1, TCP1, TCP2>, new();
         ICommandBinding<T1, T2, T3> To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new();
 
+        ICommandBinding<T1, T2, T3> TriggerValues(T1 value01, T2 value02, T3 value03);
+        ICommandBinding<T1, T2, T3> TriggerCondition(Func<T1, T2, T3, bool> predicate);
+        
         ICommandBinding<T1, T2, T3> OnComplete(Event<T1, T2, T3> @event);
         ICommandBinding<T1, T2, T3> OnComplete(Event<T1, T2> @event);
         ICommandBinding<T1, T2, T3> OnComplete(Event<T1> @event);

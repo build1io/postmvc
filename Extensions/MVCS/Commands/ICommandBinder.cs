@@ -6,20 +6,23 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
 {
     public interface ICommandBinder
     {
-        CommandBinding             Bind(Event type);
-        CommandBinding<T1>         Bind<T1>(Event<T1> type);
-        CommandBinding<T1, T2>     Bind<T1, T2>(Event<T1, T2> type);
-        CommandBinding<T1, T2, T3> Bind<T1, T2, T3>(Event<T1, T2, T3> type);
-
+        CommandBinding             Bind(Event @event);
+        CommandBinding<T1>         Bind<T1>(Event<T1> @event);
+        CommandBinding<T1, T2>     Bind<T1, T2>(Event<T1, T2> @event);
+        CommandBinding<T1, T2, T3> Bind<T1, T2, T3>(Event<T1, T2, T3> @event);
+        
         void Unbind(CommandBindingBase binding);
-        void UnbindAll(EventBase type);
+        void UnbindAll(EventBase @event);
 
-        IList<CommandBindingBase> GetBindings(EventBase type);
+        public IList<CommandBinding>             GetBindings(Event @event);
+        public IList<CommandBinding<T1>>         GetBindings<T1>(Event<T1> @event);
+        public IList<CommandBinding<T1, T2>>     GetBindings<T1, T2>(Event<T1, T2> @event);
+        public IList<CommandBinding<T1, T2, T3>> GetBindings<T1, T2, T3>(Event<T1, T2, T3> @event);
 
-        void ProcessEvent(Event type);
-        void ProcessEvent<T1>(Event<T1> type, T1 param01);
-        void ProcessEvent<T1, T2>(Event<T1, T2> type, T1 param01, T2 param02);
-        void ProcessEvent<T1, T2, T3>(Event<T1, T2, T3> type, T1 param01, T2 param02, T3 param03);
+        void ProcessEvent(Event @event);
+        void ProcessEvent<T1>(Event<T1> @event, T1 param01);
+        void ProcessEvent<T1, T2>(Event<T1, T2> @event, T1 param01, T2 param02);
+        void ProcessEvent<T1, T2, T3>(Event<T1, T2, T3> @event, T1 param01, T2 param02, T3 param03);
 
         void Break(CommandBindingBase binding);
         void BreakAll(EventBase @event);
