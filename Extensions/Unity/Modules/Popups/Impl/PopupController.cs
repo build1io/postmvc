@@ -124,6 +124,16 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups.Impl
             return _openPopups.Any(p => p == popup);
         }
 
+        public bool CheckPopupOnTop(IPopupView popupView)
+        {
+            if (_openPopups.Count == 0)
+                return false;
+
+            var lastOpenedPopup = _openPopups[_openPopups.Count - 1];
+            
+            return lastOpenedPopup == popupView.Popup;
+        }
+
         /*
          * Private.
          */

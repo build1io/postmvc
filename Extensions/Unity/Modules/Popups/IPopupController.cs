@@ -14,5 +14,6 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
         void CloseAll(bool immediate = false);
 
         bool CheckPopupOpen(PopupBase popup);
+        bool CheckPopupOnTop(IPopupView popupView);
     }
 }
