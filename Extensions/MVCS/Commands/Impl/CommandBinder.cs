@@ -506,9 +506,19 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
             if ((binding.OnceBehavior & OnceBehavior.UnbindOnFail) == OnceBehavior.UnbindOnFail)
                 UnbindOrScheduleIfOnce(binding);
-
-            Log?.Error(exception);
-
+            
+            Log?.Error(log =>
+            {
+                try
+                {
+                    ExceptionDispatchInfo.Capture(exception).Throw();
+                }
+                catch (Exception exceptionRethrown)
+                {
+                    log.Error(exceptionRethrown);
+                }
+            });
+            
             switch (binding.FailEvent)
             {
                 case Event<Exception> event1:
