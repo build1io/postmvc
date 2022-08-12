@@ -17,6 +17,11 @@ namespace Build1.PostMVC.Utils.Extensions
             return (long)dateTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
         }
 
+        public static DateTime FromUnixTimestamp(this int timestamp)
+        {
+            return new DateTime(1970, 1, 1).AddSeconds(timestamp);
+        }
+        
         public static DateTime FromUnixTimestamp(this long timestamp)
         {
             return new DateTime(1970, 1, 1).AddSeconds(timestamp);
