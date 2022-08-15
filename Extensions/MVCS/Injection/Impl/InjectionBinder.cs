@@ -30,42 +30,113 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
         public IInjectionBindingTo<T> Bind<T>()
         {
             var type = typeof(T);
-            
             if (_bindings.ContainsKey(type))
-                throw new InjectionException(InjectionExceptionType.BindingAlreadyRegistered, type.FullName);
-            
+                throw new BindingException(BindingExceptionType.BindingAlreadyRegistered, type.FullName);
             var binding = new InjectionBinding<T>(type);
             _bindings.Add(type, binding);
             return binding;
         }
-
+        
         public IInjectionBindingTo Bind(Type type)
         {
             if (_bindings.ContainsKey(type))
-                throw new InjectionException(InjectionExceptionType.BindingAlreadyRegistered, type.FullName);
+                throw new BindingException(BindingExceptionType.BindingAlreadyRegistered, type.FullName);
             var binding = new InjectionBinding(type);
             _bindings.Add(type, binding);
             return binding;
         }
 
+        public IInjectionBindingToType Bind<T, V>() where V : T, new()
+        {
+            var type = typeof(T);
+            if (_bindings.ContainsKey(type))
+                throw new BindingException(BindingExceptionType.BindingAlreadyRegistered, type.FullName);
+            var binding = new InjectionBinding<T>(type, typeof(V));
+            _bindings.Add(type, binding);
+            return binding;
+        }
+
+        public IInjectionBindingToValue Bind<T>(T value)
+        {
+            var type = typeof(T);
+            if (_bindings.ContainsKey(type))
+                throw new BindingException(BindingExceptionType.BindingAlreadyRegistered, type.FullName);
+            var binding = new InjectionBinding<T>(type, value);
+            _bindings.Add(type, binding);
+            return binding;
+        }
+
+        public IInjectionBindingToValue Bind<V>(Type type, V value)
+        {
+            if (_bindings.ContainsKey(type))
+                throw new BindingException(BindingExceptionType.BindingAlreadyRegistered, type.FullName);
+            var binding = new InjectionBinding(type, value);
+            _bindings.Add(type, binding);
+            return binding;
+        }
+
+        public IInjectionBindingToBinding Bind<V, P, A>() where P : IInjectionProvider<V, A>, new()
+                                                          where A : Inject
+        {
+            var type = typeof(V);
+            if (_bindings.ContainsKey(type))
+                throw new BindingException(BindingExceptionType.BindingAlreadyRegistered, type.FullName);
+            var binding = new InjectionBinding<V, P, A>(type);
+            _bindings.Add(type, binding);
+            return binding;
+        }
+        
         public void Bind(IInjectionBinding binding)
         {
             if (_bindings.ContainsKey(binding.Key))
-                throw new InjectionException(InjectionExceptionType.BindingAlreadyRegistered, binding.Key.FullName);
+                throw new BindingException(BindingExceptionType.BindingAlreadyRegistered, binding.Key.FullName);
             _bindings.Add(binding.Key, binding);
         }
+        
+        /*
+         * Rebinding.
+         */
 
         public IInjectionBindingTo<T> Rebind<T>()
         {
-            Unbind<T>();
+            Unbind(typeof(T));
             return Bind<T>();
         }
-
+        
         public IInjectionBindingTo Rebind(Type type)
         {
             Unbind(type);
             return Bind(type);
         }
+
+        public IInjectionBindingToType Rebind<T, V>() where V : T, new()
+        {
+            Unbind(typeof(T));
+            return Bind<T, V>();
+        }
+        
+        public IInjectionBindingToValue Rebind<T>(T value)
+        {
+            Unbind(typeof(T));
+            return Bind(value);
+        }
+
+        public IInjectionBindingToValue Rebind<V>(Type type, V value)
+        {
+            Unbind(type);
+            return Bind(type, value);
+        }
+        
+        public IInjectionBindingToBinding Rebind<V, P, A>() where P : IInjectionProvider<V, A>, new()
+                                                            where A : Inject
+        {
+            Unbind(typeof(V));
+            return Bind<V, P, A>();
+        }
+        
+        /*
+         * Unbinding.
+         */
 
         public void Unbind<T>()
         {
@@ -83,7 +154,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
         public void Unbind(IInjectionBinding binding)
         {
             if (!_bindings.TryGetValue(binding.Key, out var bindingAdded) || binding != bindingAdded)
-                throw new InjectionException(InjectionExceptionType.BindingDoesntMatch, binding);
+                throw new BindingException(BindingExceptionType.BindingDoesntMatch, binding);
             _bindings.Remove(binding.Key);
             DestroyBinding(binding);
         }
@@ -118,7 +189,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
         {
             switch (binding.BindingType)
             {
-                case InjectionBindingType.InstanceProvider when binding.InjectionMode == InjectionMode.Factory:
+                case InjectionBindingType.InstanceProvider:
                 {
                     if (binding.ToConstruct && CheckIsConstructed(binding.Value))
                     {
@@ -129,7 +200,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
                     break;
                 }
 
-                case InjectionBindingType.Value when binding.InjectionMode == InjectionMode.Singleton:
+                case InjectionBindingType.Value:
                 {
                     if (binding.ToConstruct && CheckIsConstructed(binding.Value))
                     {
@@ -175,7 +246,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
         private object GetInstance(IInjectionBinding binding, object callerInstance, IInjectionInfo injectionInfo)
         {
             if (binding == null)
-                throw new InjectionException(InjectionExceptionType.BindingIsMissing, callerInstance);
+                throw new BindingException(BindingExceptionType.BindingIsMissing, callerInstance);
             IncrementDependencyCounter(binding, callerInstance);
             var instance = GetInjectionValue(callerInstance, binding, injectionInfo);
             DecrementDependencyCounter(binding);
@@ -265,7 +336,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             {
                 var binding = GetBinding(injection.PropertyInfo.PropertyType);
                 if (binding == null)
-                    throw new InjectionException(InjectionExceptionType.BindingIsMissing, $"Binding: {injection}", $"Injection target: {instance.GetType().FullName}");
+                    throw new BindingException(BindingExceptionType.BindingIsMissing, $"Binding: {injection}", $"Injection target: {instance.GetType().FullName}");
 
                 var value = GetInstance(binding, instance, injection);
                 if (!injection.PropertyInfo.PropertyType.IsInstanceOfType(value))
@@ -279,7 +350,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
         {
             switch (binding.BindingType)
             {
-                case InjectionBindingType.InstanceProvider when binding.InjectionMode == InjectionMode.Factory:
+                case InjectionBindingType.InstanceProvider:
                 {
                     var instanceProvider = binding.Value is Type type
                                                ? (IInjectionProvider)Activator.CreateInstance(type)
@@ -292,10 +363,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
                         MarkConstructed(binding.Value);
                     }
 
-                    return instanceProvider.TakeInstance(instance, injectionInfo.Attribute);
+                    return instanceProvider.TakeInstance(instance, injectionInfo?.Attribute);
                 }
 
-                case InjectionBindingType.Value when binding.InjectionMode == InjectionMode.Singleton:
+                case InjectionBindingType.Value:
                 {
                     if (binding.ToConstruct && !CheckIsConstructed(binding.Value))
                     {
@@ -308,8 +379,22 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 
                 case InjectionBindingType.Type when binding.InjectionMode == InjectionMode.Factory:
                 {
-                    var value = Activator.CreateInstance((Type)binding.Value);
-                    Construct(value, true);
+                    var type = (Type)binding.Value;
+                    
+                    object value;
+
+                    try
+                    {
+                        value = Activator.CreateInstance(type);
+                    }
+                    catch (MissingMethodException)
+                    {
+                        throw new InjectionException(InjectionExceptionType.ConstructingTypeCantBeInstantiated);
+                    }
+
+                    if (binding.ToConstruct)
+                        Construct(value, true);
+
                     return value;
                 }
 
@@ -317,7 +402,19 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
                 {
                     if (binding.ToConstruct && !CheckIsConstructed(binding.Value))
                     {
-                        var value = Activator.CreateInstance((Type)binding.Value);
+                        var type = (Type)binding.Value;
+
+                        object value;
+
+                        try
+                        {
+                            value = Activator.CreateInstance(type);
+                        }
+                        catch (MissingMethodException)
+                        {
+                            throw new InjectionException(InjectionExceptionType.ConstructingTypeCantBeInstantiated);
+                        }
+                        
                         Construct(value, true);
                         binding.SetValue(value);
                         MarkConstructed(binding.Value);
@@ -351,12 +448,12 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             var value = injection.PropertyInfo.GetValue(instance);
             switch (binding.BindingType)
             {
-                case InjectionBindingType.InstanceProvider when binding.InjectionMode == InjectionMode.Factory:
+                case InjectionBindingType.InstanceProvider:
                     // Provider constructed (if configured) on the first instance inject.
                     // Provider is destroyed when it's binding is destroyed.
                     ((IInjectionProvider)binding.Value).ReturnInstance(value);
                     return;
-                case InjectionBindingType.Value when binding.InjectionMode == InjectionMode.Singleton:
+                case InjectionBindingType.Value:
                     // Value is constructed (if configured) on the first instance inject.
                     // Value is destroyed when it's binding is destroyed.
                     return;
@@ -440,7 +537,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 
         public static bool CheckTypeCanBeConstructed(Type type)
         {
-            return !type.IsPrimitive && type != typeof(Decimal) && type != typeof(string);
+            return !type.IsPrimitive && !type.IsEnum && type != typeof(Decimal) && type != typeof(string);
         }
     }
 }

@@ -3,7 +3,7 @@ using Build1.PostMVC.Extensions.MVCS.Injection;
 
 namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
 {
-    public sealed class EventMapProvider : InjectionProvider<Inject, IEventMap>
+    public sealed class EventMapProvider : InjectionProvider<IEventMap>
     {
         [Inject] public IEventDispatcher Dispatcher { get; set; }
         [Inject] public IEventBus        EventBus   { get; set; }

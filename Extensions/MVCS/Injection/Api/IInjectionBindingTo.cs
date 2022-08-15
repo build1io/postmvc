@@ -7,6 +7,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Api
 
         IInjectionBindingToProvider         ToProvider<T>() where T : IInjectionProvider, new();
         IInjectionBindingToProviderInstance ToProvider(IInjectionProvider provider);
+        
+        IInjectionBindingToBinding              AsFactory();
+        IInjectionBindingToTypeConstructOnStart AsSingleton();
+        IInjectionBinding                       ToBinding();
     }
 
     public interface IInjectionBindingTo<in I> : IInjectionBindingTo

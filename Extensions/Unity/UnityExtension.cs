@@ -38,17 +38,15 @@ namespace Build1.PostMVC.Extensions.Unity
         public override void Initialize()
         {
             var injectionBinder = GetDependentExtension<MVCSExtension>().InjectionBinder;
-            injectionBinder.Bind<IUnityViewEventProcessor>().To<UnityViewEventProcessor>().AsSingleton();
-
-            // TODO: move to PostMVCUnityApp module.
-            injectionBinder.Bind<ILog>().ToProvider<LogProvider>().ByAttribute<LogAttribute>();
-            injectionBinder.Bind<IAgentsController>().To<AgentsController>().AsSingleton();
-            injectionBinder.Bind<IAppController>().To<AppController>().AsSingleton().ConstructOnStart();
-            injectionBinder.Bind<IAssetsController>().To<AssetsController>().AsSingleton();
-            injectionBinder.Bind<IAsyncResolver>().To<AsyncResolver>().AsSingleton().ConstructOnStart();
-            injectionBinder.Bind<ICoroutineProvider>().To<CoroutineProvider>().AsSingleton();
-            injectionBinder.Bind<IUpdateController>().To<UpdateController>().AsSingleton();
-            injectionBinder.Rebind<IEventBus>().To<EventBusUnity>().AsSingleton();
+            injectionBinder.Bind<IUnityViewEventProcessor, UnityViewEventProcessor>();
+            injectionBinder.Bind<ILog, LogProvider, LogAttribute>(); // TODO: move to PostMVCUnityApp module.
+            injectionBinder.Bind<IAgentsController, AgentsController>();
+            injectionBinder.Bind<IAppController, AppController>().ConstructOnStart();
+            injectionBinder.Bind<IAssetsController, AssetsController>();
+            injectionBinder.Bind<IAsyncResolver, AsyncResolver>().ConstructOnStart();
+            injectionBinder.Bind<ICoroutineProvider, CoroutineProvider>();
+            injectionBinder.Bind<IUpdateController, UpdateController>();
+            injectionBinder.Rebind<IEventBus, EventBusUnity>();
         }
 
         public override void Setup()

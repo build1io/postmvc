@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Build1.PostMVC.Extensions.Unity.Modules.Logging
 {
-    public sealed class LogProvider : InjectionProvider<LogAttribute, ILog>
+    public sealed class LogProvider : InjectionProvider<ILog, LogAttribute>
     {
         public static LogLevel ForceLevel     = LogLevel.None;
         public static LogLevel MinLevel       = LogLevel.Debug;
