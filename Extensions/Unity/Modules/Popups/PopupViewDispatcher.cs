@@ -7,8 +7,8 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
 {
     public abstract class PopupViewDispatcher : UnityViewDispatcher, IPopupView
     {
-        public static readonly MVCS.Events.Event OnShown  = new MVCS.Events.Event();
-        public static readonly MVCS.Events.Event OnHidden = new MVCS.Events.Event();
+        public static readonly MVCS.Events.Event OnShown  = new();
+        public static readonly MVCS.Events.Event OnHidden = new();
 
         [Header("Parts Base"), SerializeField] private GameObject     overlay;
         [SerializeField]                       private RectTransform  content;
@@ -23,6 +23,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
         public GameObject    Overlay => overlay;
         public RectTransform Content => content;
 
+        public bool InputBlocked => raycastBlocker && raycastBlocker.activeSelf;
+        public bool IsAnimating  { get; private set; }
+
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -33,6 +36,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
                     raycastBlocker.SetActive(true);
 
                 animationObject.AnimateShow(this, OnShownImpl);
+                IsAnimating = true;
                 return;
             }
 
@@ -47,11 +51,12 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
             {
                 if (raycastBlocker)
                     raycastBlocker.SetActive(false);
-             
+
                 animationObject.KillAnimations(this);
+                IsAnimating = false;
             }
         }
-        
+
         /*
          * Public.
          */
@@ -69,6 +74,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
                     raycastBlocker.SetActive(true);
 
                 animationObject.AnimateHide(this, OnHiddenImpl);
+                IsAnimating = true;
                 return;
             }
 
@@ -91,15 +97,19 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
             if (raycastBlocker)
                 raycastBlocker.SetActive(false);
 
-            OnShownHandler();
+            IsAnimating = false;
             
+            OnShownHandler();
+
             Dispatch(OnShown);
         }
 
         private void OnHiddenImpl()
         {
+            IsAnimating = false;
+            
             OnHiddenHandler();
-
+            
             Dispatch(OnHidden);
 
             PopupController.Close(Popup, true);

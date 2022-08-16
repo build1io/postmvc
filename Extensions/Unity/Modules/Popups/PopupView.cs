@@ -19,6 +19,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
 
         public GameObject    Overlay => overlay;
         public RectTransform Content => content;
+        
+        public bool InputBlocked => raycastBlocker && raycastBlocker.activeSelf;
+        public bool IsAnimating  { get; private set; }
 
         protected override void OnEnable()
         {
@@ -30,6 +33,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
                     raycastBlocker.SetActive(true);
 
                 animationObject.AnimateShow(this, OnShownImpl);
+                IsAnimating = true;
                 return;
             }
 
@@ -46,6 +50,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
                     raycastBlocker.SetActive(false);
              
                 animationObject.KillAnimations(this);
+                IsAnimating = false;
             }
         }
 
@@ -66,6 +71,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
                     raycastBlocker.SetActive(true);
 
                 animationObject.AnimateHide(this, OnHiddenImpl);
+                IsAnimating = true;
                 return;
             }
 
@@ -87,13 +93,18 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
         {
             if (raycastBlocker)
                 raycastBlocker.SetActive(false);
+            
+            IsAnimating = false;
 
             OnShownHandler();
         }
 
         private void OnHiddenImpl()
         {
+            IsAnimating = false;
+            
             OnHiddenHandler();
+            
             PopupController.Close(Popup, true);
         }
     }
