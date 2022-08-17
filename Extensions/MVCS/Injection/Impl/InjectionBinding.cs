@@ -22,7 +22,15 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             Key = key;
             Value = key;
             BindingType = InjectionBindingType.Type;
-            InjectionMode = InjectionMode.Factory;
+            InjectionMode = InjectionMode.Singleton;
+        }
+        
+        public InjectionBinding(Type key, object value)
+        {
+            Key = key;
+            Value = value;
+            BindingType = InjectionBindingType.Type;
+            InjectionMode = InjectionMode.Singleton;
         }
 
         public void SetValue(object value)
@@ -83,7 +91,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 
         public IInjectionBindingToTypeConstructOnStart AsSingleton()
         {
-            InjectionMode = InjectionMode.Singleton;
+            if (BindingType == InjectionBindingType.Type)
+            {
+                var type = (Type)Value;
+                InjectionMode = type.IsValueType || type == typeof(string) ? InjectionMode.Factory : InjectionMode.Singleton;
+            }
+            else
+            {
+                InjectionMode = InjectionMode.Singleton;
+            }
+            
             return this;
         }
 
@@ -113,17 +130,45 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 
     internal sealed class InjectionBinding<T> : InjectionBinding, IInjectionBindingTo<T>
     {
-        public InjectionBinding(Type key) : base(key)
+        public InjectionBinding(Type key) : this(key, key)
         {
         }
-        
+
+        public InjectionBinding(Type key, Type value) : base(key)
+        {
+            Value = value;
+            BindingType = InjectionBindingType.Type;
+            InjectionMode = value.IsValueType || value == typeof(string) ? InjectionMode.Factory : InjectionMode.Singleton;
+            ToConstruct = InjectionBinder.CheckTypeCanBeConstructed(value);
+        }
+
+        public InjectionBinding(Type key, object value) : base(key)
+        {
+            Value = value;
+            BindingType = InjectionBindingType.Value;
+            InjectionMode = InjectionMode.Singleton;
+            ToConstruct = false;
+        }
+
         public IInjectionBindingToType To<I>() where I : T, new()
         {
             Value = typeof(I);
             BindingType = InjectionBindingType.Type;
-            InjectionMode = InjectionMode.Factory;
+            InjectionMode = InjectionMode.Singleton;
             ToConstruct = true;
             return this;
+        }
+    }
+
+    internal sealed class InjectionBinding<V, P, A> : InjectionBinding where P : IInjectionProvider<V, A>, new()
+                                                                       where A : Inject
+    {
+        public InjectionBinding(Type key) : base(key)
+        {
+            Value = typeof(P);
+            BindingType = InjectionBindingType.InstanceProvider;
+            InjectionMode = InjectionMode.Factory;
+            ToConstruct = true;
         }
     }
 }

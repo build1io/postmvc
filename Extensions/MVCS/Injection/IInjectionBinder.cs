@@ -5,12 +5,27 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection
 {
     public interface IInjectionBinder
     {
-        IInjectionBindingTo<T> Bind<T>();
-        IInjectionBindingTo    Bind(Type type);
-        void                   Bind(IInjectionBinding binding);
+        IInjectionBindingTo<T>  Bind<T>();
+        IInjectionBindingTo     Bind(Type type);
+        IInjectionBindingToType Bind<T, V>() where V : T, new();
 
-        IInjectionBindingTo<T> Rebind<T>();
-        IInjectionBindingTo    Rebind(Type type);
+        IInjectionBindingToValue Bind<T>(T value);
+        IInjectionBindingToValue Bind<V>(Type type, V value);
+
+        IInjectionBindingToBinding Bind<V, P, A>() where P : IInjectionProvider<V, A>, new()
+                                                   where A : Inject;
+
+        void Bind(IInjectionBinding binding);
+
+        IInjectionBindingTo<T>  Rebind<T>();
+        IInjectionBindingTo     Rebind(Type type);
+        IInjectionBindingToType Rebind<T, V>() where V : T, new();
+
+        IInjectionBindingToValue Rebind<T>(T value);
+        IInjectionBindingToValue Rebind<V>(Type type, V value);
+        
+        IInjectionBindingToBinding Rebind<V, P, A>() where P : IInjectionProvider<V, A>, new()
+                                                     where A : Inject;
 
         void Unbind<T>();
         void Unbind(Type type);

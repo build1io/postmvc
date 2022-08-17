@@ -6,9 +6,9 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection
         void   ReturnInstance(object instance);
     }
 
-    public interface IInjectionProvider<in I, V> : IInjectionProvider where I : Inject
+    public interface IInjectionProvider<V, in A> : IInjectionProvider where A : Inject
     {
-        V    TakeInstance(object parent, I attribute);
+        V    TakeInstance(object parent, A attribute);
         void ReturnInstance(V instance);
     }
 }

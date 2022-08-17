@@ -1,8 +1,8 @@
 using System;
 
-namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
+namespace Build1.PostMVC.Extensions.MVCS.Injection
 {
-    internal sealed class InjectionException : Exception
+    public sealed class InjectionException : Exception
     {
         public InjectionException(InjectionExceptionType type) : base(type.ToString())
         {
