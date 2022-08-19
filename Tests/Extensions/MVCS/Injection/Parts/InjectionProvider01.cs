@@ -5,13 +5,33 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Injection.Parts
 {
     public sealed class InjectionProvider01 : InjectionProvider<IInjectionProviderItem>
     {
-        public int CounterCreatedInstances { get; private set; }
-        public int CounterTaken            { get; private set; }
-        public int CounterReturned         { get; private set; }
+        public static int Constructed   { get; set; }
+        public static int Destroyed     { get; set; }
+        public static int ItemsCreated  { get; set; }
+        public static int ItemsTaken    { get; set; }
+        public static int ItemsReturned { get; set; }
 
-        private readonly Stack<IInjectionProviderItem> _availableInstances = new();
-        private readonly List<IInjectionProviderItem>  _usedInstances      = new();
-        
+        private Stack<IInjectionProviderItem> _availableInstances;
+        private List<IInjectionProviderItem>  _usedInstances;
+
+        [PostConstruct]
+        public void PostConstruct()
+        {
+            _availableInstances = new Stack<IInjectionProviderItem>();
+            _usedInstances = new List<IInjectionProviderItem>();
+
+            Constructed++;
+        }
+
+        [PreDestroy]
+        public void PreDestroy()
+        {
+            _availableInstances = null;
+            _usedInstances = null;
+
+            Destroyed++;
+        }
+
         public override IInjectionProviderItem TakeInstance(object parent, Inject attribute)
         {
             IInjectionProviderItem item;
@@ -26,10 +46,10 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Injection.Parts
                 item = new InjectionProviderItem01();
                 _usedInstances.Add(item);
 
-                CounterCreatedInstances++;
+                ItemsCreated++;
             }
-            
-            CounterTaken++;
+
+            ItemsTaken++;
             return item;
         }
 
@@ -37,9 +57,9 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Injection.Parts
         {
             if (!_usedInstances.Remove(instance))
                 return;
-                
+
             _availableInstances.Push(instance);
-            CounterReturned++;
+            ItemsReturned++;
         }
     }
 }
