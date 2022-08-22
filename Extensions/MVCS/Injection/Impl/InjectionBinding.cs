@@ -24,7 +24,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             BindingType = InjectionBindingType.Type;
             InjectionMode = InjectionMode.Singleton;
         }
-        
+
         public InjectionBinding(Type key, object value)
         {
             Key = key;
@@ -43,6 +43,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             Value = value;
             BindingType = InjectionBindingType.Value;
             InjectionMode = InjectionMode.Singleton;
+            ToConstruct = false;
             return this;
         }
 
@@ -51,6 +52,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             Value = value;
             BindingType = InjectionBindingType.Value;
             InjectionMode = InjectionMode.Singleton;
+            ToConstruct = false;
             return this;
         }
 
@@ -68,6 +70,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             Value = provider;
             BindingType = InjectionBindingType.InstanceProvider;
             InjectionMode = InjectionMode.Factory;
+            ToConstruct = false;
             return this;
         }
 
@@ -100,7 +103,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             {
                 InjectionMode = InjectionMode.Singleton;
             }
-            
+
             return this;
         }
 

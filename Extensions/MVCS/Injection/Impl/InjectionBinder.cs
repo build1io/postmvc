@@ -193,7 +193,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
                 {
                     if (binding.ToConstruct && CheckIsConstructed(binding.Value))
                     {
-                        Destroy(binding.Value, true);
+                        DestroyImpl(binding.Value, true);
                         UnmarkConstructed(binding.Value);
                     }
 
@@ -204,7 +204,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
                 {
                     if (binding.ToConstruct && CheckIsConstructed(binding.Value))
                     {
-                        Destroy(binding.Value, true);
+                        DestroyImpl(binding.Value, true);
                         UnmarkConstructed(binding.Value);
                     }
 
@@ -215,7 +215,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
                 {
                     if (binding.ToConstruct && CheckIsConstructed(binding.Value))
                     {
-                        Destroy(binding.Value, true);
+                        DestroyImpl(binding.Value, true);
                         UnmarkConstructed(binding.Value);
                     }
 
@@ -259,24 +259,40 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 
         public T Construct<T>(bool triggerPostConstructors) where T : new()
         {
-            return Construct(new T(), triggerPostConstructors);
+            var instance = new T();
+            ConstructImpl(instance, triggerPostConstructors);
+            MarkConstructed(instance);
+            return instance;
         }
 
         public T Construct<T>(T instance, bool triggerPostConstructors)
         {
-            ConstructImpl(instance, triggerPostConstructors);
+            if (!CheckIsConstructed(instance))
+            {
+                ConstructImpl(instance, triggerPostConstructors);
+                MarkConstructed(instance);    
+            }
             return instance;
         }
 
         public object Construct(object instance, bool triggerPostConstructors)
         {
-            ConstructImpl(instance, triggerPostConstructors);
+            if (!CheckIsConstructed(instance))
+            {
+                ConstructImpl(instance, triggerPostConstructors);
+                MarkConstructed(instance);    
+            }
             return instance;
         }
         
         private void ConstructImpl(object instance, bool triggerPostConstructors)
         {
-            ValidateInstance(instance, out var type);
+            if (instance == null)
+                throw new InjectionException(InjectionExceptionType.InstanceIsMissing);
+
+            var type = instance.GetType();
+            if (!CheckTypeCanBeConstructed(type))
+                throw new InjectionException(InjectionExceptionType.InstanceIsOfPrimitiveType);
 
             var info = _reflector.Get(type);
             Inject(instance, info);
@@ -290,19 +306,32 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 
         public T Destroy<T>(T instance, bool triggerPreDestroys)
         {
-            DestroyImpl(instance, triggerPreDestroys);
+            if (CheckIsConstructed(instance))
+            {
+                DestroyImpl(instance, triggerPreDestroys);
+                UnmarkConstructed(instance);
+            }
             return instance;
         }
 
         public object Destroy(object instance, bool triggerPreDestroys)
         {
-            DestroyImpl(instance, triggerPreDestroys);
+            if (CheckIsConstructed(instance))
+            {
+                DestroyImpl(instance, triggerPreDestroys);
+                UnmarkConstructed(instance);
+            }
             return instance;
         }
         
         private void DestroyImpl(object instance, bool triggerPreDestroys)
         {
-            ValidateInstance(instance, out var type);
+            if (instance == null)
+                throw new InjectionException(InjectionExceptionType.InstanceIsMissing);
+
+            var type = instance.GetType();
+            if (!CheckTypeCanBeConstructed(type))
+                throw new InjectionException(InjectionExceptionType.InstanceIsOfPrimitiveType);
 
             var info = _reflector.Get(type);
 
@@ -312,20 +341,6 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
             UnInject(instance, info);
         }
         
-        /*
-         * Validation.
-         */
-
-        private void ValidateInstance(object instance, out Type type)
-        {
-            if (instance == null)
-                throw new InjectionException(InjectionExceptionType.InstanceIsMissing);
-
-            type = instance.GetType();
-            if (!CheckTypeCanBeConstructed(type))
-                throw new InjectionException(InjectionExceptionType.InstanceIsOfPrimitiveType);
-        }
-
         /*
          * Injections.
          */
@@ -358,7 +373,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
 
                     if (binding.ToConstruct && !CheckIsConstructed(instanceProvider))
                     {
-                        Construct(instanceProvider, true);
+                        ConstructImpl(instanceProvider, true);
                         binding.SetValue(instanceProvider);
                         MarkConstructed(binding.Value);
                     }
@@ -370,7 +385,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
                 {
                     if (binding.ToConstruct && !CheckIsConstructed(binding.Value))
                     {
-                        Construct(binding.Value, true);
+                        ConstructImpl(binding.Value, true);
                         MarkConstructed(binding.Value);
                     }
 
@@ -393,7 +408,10 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
                     }
 
                     if (binding.ToConstruct)
-                        Construct(value, true);
+                    {
+                        ConstructImpl(value, true);
+                        MarkConstructed(binding.Value);
+                    }
 
                     return value;
                 }
@@ -415,7 +433,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
                             throw new InjectionException(InjectionExceptionType.ConstructingTypeCantBeInstantiated);
                         }
                         
-                        Construct(value, true);
+                        ConstructImpl(value, true);
                         binding.SetValue(value);
                         MarkConstructed(binding.Value);
                     }

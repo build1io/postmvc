@@ -110,5 +110,33 @@ namespace Build1.PostMVC.Tests.Extensions.MVCS.Injection
             InjectionBinder.Bind(str);
             Assert.AreEqual(InjectionBinder.GetInstance<Struct>(), str);
         }
+        
+        /*
+         * Other.
+         */
+
+        [Test]
+        public void FalseConstruction01()
+        {
+            InjectionBinder.Bind<IController>().To(new Controller());
+            InjectionBinder.GetInstance<IController>();
+            Assert.AreEqual(0, Controller.constructedTimes);
+        }
+        
+        [Test]
+        public void FalseConstruction02()
+        {
+            InjectionBinder.Bind<IController>().ToValue(new Controller());
+            InjectionBinder.GetInstance<IController>();
+            Assert.AreEqual(0, Controller.constructedTimes);
+        }
+        
+        [Test]
+        public void FalseConstruction03()
+        {
+            InjectionBinder.Bind<IController>(new Controller());
+            InjectionBinder.GetInstance<IController>();
+            Assert.AreEqual(0, Controller.constructedTimes);
+        }
     }
 }
