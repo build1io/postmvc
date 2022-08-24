@@ -49,7 +49,7 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Logging.Impl
             }
         }
 
-        public LogWebGL(string prefix, LogLevel level, bool print, bool record) : base(prefix, ValidateLogLevel(level))
+        public LogWebGL(string prefix, LogLevel level) : base(prefix, ValidateLogLevel(level))
         {
         }
 
