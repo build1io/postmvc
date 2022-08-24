@@ -3,34 +3,39 @@ using System.Collections.Generic;
 using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Events.Impl;
+using Build1.PostMVC.Utils.Pooling;
 
 namespace Build1.PostMVC.Extensions.MVCS.Commands
 {
     public abstract class CommandBindingBase : ICommandBindingBase
     {
-        internal EventBase                          Event            { get; }
-        internal CommandBinder                      CommandBinder    { get; }
-        internal List<Type>                         Commands         { get; }
-        internal Dictionary<int, CommandParamsBase> Params           { get; private set; }
-        internal int                                CommandsExecuted { get; private set; }
-        internal int                                CommandsReleased { get; private set; }
-        internal List<Exception>                    CommandsFailed   { get; private set; }
-        internal EventBase                          CompleteEvent    { get; set; }
-        internal EventBase                          BreakEvent       { get; set; }
-        internal EventBase                          FailEvent        { get; private set; }
-        internal bool                               IsSequence       { get; private set; }
-        internal OnceBehavior                       OnceBehavior     { get; private set; }
-        internal bool                               IsUnbindOnQuit   { get; private set; }
+        internal EventBase                          Event             { get; }
+        internal CommandBinder                      CommandBinder     { get; }
+        internal Pool<CommandParamsBase>            CommandParamsPool { get; }
+        internal List<Type>                         Commands          { get; }
+        internal Dictionary<int, CommandParamsBase> Params            { get; private set; }
+        internal int                                CommandsExecuted  { get; private set; }
+        internal int                                CommandsReleased  { get; private set; }
+        internal List<Exception>                    CommandsFailed    { get; private set; }
+        internal EventBase                          CompleteEvent     { get; set; }
+        internal EventBase                          BreakEvent        { get; set; }
+        internal EventBase                          FailEvent         { get; private set; }
+        internal bool                               IsSequence        { get; private set; }
+        internal OnceBehavior                       OnceBehavior      { get; private set; }
+        internal bool                               IsUnbindOnQuit    { get; private set; }
 
         internal bool IsExecuting { get; private set; }
         internal bool IsBreak     { get; private set; }
 
         internal bool HasFails => CommandsFailed != null && CommandsFailed.Count > 0;
 
-        protected CommandBindingBase(EventBase type, CommandBinder binder)
+        private Pool<CommandParamsBase> _commandParamsPool;
+
+        internal CommandBindingBase(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool)
         {
             Event = type;
             CommandBinder = binder;
+            CommandParamsPool = paramsPool;
             Commands = new List<Type>();
         }
 
@@ -43,7 +48,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         {
             Commands.Add(typeof(TCommand));
 
-            var param = CommandBinder.CommandsParamsPool.Take<CommandParams<T1>>();
+            var param = CommandParamsPool.Take<CommandParams<T1>>();
             param.Param01 = param01;
             
             Params ??= new Dictionary<int, CommandParamsBase>();
@@ -54,7 +59,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         {
             Commands.Add(typeof(TCommand));
 
-            var param = CommandBinder.CommandsParamsPool.Take<CommandParams<T1, T2>>();
+            var param = CommandParamsPool.Take<CommandParams<T1, T2>>();
             param.Param01 = param01;
             param.Param02 = param02;
             
@@ -66,7 +71,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         {
             Commands.Add(typeof(TCommand));
 
-            var param = CommandBinder.CommandsParamsPool.Take<CommandParams<T1, T2, T3>>();
+            var param = CommandParamsPool.Take<CommandParams<T1, T2, T3>>();
             param.Param01 = param01;
             param.Param02 = param02;
             param.Param03 = param03;
@@ -132,7 +137,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
                 return;
 
             foreach (var param in Params.Values)
-                CommandBinder.CommandsParamsPool.Return(param);
+                CommandParamsPool.Return(param);
         }
 
         /*

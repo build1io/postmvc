@@ -2,6 +2,7 @@ using System;
 using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
 using Build1.PostMVC.Extensions.MVCS.Events;
 using Build1.PostMVC.Extensions.MVCS.Events.Impl;
+using Build1.PostMVC.Utils.Pooling;
 
 namespace Build1.PostMVC.Extensions.MVCS.Commands
 {
@@ -9,7 +10,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
     {
         internal Func<bool> TriggerPredicate { get; private set; }
 
-        public CommandBinding(EventBase type, CommandBinder binder) : base(type, binder)
+        internal CommandBinding(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(type, binder, paramsPool)
         {
         }
 
@@ -131,7 +132,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         internal bool           TriggerValuesSet { get; private set; }
         internal Func<T1, bool> TriggerPredicate { get; private set; }
 
-        public CommandBinding(EventBase type, CommandBinder binder) : base(type, binder)
+        internal CommandBinding(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(type, binder, paramsPool)
         {
         }
 
@@ -339,7 +340,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         internal bool               TriggerValuesSet { get; private set; }
         internal Func<T1, T2, bool> TriggerPredicate { get; private set; }
 
-        public CommandBinding(EventBase type, CommandBinder binder) : base(type, binder)
+        internal CommandBinding(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(type, binder, paramsPool)
         {
         }
 
@@ -579,7 +580,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands
         internal bool                   TriggerValuesSet { get; private set; }
         internal Func<T1, T2, T3, bool> TriggerPredicate { get; private set; }
 
-        public CommandBinding(EventBase type, CommandBinder binder) : base(type, binder)
+        internal CommandBinding(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(type, binder, paramsPool)
         {
         }
 

@@ -16,17 +16,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
         [Log(LogLevel.Warning)] public ILog             Log             { get; set; }
         [Inject]                public IEventDispatcher Dispatcher      { get; set; }
         [Inject]                public IInjectionBinder InjectionBinder { get; set; }
-
-        public Pool<CommandParamsBase> CommandsParamsPool { get; }
-
-        private readonly CommandParams NoParams = new CommandParams();
+        
+        private readonly CommandParams NoParams = new();
 
         private readonly Dictionary<EventBase, IList> _bindings;
         private readonly List<CommandBindingBase>     _bindingsToUnbind;
 
-        private readonly Pool<CommandBase>      _commandsPool;
-        private readonly Dictionary<Type, bool> _commandsPoolableData;
-        private          int                    _commandsExecutionIterationTokens;
+        private readonly Pool<CommandBase>       _commandsPool;
+        private readonly Pool<CommandParamsBase> _commandsParamsPool;
+        private readonly Dictionary<Type, bool>  _commandsPoolableData;
+        private          int                     _commandsExecutionIterationTokens;
 
         public CommandBinder()
         {
@@ -34,9 +33,8 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             _bindingsToUnbind = new List<CommandBindingBase>(8);
 
             _commandsPool = new Pool<CommandBase>();
+            _commandsParamsPool = new Pool<CommandParamsBase>();
             _commandsPoolableData = new Dictionary<Type, bool>(64);
-
-            CommandsParamsPool = new Pool<CommandParamsBase>();
         }
 
         /*
@@ -45,7 +43,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         public CommandBinding Bind(Event @event)
         {
-            var binding = new CommandBinding(@event, this);
+            var binding = new CommandBinding(@event, this, _commandsParamsPool);
             if (_bindings.TryGetValue(@event, out var bindings))
                 ((List<CommandBinding>)bindings).Add(binding);
             else
@@ -55,7 +53,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         public CommandBinding<T1> Bind<T1>(Event<T1> @event)
         {
-            var binding = new CommandBinding<T1>(@event, this);
+            var binding = new CommandBinding<T1>(@event, this, _commandsParamsPool);
             if (_bindings.TryGetValue(@event, out var bindings))
                 ((List<CommandBinding<T1>>)bindings).Add(binding);
             else
@@ -65,7 +63,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         public CommandBinding<T1, T2> Bind<T1, T2>(Event<T1, T2> @event)
         {
-            var binding = new CommandBinding<T1, T2>(@event, this);
+            var binding = new CommandBinding<T1, T2>(@event, this, _commandsParamsPool);
             if (_bindings.TryGetValue(@event, out var bindings))
                 ((List<CommandBinding<T1, T2>>)bindings).Add(binding);
             else
@@ -75,7 +73,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
         public CommandBinding<T1, T2, T3> Bind<T1, T2, T3>(Event<T1, T2, T3> @event)
         {
-            var binding = new CommandBinding<T1, T2, T3>(@event, this);
+            var binding = new CommandBinding<T1, T2, T3>(@event, this, _commandsParamsPool);
             if (_bindings.TryGetValue(@event, out var bindings))
                 ((List<CommandBinding<T1, T2, T3>>)bindings).Add(binding);
             else
@@ -313,7 +311,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke(param01))
                     continue;
 
-                var param = CommandsParamsPool.Take<CommandParams<T1>>();
+                var param = _commandsParamsPool.Take<CommandParams<T1>>();
                 param.Param01 = param01;
 
                 binding.StartExecution();
@@ -339,13 +337,13 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
                 if (binding.TriggerValuesSet &&
                     (!EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01) ||
-                    !EqualityComparer<T2>.Default.Equals(binding.TriggerValue02, param02)))
+                     !EqualityComparer<T2>.Default.Equals(binding.TriggerValue02, param02)))
                     continue;
 
                 if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke(param01, param02))
                     continue;
 
-                var param = CommandsParamsPool.Take<CommandParams<T1, T2>>();
+                var param = _commandsParamsPool.Take<CommandParams<T1, T2>>();
                 param.Param01 = param01;
                 param.Param02 = param02;
 
@@ -370,16 +368,16 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
 
-                if (binding.TriggerValuesSet && 
+                if (binding.TriggerValuesSet &&
                     (!EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01) ||
-                    !EqualityComparer<T2>.Default.Equals(binding.TriggerValue02, param02) ||
-                    !EqualityComparer<T3>.Default.Equals(binding.TriggerValue03, param03)))
+                     !EqualityComparer<T2>.Default.Equals(binding.TriggerValue02, param02) ||
+                     !EqualityComparer<T3>.Default.Equals(binding.TriggerValue03, param03)))
                     continue;
 
                 if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke(param01, param02, param03))
                     continue;
 
-                var param = CommandsParamsPool.Take<CommandParams<T1, T2, T3>>();
+                var param = _commandsParamsPool.Take<CommandParams<T1, T2, T3>>();
                 param.Param01 = param01;
                 param.Param02 = param02;
                 param.Param03 = param03;
@@ -479,7 +477,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
             }
             else if (binding.HasFails)
             {
-                CommandsParamsPool.Return(param);
+                _commandsParamsPool.Return(param);
 
                 HandleBindingFail(binding);
                 return;
@@ -495,7 +493,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                     param.DispatchParams(Dispatcher, binding.CompleteEvent);
             }
 
-            CommandsParamsPool.Return(param);
+            _commandsParamsPool.Return(param);
         }
 
         private void HandleBindingFail(CommandBindingBase binding)
@@ -506,7 +504,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
             if ((binding.OnceBehavior & OnceBehavior.UnbindOnFail) == OnceBehavior.UnbindOnFail)
                 UnbindOrScheduleIfOnce(binding);
-            
+
             Log?.Error(log =>
             {
                 try
@@ -518,7 +516,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
                     log.Error(exceptionRethrown);
                 }
             });
-            
+
             switch (binding.FailEvent)
             {
                 case Event<Exception> event1:
