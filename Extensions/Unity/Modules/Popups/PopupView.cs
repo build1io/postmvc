@@ -67,6 +67,9 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups
         {
             if (animationObject)
             {
+                if (IsAnimating)
+                    return;
+                
                 if (raycastBlocker)
                     raycastBlocker.SetActive(true);
 
