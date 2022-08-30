@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 
@@ -16,20 +17,20 @@ namespace Build1.PostMVC.Extensions.Unity.Modules.Popups.Animation
         [SerializeField]                 private float hideDuration  = 0.05F;
         [SerializeField]                 private Ease  hideEasing    = Ease.OutSine;
 
-        public override void AnimateShow(IPopupView view, TweenCallback onComplete)
+        public override void AnimateShow(IPopupView view, Action onComplete)
         {
             view.Content.localScale = new Vector3(showScaleFrom, showScaleFrom, showScaleFrom);
             view.Content.DOScale(showScaleTo, showDuration)
-                .OnComplete(onComplete)
+                .OnComplete(onComplete.Invoke)
                 .SetEase(showEasing);
         }
 
-        public override void AnimateHide(IPopupView view, TweenCallback onComplete)
+        public override void AnimateHide(IPopupView view, Action onComplete)
         {
             view.Content.localScale = new Vector3(hideScaleFrom, hideScaleFrom, hideScaleFrom);
             view.Content.DOScale(hideScaleTo, hideDuration)
                 .SetEase(hideEasing)
-                .OnComplete(onComplete);
+                .OnComplete(onComplete.Invoke);
         }
 
         public override void KillAnimations(IPopupView view)
