@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Build1.PostMVC.Core.MVCS.Events.Impl
+namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 {
     public class EventMap : IEventMap
     {
@@ -215,7 +215,7 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
          * Remove Map Info.
          */
 
-        internal void RemoveMapInfo(IEventMapInfo info)
+        protected void RemoveMapInfo(IEventMapInfo info)
         {
             _infos.Remove(info);
             _infosPool.Return(info);
@@ -238,7 +238,7 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
          * Other.
          */
 
-        internal bool ContainsMapInfoImpl(IEventDispatcher dispatcher, EventBase @event, object listener)
+        protected bool ContainsMapInfoImpl(IEventDispatcher dispatcher, EventBase @event, object listener)
         {
             foreach (var info in _infos)
             {

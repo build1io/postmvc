@@ -15,7 +15,7 @@ namespace Build1.PostMVC.Core.Tests.Events.EventBus
         public void SetUp()
         {
             var dispatcher = new EventDispatcherWithCommandProcessing(new CommandBinder());
-            var bus = new MVCS.Events.Impl.EventBus
+            var bus = new MVCS.Events.Impl.Bus.EventBus
             {
                 Dispatcher = dispatcher
             };

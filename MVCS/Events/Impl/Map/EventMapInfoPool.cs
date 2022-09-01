@@ -1,6 +1,6 @@
 using Build1.PostMVC.Core.Utils.Pooling;
 
-namespace Build1.PostMVC.Core.MVCS.Events.Impl
+namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 {
     public class EventMapInfoPool : Pool<IEventMapInfo>
     {

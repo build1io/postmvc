@@ -1,4 +1,4 @@
-namespace Build1.PostMVC.Core.MVCS.Events.Impl
+namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 {
     public interface IEventMapInfo
     {

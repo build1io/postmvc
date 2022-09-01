@@ -1,16 +1,16 @@
 using System;
 
-namespace Build1.PostMVC.Core.MVCS.Events.Impl
+namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 {
-    public sealed class EventMapInfoInterface : IEventMapInfo
+    public sealed class EventMapInfoExact : IEventMapInfo
     {
-        private IEventDispatcher      _dispatcher;
-        private Event                 _event;
-        private Action                _listener;
-        private Action<IEventMapInfo> _infoRemovalMethod;
-        private bool                  _isOnceScenario;
+        private EventDispatcherWithCommandProcessing _dispatcher;
+        private Event                                _event;
+        private Action                               _listener;
+        private Action<IEventMapInfo>                _infoRemovalMethod;
+        private bool                                 _isOnceScenario;
 
-        public void Setup(IEventDispatcher dispatcher, Event @event, Action listener, Action<IEventMapInfo> infoRemovalMethod, bool isOnceScenario)
+        public void Setup(EventDispatcherWithCommandProcessing dispatcher, Event @event, Action listener, Action<IEventMapInfo> infoRemovalMethod, bool isOnceScenario)
         {
             _dispatcher = dispatcher;
             _event = @event;
@@ -32,7 +32,7 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
                 _dispatcher.AddListenerOnce(_event, _listener);
                 return;
             }
-            
+
             _dispatcher.AddListener(_event, _listener);
         }
 
@@ -40,7 +40,7 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
         {
             if (_isOnceScenario)
                 _dispatcher.RemoveListener(_event, OnceListener);
-            
+
             _dispatcher.RemoveListener(_event, _listener);
 
             return this;
@@ -54,15 +54,15 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
         }
     }
 
-    public sealed class EventMapInfoInterface<T1> : IEventMapInfo
+    public sealed class EventMapInfoExact<T1> : IEventMapInfo
     {
-        private IEventDispatcher      _dispatcher;
-        private Event<T1>             _event;
-        private Action<T1>            _listener;
-        private Action<IEventMapInfo> _infoRemovalMethod;
-        private bool                  _isOnceScenario;
+        private EventDispatcherWithCommandProcessing _dispatcher;
+        private Event<T1>                            _event;
+        private Action<T1>                           _listener;
+        private Action<IEventMapInfo>                _infoRemovalMethod;
+        private bool                                 _isOnceScenario;
 
-        public void Setup(IEventDispatcher dispatcher, Event<T1> @event, Action<T1> listener, Action<IEventMapInfo> infoRemovalMethod, bool isOnceScenario)
+        public void Setup(EventDispatcherWithCommandProcessing dispatcher, Event<T1> @event, Action<T1> listener, Action<IEventMapInfo> infoRemovalMethod, bool isOnceScenario)
         {
             _dispatcher = dispatcher;
             _event = @event;
@@ -70,12 +70,12 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
             _infoRemovalMethod = infoRemovalMethod;
             _isOnceScenario = isOnceScenario;
         }
-        
+
         public void OnceListener(T1 param01)
         {
             _infoRemovalMethod.Invoke(this);
         }
-        
+
         public void Bind()
         {
             if (_isOnceScenario)
@@ -84,15 +84,15 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
                 _dispatcher.AddListenerOnce(_event, _listener);
                 return;
             }
-            
+
             _dispatcher.AddListener(_event, _listener);
         }
-        
+
         public IEventMapInfo Unbind()
         {
             if (_isOnceScenario)
                 _dispatcher.RemoveListener(_event, OnceListener);
-            
+
             _dispatcher.RemoveListener(_event, _listener);
 
             return this;
@@ -106,15 +106,15 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
         }
     }
 
-    public sealed class EventMapInfoInterface<T1, T2> : IEventMapInfo
+    public sealed class EventMapInfoExact<T1, T2> : IEventMapInfo
     {
-        private IEventDispatcher      _dispatcher;
-        private Event<T1, T2>         _event;
-        private Action<T1, T2>        _listener;
-        private Action<IEventMapInfo> _infoRemovalMethod;
-        private bool                  _isOnceScenario;
+        private EventDispatcherWithCommandProcessing _dispatcher;
+        private Event<T1, T2>                        _event;
+        private Action<T1, T2>                       _listener;
+        private Action<IEventMapInfo>                _infoRemovalMethod;
+        private bool                                 _isOnceScenario;
 
-        public void Setup(IEventDispatcher dispatcher, Event<T1, T2> @event, Action<T1, T2> listener, Action<IEventMapInfo> infoRemovalMethod, bool isOnceScenario)
+        public void Setup(EventDispatcherWithCommandProcessing dispatcher, Event<T1, T2> @event, Action<T1, T2> listener, Action<IEventMapInfo> infoRemovalMethod, bool isOnceScenario)
         {
             _dispatcher = dispatcher;
             _event = @event;
@@ -122,12 +122,12 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
             _infoRemovalMethod = infoRemovalMethod;
             _isOnceScenario = isOnceScenario;
         }
-        
+
         public void OnceListener(T1 param01, T2 param02)
         {
             _infoRemovalMethod.Invoke(this);
         }
-        
+
         public void Bind()
         {
             if (_isOnceScenario)
@@ -136,15 +136,15 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
                 _dispatcher.AddListenerOnce(_event, _listener);
                 return;
             }
-            
+
             _dispatcher.AddListener(_event, _listener);
         }
-        
+
         public IEventMapInfo Unbind()
         {
             if (_isOnceScenario)
                 _dispatcher.RemoveListener(_event, OnceListener);
-            
+
             _dispatcher.RemoveListener(_event, _listener);
 
             return this;
@@ -158,15 +158,15 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
         }
     }
 
-    public sealed class EventMapInfoInterface<T1, T2, T3> : IEventMapInfo
+    public sealed class EventMapInfoExact<T1, T2, T3> : IEventMapInfo
     {
-        private IEventDispatcher      _dispatcher;
-        private Event<T1, T2, T3>     _event;
-        private Action<T1, T2, T3>    _listener;
-        private Action<IEventMapInfo> _infoRemovalMethod;
-        private bool                  _isOnceScenario;
+        private EventDispatcherWithCommandProcessing _dispatcher;
+        private Event<T1, T2, T3>                    _event;
+        private Action<T1, T2, T3>                   _listener;
+        private Action<IEventMapInfo>                _infoRemovalMethod;
+        private bool                                 _isOnceScenario;
 
-        public void Setup(IEventDispatcher dispatcher, Event<T1, T2, T3> @event, Action<T1, T2, T3> listener, Action<IEventMapInfo> infoRemovalMethod, bool isOnceScenario)
+        public void Setup(EventDispatcherWithCommandProcessing dispatcher, Event<T1, T2, T3> @event, Action<T1, T2, T3> listener, Action<IEventMapInfo> infoRemovalMethod, bool isOnceScenario)
         {
             _dispatcher = dispatcher;
             _event = @event;
@@ -174,12 +174,12 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
             _infoRemovalMethod = infoRemovalMethod;
             _isOnceScenario = isOnceScenario;
         }
-        
+
         public void OnceListener(T1 param01, T2 param02, T3 param03)
         {
             _infoRemovalMethod.Invoke(this);
         }
-        
+
         public void Bind()
         {
             if (_isOnceScenario)
@@ -188,7 +188,7 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
                 _dispatcher.AddListenerOnce(_event, _listener);
                 return;
             }
-            
+
             _dispatcher.AddListener(_event, _listener);
         }
 
@@ -196,9 +196,9 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
         {
             if (_isOnceScenario)
                 _dispatcher.RemoveListener(_event, OnceListener);
-            
+
             _dispatcher.RemoveListener(_event, _listener);
-            
+
             return this;
         }
 
