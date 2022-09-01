@@ -1,9 +1,7 @@
 {
     "name": "PostMVC",
     "rootNamespace": "",
-    "references": [
-        "Unity.InputSystem"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
