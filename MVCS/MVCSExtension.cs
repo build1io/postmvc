@@ -12,7 +12,7 @@ using Build1.PostMVC.Core.MVCS.Mediation.Impl;
 
 namespace Build1.PostMVC.Core.MVCS
 {
-    internal sealed class MVCSExtension : Extension
+    public sealed class MVCSExtension : Extension
     {
         public IEventDispatcher EventDispatcher { get; }
         public IInjectionBinder InjectionBinder { get; }
