@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Build1.PostMVC.Core.Extensions.MVCS.Injection;
+using Build1.PostMVC.Core.MVCS.Injection;
 
 namespace Build1.PostMVC.Core.Tests.Injection.Parts
 {

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Build1.PostMVC.Core.Extensions.MVCS.Commands;
-using Build1.PostMVC.Core.Extensions.MVCS.Commands.Impl;
-using Build1.PostMVC.Core.Extensions.MVCS.Events;
-using Build1.PostMVC.Core.Extensions.MVCS.Events.Impl;
-using Build1.PostMVC.Core.Extensions.MVCS.Injection.Impl;
+using Build1.PostMVC.Core.MVCS.Commands;
+using Build1.PostMVC.Core.MVCS.Commands.Impl;
+using Build1.PostMVC.Core.MVCS.Events;
+using Build1.PostMVC.Core.MVCS.Events.Impl;
+using Build1.PostMVC.Core.MVCS.Injection.Impl;
 using Build1.PostMVC.Core.Tests.Commands.Command03Tests.Commands;
 using Build1.PostMVC.Core.Tests.Commands.Common;
 using NUnit.Framework;

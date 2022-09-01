@@ -1,4 +1,4 @@
-using Build1.PostMVC.Core.Extensions.MVCS.Events;
+using Build1.PostMVC.Core.MVCS.Events;
 using Build1.PostMVC.Core.Tests.Events.Common;
 using NUnit.Framework;
 
@@ -12,7 +12,7 @@ namespace Build1.PostMVC.Core.Tests.Events.EventDispatcher
         [SetUp]
         public void SetUp()
         {
-            _dispatcher = new Extensions.MVCS.Events.Impl.EventDispatcher();
+            _dispatcher = new MVCS.Events.Impl.EventDispatcher();
             _counter = 0;
         }
 

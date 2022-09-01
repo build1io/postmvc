@@ -1,5 +1,5 @@
-using Build1.PostMVC.Core.Extensions.MVCS.Commands.Impl;
-using Build1.PostMVC.Core.Extensions.MVCS.Injection.Impl;
+using Build1.PostMVC.Core.MVCS.Commands.Impl;
+using Build1.PostMVC.Core.MVCS.Injection.Impl;
 using NUnit.Framework;
 
 namespace Build1.PostMVC.Core.Tests.Commands

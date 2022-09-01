@@ -1,6 +1,6 @@
-using Build1.PostMVC.Core.Extensions.MVCS.Commands.Impl;
-using Build1.PostMVC.Core.Extensions.MVCS.Events;
-using Build1.PostMVC.Core.Extensions.MVCS.Events.Impl;
+using Build1.PostMVC.Core.MVCS.Commands.Impl;
+using Build1.PostMVC.Core.MVCS.Events;
+using Build1.PostMVC.Core.MVCS.Events.Impl;
 using Build1.PostMVC.Core.Tests.Events.Common;
 using NUnit.Framework;
 
@@ -15,7 +15,7 @@ namespace Build1.PostMVC.Core.Tests.Events.EventBus
         public void SetUp()
         {
             var dispatcher = new EventDispatcherWithCommandProcessing(new CommandBinder());
-            var bus = new Extensions.MVCS.Events.Impl.EventBus
+            var bus = new MVCS.Events.Impl.EventBus
             {
                 Dispatcher = dispatcher
             };

@@ -1,6 +1,6 @@
-using Build1.PostMVC.Core.Extensions.MVCS.Commands.Impl;
-using Build1.PostMVC.Core.Extensions.MVCS.Events;
-using Build1.PostMVC.Core.Extensions.MVCS.Events.Impl;
+using Build1.PostMVC.Core.MVCS.Commands.Impl;
+using Build1.PostMVC.Core.MVCS.Events;
+using Build1.PostMVC.Core.MVCS.Events.Impl;
 using Build1.PostMVC.Core.Tests.Events.Common;
 using NUnit.Framework;
 
@@ -80,7 +80,7 @@ namespace Build1.PostMVC.Core.Tests.Events.EventMap
         [Test]
         public void MapWithSideDispatcherTest()
         {
-            var dispatcher = new Extensions.MVCS.Events.Impl.EventDispatcher();
+            var dispatcher = new MVCS.Events.Impl.EventDispatcher();
 
             var count00 = 0;
             var count01 = 0;
@@ -226,7 +226,7 @@ namespace Build1.PostMVC.Core.Tests.Events.EventMap
         [Test]
         public void MapOnceWithSideDispatcherTest()
         {
-            var dispatcher = new Extensions.MVCS.Events.Impl.EventDispatcher();
+            var dispatcher = new MVCS.Events.Impl.EventDispatcher();
         
             var count00 = 0;
             var count01 = 0;
@@ -375,7 +375,7 @@ namespace Build1.PostMVC.Core.Tests.Events.EventMap
         [Test]
         public void UnmapWithSideDispatcherTest()
         {
-            var dispatcher = new Extensions.MVCS.Events.Impl.EventDispatcher();
+            var dispatcher = new MVCS.Events.Impl.EventDispatcher();
         
             var count00 = 0;
             var count01 = 0;
@@ -527,7 +527,7 @@ namespace Build1.PostMVC.Core.Tests.Events.EventMap
         [Test]
         public void UnmapAllWithSideDispatcherTest()
         {
-            var dispatcher = new Extensions.MVCS.Events.Impl.EventDispatcher();
+            var dispatcher = new MVCS.Events.Impl.EventDispatcher();
         
             var count00 = 0;
             var count01 = 0;
@@ -577,7 +577,7 @@ namespace Build1.PostMVC.Core.Tests.Events.EventMap
         [Test]
         public void UnmapAllWithSideDispatcherOnceTest()
         {
-            var dispatcher = new Extensions.MVCS.Events.Impl.EventDispatcher();
+            var dispatcher = new MVCS.Events.Impl.EventDispatcher();
         
             var count00 = 0;
             var count01 = 0;

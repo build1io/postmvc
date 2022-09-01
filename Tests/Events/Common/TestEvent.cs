@@ -1,4 +1,4 @@
-using Build1.PostMVC.Core.Extensions.MVCS.Events;
+using Build1.PostMVC.Core.MVCS.Events;
 
 namespace Build1.PostMVC.Core.Tests.Events.Common
 {
