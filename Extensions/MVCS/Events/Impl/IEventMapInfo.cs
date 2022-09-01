@@ -1,6 +1,6 @@
-namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
+namespace Build1.PostMVC.Core.Extensions.MVCS.Events.Impl
 {
-    internal interface IEventMapInfo
+    public interface IEventMapInfo
     {
         IEventMapInfo Unbind();
         bool          Match(IEventDispatcher dispatcher, EventBase @event, object listener);

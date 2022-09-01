@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Build1.PostMVC.Extensions.MVCS.Injection;
+using Build1.PostMVC.Core.Extensions.MVCS.Injection;
 
-namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
+namespace Build1.PostMVC.Core.Extensions.MVCS.Events.Impl
 {
     public sealed class EventBus : IEventBus
     {

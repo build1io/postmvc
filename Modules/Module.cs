@@ -1,8 +1,8 @@
-using Build1.PostMVC.Contexts;
+using Build1.PostMVC.Core.Contexts;
 
-namespace Build1.PostMVC.Modules
+namespace Build1.PostMVC.Core.Modules
 {
-    public abstract class Module : IModule
+    public abstract class Module
     {
         private IContext _context;
         
@@ -10,18 +10,16 @@ namespace Build1.PostMVC.Modules
          * Public.
          */
 
-        public void SetContext(IContext context)
+        internal void SetContext(IContext context)
         {
             _context = context;
         }
-
-        public virtual void Configure() { }
 
         /*
          * Protected.
          */
         
-        protected void AddModule<T>() where T : IModule, new()
+        protected void AddModule<T>() where T : Module, new()
         {
             _context.AddModule<T>();
         }

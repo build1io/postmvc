@@ -1,6 +1,6 @@
 using System;
 
-namespace Build1.PostMVC.Extensions
+namespace Build1.PostMVC.Core.Extensions
 {
     public sealed class ExtensionException : Exception
     {

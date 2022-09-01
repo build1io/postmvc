@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace Build1.PostMVC.Extensions.MVCS.Injection.Api
+namespace Build1.PostMVC.Core.Extensions.MVCS.Injection.Api
 {
     internal interface IInjectionInfo
     {

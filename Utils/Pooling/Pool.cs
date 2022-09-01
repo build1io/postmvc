@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Build1.PostMVC.Utils.Pooling
+namespace Build1.PostMVC.Core.Utils.Pooling
 {
     public class Pool<T> where T : class
     {

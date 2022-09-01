@@ -1,7 +1,7 @@
 using System;
-using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
+using Build1.PostMVC.Core.Extensions.MVCS.Commands.Impl;
 
-namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
+namespace Build1.PostMVC.Core.Extensions.MVCS.Events.Impl
 {
     public sealed class EventDispatcherWithCommandProcessing : IEventDispatcher
     {

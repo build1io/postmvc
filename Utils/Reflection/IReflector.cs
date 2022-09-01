@@ -1,8 +1,8 @@
 using System;
 
-namespace Build1.PostMVC.Utils.Reflection
+namespace Build1.PostMVC.Core.Utils.Reflection
 {
-    internal interface IReflector<out T> where T : class, IReflectionInfo, new()
+    public interface IReflector<out T> where T : class, IReflectionInfo, new()
     {
         T Get<Y>();
         T Get(Type type);

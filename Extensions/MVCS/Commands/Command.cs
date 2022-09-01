@@ -1,6 +1,6 @@
-using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
+using Build1.PostMVC.Core.Extensions.MVCS.Commands.Impl;
 
-namespace Build1.PostMVC.Extensions.MVCS.Commands
+namespace Build1.PostMVC.Core.Extensions.MVCS.Commands
 {
     public abstract class Command : CommandBase
     {

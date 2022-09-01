@@ -1,13 +1,13 @@
-using Build1.PostMVC.Contexts;
+using Build1.PostMVC.Core.Contexts;
 
-namespace Build1.PostMVC.Extensions
+namespace Build1.PostMVC.Core.Extensions
 {
-    public abstract class Extension : IExtension
+    public abstract class Extension
     {
         protected IContext Context     { get; private set; }
         protected IContext RootContext { get; private set; }
 
-        public void SetContext(IContext context, IContext rootContext)
+        internal void SetContext(IContext context, IContext rootContext)
         {
             Context = context;
             RootContext = rootContext;
@@ -17,7 +17,7 @@ namespace Build1.PostMVC.Extensions
         public virtual void Setup()      { }
         public virtual void Dispose()    { }
 
-        protected T GetDependentExtension<T>() where T : IExtension
+        protected T GetDependentExtension<T>() where T : Extension
         {
             if (Context.TryGetExtension<T>(out var extension))
                 return extension;

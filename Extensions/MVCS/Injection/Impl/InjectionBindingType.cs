@@ -1,4 +1,4 @@
-namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
+namespace Build1.PostMVC.Core.Extensions.MVCS.Injection.Impl
 {
     public enum InjectionBindingType
     {

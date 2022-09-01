@@ -1,8 +1,8 @@
-using Build1.PostMVC.Utils.Pooling;
+using Build1.PostMVC.Core.Utils.Pooling;
 
-namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
+namespace Build1.PostMVC.Core.Extensions.MVCS.Events.Impl
 {
-    internal partial class EventMapInfoPool : Pool<IEventMapInfo>
+    public class EventMapInfoPool : Pool<IEventMapInfo>
     {
         public EventMapInfoInterface             TakeInterface()             { return Take<EventMapInfoInterface>(); }
         public EventMapInfoInterface<T1>         TakeInterface<T1>()         { return Take<EventMapInfoInterface<T1>>(); }

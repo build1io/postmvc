@@ -1,8 +1,8 @@
 using System;
 
-namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
+namespace Build1.PostMVC.Core.Extensions.MVCS.Events.Impl
 {
-    internal sealed class EventMapInfoInterface : IEventMapInfo
+    public sealed class EventMapInfoInterface : IEventMapInfo
     {
         private IEventDispatcher      _dispatcher;
         private Event                 _event;
@@ -54,7 +54,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         }
     }
 
-    internal sealed class EventMapInfoInterface<T1> : IEventMapInfo
+    public sealed class EventMapInfoInterface<T1> : IEventMapInfo
     {
         private IEventDispatcher      _dispatcher;
         private Event<T1>             _event;
@@ -106,7 +106,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         }
     }
 
-    internal sealed class EventMapInfoInterface<T1, T2> : IEventMapInfo
+    public sealed class EventMapInfoInterface<T1, T2> : IEventMapInfo
     {
         private IEventDispatcher      _dispatcher;
         private Event<T1, T2>         _event;
@@ -158,7 +158,7 @@ namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
         }
     }
 
-    internal sealed class EventMapInfoInterface<T1, T2, T3> : IEventMapInfo
+    public sealed class EventMapInfoInterface<T1, T2, T3> : IEventMapInfo
     {
         private IEventDispatcher      _dispatcher;
         private Event<T1, T2, T3>     _event;

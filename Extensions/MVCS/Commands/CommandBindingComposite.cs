@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Build1.PostMVC.Extensions.MVCS.Events;
+using Build1.PostMVC.Core.Extensions.MVCS.Events;
 
-namespace Build1.PostMVC.Extensions.MVCS.Commands
+namespace Build1.PostMVC.Core.Extensions.MVCS.Commands
 {
     public sealed class CommandBindingComposite : ICommandBinding
     {

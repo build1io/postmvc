@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Reflection;
-using Build1.PostMVC.Utils.Reflection;
+using Build1.PostMVC.Core.Utils.Reflection;
 
-namespace Build1.PostMVC.Extensions.MVCS.Injection.Api
+namespace Build1.PostMVC.Core.Extensions.MVCS.Injection.Api
 {
     internal interface IMVCSItemReflectionInfo : IReflectionInfo
     {

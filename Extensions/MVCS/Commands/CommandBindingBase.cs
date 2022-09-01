@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
-using Build1.PostMVC.Extensions.MVCS.Events;
-using Build1.PostMVC.Extensions.MVCS.Events.Impl;
-using Build1.PostMVC.Utils.Pooling;
+using Build1.PostMVC.Core.Extensions.MVCS.Commands.Impl;
+using Build1.PostMVC.Core.Extensions.MVCS.Events;
+using Build1.PostMVC.Core.Extensions.MVCS.Events.Impl;
+using Build1.PostMVC.Core.Utils.Pooling;
 
-namespace Build1.PostMVC.Extensions.MVCS.Commands
+namespace Build1.PostMVC.Core.Extensions.MVCS.Commands
 {
     public abstract class CommandBindingBase : ICommandBindingBase
     {

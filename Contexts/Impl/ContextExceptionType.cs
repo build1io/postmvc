@@ -1,4 +1,4 @@
-namespace Build1.PostMVC.Contexts.Impl
+namespace Build1.PostMVC.Core.Contexts.Impl
 {
     internal enum ContextExceptionType
     {

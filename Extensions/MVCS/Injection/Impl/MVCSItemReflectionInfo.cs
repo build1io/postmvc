@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Build1.PostMVC.Extensions.MVCS.Injection.Api;
-using Build1.PostMVC.Utils.Reflection;
+using Build1.PostMVC.Core.Extensions.MVCS.Injection.Api;
+using Build1.PostMVC.Core.Utils.Reflection;
 
-namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
+namespace Build1.PostMVC.Core.Extensions.MVCS.Injection.Impl
 {
     internal sealed class MVCSItemReflectionInfo : IMVCSItemReflectionInfo
     {

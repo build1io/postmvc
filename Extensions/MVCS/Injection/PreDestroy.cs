@@ -1,6 +1,6 @@
 using System;
 
-namespace Build1.PostMVC.Extensions.MVCS.Injection
+namespace Build1.PostMVC.Core.Extensions.MVCS.Injection
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class PreDestroy : Attribute

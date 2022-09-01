@@ -1,8 +1,8 @@
 using System;
 
-namespace Build1.PostMVC.Utils.Reflection
+namespace Build1.PostMVC.Core.Utils.Reflection
 {
-    internal interface IReflectionInfo
+    public interface IReflectionInfo
     {
         IReflectionInfo Build(Type type);
     }

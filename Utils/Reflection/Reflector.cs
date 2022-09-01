@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Build1.PostMVC.Utils.Reflection
+namespace Build1.PostMVC.Core.Utils.Reflection
 {
-    internal sealed class Reflector<T> : IReflector<T> where T : class, IReflectionInfo, new()
+    public sealed class Reflector<T> : IReflector<T> where T : class, IReflectionInfo, new()
     {
         private readonly Dictionary<Type, T> _infos;
         

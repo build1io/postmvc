@@ -1,4 +1,4 @@
-namespace Build1.PostMVC.Extensions.MVCS.Mediation.Impl
+namespace Build1.PostMVC.Core.Extensions.MVCS.Mediation.Impl
 {
     internal enum MediationExceptionType
     {

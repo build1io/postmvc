@@ -1,28 +1,20 @@
 using System;
 using System.Collections.Generic;
-using Build1.PostMVC.Contexts.Impl;
-using Build1.PostMVC.Extensions;
-using Build1.PostMVC.Modules;
+using Build1.PostMVC.Core.Contexts.Impl;
+using Build1.PostMVC.Core.Extensions;
+using Build1.PostMVC.Core.Modules;
 
-namespace Build1.PostMVC.Contexts
+namespace Build1.PostMVC.Core.Contexts
 {
-    public sealed class Context : IContext
+    internal sealed class Context : IContext
     {
-        public static event Action<IContext> OnContextStarting;
-        public static event Action<IContext> OnContextStarted;
-        public static event Action<IContext> OnContextQuitting;
-        public static event Action<IContext> OnContextStopping;
-        public static event Action<IContext> OnContextStopped;
-
-        public IContext RootContext { get; }
-
-        public bool IsRootContext => this == RootContext;
+        public bool IsRootContext { get; }
         public bool IsStarted     { get; private set; }
         public bool IsQuitting    { get; private set; }
         public bool IsStopping    { get; private set; }
 
-        public event Action<IModule> OnModuleConstructing;
-        public event Action<IModule> OnModuleDisposing;
+        public event Action<Module> OnModuleConstructing;
+        public event Action<Module> OnModuleDisposing;
 
         public event Action OnStarting;
         public event Action OnStarted;
@@ -30,28 +22,32 @@ namespace Build1.PostMVC.Contexts
         public event Action OnStopping;
         public event Action OnStopped;
 
+        private readonly IContext _rootContext;
+        
         private readonly HashSet<Type>                _extensions;
-        private readonly Dictionary<Type, IExtension> _extensionInstances;
+        private readonly Dictionary<Type, Extension> _extensionInstances;
 
         private readonly List<Type>                _modules;
-        private readonly Dictionary<Type, IModule> _moduleInstances;
+        private readonly Dictionary<Type, Module> _moduleInstances;
 
-        public Context()
+        public Context(IContext rootContext)
         {
-            RootContext = this;
-
+            _rootContext = rootContext ?? this;
+            
             _extensions = new HashSet<Type>();
-            _extensionInstances = new Dictionary<Type, IExtension>();
+            _extensionInstances = new Dictionary<Type, Extension>();
 
             _modules = new List<Type>();
-            _moduleInstances = new Dictionary<Type, IModule>();
+            _moduleInstances = new Dictionary<Type, Module>();
+
+            IsRootContext = rootContext == this;
         }
 
         /*
          * Extensions.
          */
 
-        public IContext AddExtension(IExtension extension)
+        public IContext AddExtension(Extension extension)
         {
             if (IsStarted)
                 throw new ContextException(ContextExceptionType.ExtensionInstallationAttemptAfterContextStart, extension.GetType().FullName);
@@ -65,7 +61,7 @@ namespace Build1.PostMVC.Contexts
             return this;
         }
 
-        public IContext AddExtension<T>() where T : IExtension, new()
+        public IContext AddExtension<T>() where T : Extension, new()
         {
             if (IsStarted)
                 throw new ContextException(ContextExceptionType.ExtensionInstallationAttemptAfterContextStart, typeof(T).FullName);
@@ -74,19 +70,19 @@ namespace Build1.PostMVC.Contexts
             return this;
         }
 
-        public bool HasExtension<T>() where T : IExtension
+        public bool HasExtension<T>() where T : Extension
         {
             return _extensions.Contains(typeof(T));
         }
 
-        public T GetExtension<T>() where T : IExtension
+        public T GetExtension<T>() where T : Extension
         {
             if (_extensionInstances.TryGetValue(typeof(T), out var extension))
                 return (T)extension;
             throw new ContextException(ContextExceptionType.ExtensionInstanceNotFound);
         }
 
-        public bool TryGetExtension<T>(out T extension) where T : IExtension
+        public bool TryGetExtension<T>(out T extension) where T : Extension
         {
             if (_extensionInstances.TryGetValue(typeof(T), out var extensionInstance))
             {
@@ -104,11 +100,11 @@ namespace Build1.PostMVC.Contexts
             {
                 if (!_extensionInstances.TryGetValue(extensionType, out var extension))
                 {
-                    extension = (IExtension)Activator.CreateInstance(extensionType);
+                    extension = (Extension)Activator.CreateInstance(extensionType);
                     _extensionInstances.Add(extensionType, extension);
                 }
 
-                extension.SetContext(this, RootContext);
+                extension.SetContext(this, _rootContext);
             }
 
             foreach (var extension in _extensionInstances.Values)
@@ -129,7 +125,7 @@ namespace Build1.PostMVC.Contexts
          * Modules.
          */
 
-        public IContext AddModule<T>() where T : IModule, new()
+        public IContext AddModule<T>() where T : Module, new()
         {
             if (_modules.Contains(typeof(T)))
                 throw new ContextException(ContextExceptionType.ModuleAlreadyAdded, typeof(T).FullName);
@@ -143,12 +139,11 @@ namespace Build1.PostMVC.Contexts
             for (var i = 0; i < _modules.Count; i++)
             {
                 var moduleType = _modules[i];
-                var module = (IModule)Activator.CreateInstance(moduleType);
+                var module = (Module)Activator.CreateInstance(moduleType);
                 module.SetContext(this);
 
                 OnModuleConstructing?.Invoke(module);
 
-                module.Configure();
                 _moduleInstances.Add(moduleType, module);
             }
         }
@@ -173,12 +168,12 @@ namespace Build1.PostMVC.Contexts
             InitializeModules();
 
             OnStarting?.Invoke();
-            OnContextStarting?.Invoke(this);
+            PostMVC.OnContextStartingHandler(this);
 
             IsStarted = true;
 
             OnStarted?.Invoke();
-            OnContextStarted?.Invoke(this);
+            PostMVC.OnContextStartedHandler(this);
         }
 
         public void SetQuitting()
@@ -192,7 +187,7 @@ namespace Build1.PostMVC.Contexts
             IsQuitting = true;
             
             OnQuitting?.Invoke();
-            OnContextQuitting?.Invoke(this);
+            PostMVC.OnContextQuittingHandler(this);
         }
 
         public void Stop()
@@ -203,13 +198,13 @@ namespace Build1.PostMVC.Contexts
             IsStopping = true;
 
             OnStopping?.Invoke();
-            OnContextStopping?.Invoke(this);
+            PostMVC.OnContextStoppingHandler(this);
 
             IsStopping = false;
             IsStarted = false;
 
             OnStopped?.Invoke();
-            OnContextStopped?.Invoke(this);
+            PostMVC.OnContextStoppedHandler(this);
 
             DisposeModules();
             DisposeExtensions();

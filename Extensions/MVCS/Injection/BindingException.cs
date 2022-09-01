@@ -1,6 +1,6 @@
 using System;
 
-namespace Build1.PostMVC.Extensions.MVCS.Injection
+namespace Build1.PostMVC.Core.Extensions.MVCS.Injection
 {
     public sealed class BindingException : Exception
     {

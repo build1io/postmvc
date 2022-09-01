@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Build1.PostMVC.Extensions.MVCS.Injection;
-using Build1.PostMVC.Extensions.MVCS.Mediation.Api;
+using Build1.PostMVC.Core.Extensions.MVCS.Injection;
+using Build1.PostMVC.Core.Extensions.MVCS.Mediation.Api;
 
-namespace Build1.PostMVC.Extensions.MVCS.Mediation.Impl
+namespace Build1.PostMVC.Core.Extensions.MVCS.Mediation.Impl
 {
     internal sealed class MediationBinder : IMediationBinder
     {

@@ -1,4 +1,4 @@
-namespace Build1.PostMVC.Extensions.MVCS.Events
+namespace Build1.PostMVC.Core.Extensions.MVCS.Events
 {
     public interface IEventBus
     {

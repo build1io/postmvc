@@ -1,16 +1,15 @@
-using Build1.PostMVC.Contexts;
-using Build1.PostMVC.Extensions.MVCS.Commands;
-using Build1.PostMVC.Extensions.MVCS.Commands.Impl;
-using Build1.PostMVC.Extensions.MVCS.Contexts;
-using Build1.PostMVC.Extensions.MVCS.Events;
-using Build1.PostMVC.Extensions.MVCS.Events.Impl;
-using Build1.PostMVC.Extensions.MVCS.Injection;
-using Build1.PostMVC.Extensions.MVCS.Injection.Impl;
-using Build1.PostMVC.Extensions.MVCS.Mediation;
-using Build1.PostMVC.Extensions.MVCS.Mediation.Impl;
-using Build1.PostMVC.Modules;
+using Build1.PostMVC.Core.Extensions.MVCS.Commands;
+using Build1.PostMVC.Core.Extensions.MVCS.Commands.Impl;
+using Build1.PostMVC.Core.Extensions.MVCS.Contexts;
+using Build1.PostMVC.Core.Extensions.MVCS.Events;
+using Build1.PostMVC.Core.Extensions.MVCS.Events.Impl;
+using Build1.PostMVC.Core.Extensions.MVCS.Injection;
+using Build1.PostMVC.Core.Extensions.MVCS.Injection.Impl;
+using Build1.PostMVC.Core.Extensions.MVCS.Mediation;
+using Build1.PostMVC.Core.Extensions.MVCS.Mediation.Impl;
+using Build1.PostMVC.Core.Modules;
 
-namespace Build1.PostMVC.Extensions.MVCS
+namespace Build1.PostMVC.Core.Extensions.MVCS
 {
     public sealed class MVCSExtension : Extension
     {
@@ -41,13 +40,14 @@ namespace Build1.PostMVC.Extensions.MVCS
             Context.OnModuleConstructing += OnModuleConstructing;
             Context.OnModuleDisposing += OnModuleDisposing;
 
-            InjectionBinder.Bind<IContext>().ToValue(Context);
-            InjectionBinder.Bind<IEventBus>().To<EventBus>().AsSingleton();
-            InjectionBinder.Bind<IEventDispatcher>().ToValue(EventDispatcher).ConstructValue();
-            InjectionBinder.Bind<IEventMap>().ToProvider<EventMapProvider>();
-            InjectionBinder.Bind<IInjectionBinder>().ToValue(InjectionBinder);
-            InjectionBinder.Bind<ICommandBinder>().ToValue(CommandBinder).ConstructValue();
-            InjectionBinder.Bind<IMediationBinder>().ToValue(MediationBinder);
+            InjectionBinder.Bind(Context);
+            InjectionBinder.Bind(EventDispatcher);
+            InjectionBinder.Bind(InjectionBinder);
+            InjectionBinder.Bind(CommandBinder).ConstructValue();
+            InjectionBinder.Bind(MediationBinder);
+            
+            InjectionBinder.Bind<IEventBus, EventBus>();
+            InjectionBinder.Bind<IEventMap, EventMapProvider, Inject>();
         }
 
         public override void Dispose()
@@ -96,7 +96,7 @@ namespace Build1.PostMVC.Extensions.MVCS
          * Modules.
          */
 
-        private void OnModuleConstructing(IModule module) { InjectionBinder.Construct(module, true); }
-        private void OnModuleDisposing(IModule module)    { InjectionBinder.Destroy(module, true); }
+        private void OnModuleConstructing(Module module) { InjectionBinder.Construct(module, true); }
+        private void OnModuleDisposing(Module module)    { InjectionBinder.Destroy(module, true); }
     }
 }

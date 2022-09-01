@@ -1,4 +1,4 @@
-namespace Build1.PostMVC.Extensions.MVCS.Mediation
+namespace Build1.PostMVC.Core.Extensions.MVCS.Mediation
 {
     public abstract class Mediator : IMediator
     {

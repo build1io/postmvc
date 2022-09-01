@@ -1,7 +1,7 @@
 using System;
-using Build1.PostMVC.Extensions.MVCS.Injection.Impl;
+using Build1.PostMVC.Core.Extensions.MVCS.Injection.Impl;
 
-namespace Build1.PostMVC.Extensions.MVCS.Injection
+namespace Build1.PostMVC.Core.Extensions.MVCS.Injection
 {
     public interface IInjectionBinding
     {

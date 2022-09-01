@@ -2,21 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
-using Build1.PostMVC.Extensions.MVCS.Events;
-using Build1.PostMVC.Extensions.MVCS.Events.Impl;
-using Build1.PostMVC.Extensions.MVCS.Injection;
-using Build1.PostMVC.Extensions.Unity.Modules.Logging;
-using Build1.PostMVC.Utils.Pooling;
-using Event = Build1.PostMVC.Extensions.MVCS.Events.Event;
+using Build1.PostMVC.Core.Extensions.MVCS.Events;
+using Build1.PostMVC.Core.Extensions.MVCS.Events.Impl;
+using Build1.PostMVC.Core.Extensions.MVCS.Injection;
+using Build1.PostMVC.Core.Utils.Pooling;
+using Event = Build1.PostMVC.Core.Extensions.MVCS.Events.Event;
 
-namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
+namespace Build1.PostMVC.Core.Extensions.MVCS.Commands.Impl
 {
     public sealed class CommandBinder : ICommandBinder
     {
-        [Log(LogLevel.Warning)] public ILog             Log             { get; set; }
-        [Inject]                public IEventDispatcher Dispatcher      { get; set; }
-        [Inject]                public IInjectionBinder InjectionBinder { get; set; }
-        
+        [Inject] public IEventDispatcher Dispatcher      { get; set; }
+        [Inject] public IInjectionBinder InjectionBinder { get; set; }
+
         private readonly CommandParams NoParams = new();
 
         private readonly Dictionary<EventBase, IList> _bindings;
@@ -504,18 +502,6 @@ namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
 
             if ((binding.OnceBehavior & OnceBehavior.UnbindOnFail) == OnceBehavior.UnbindOnFail)
                 UnbindOrScheduleIfOnce(binding);
-
-            Log?.Error(log =>
-            {
-                try
-                {
-                    ExceptionDispatchInfo.Capture(exception).Throw();
-                }
-                catch (Exception exceptionRethrown)
-                {
-                    log.Error(exceptionRethrown);
-                }
-            });
 
             switch (binding.FailEvent)
             {

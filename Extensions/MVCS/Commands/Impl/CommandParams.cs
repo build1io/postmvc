@@ -1,7 +1,7 @@
-using Build1.PostMVC.Extensions.MVCS.Events;
-using Build1.PostMVC.Extensions.MVCS.Events.Impl;
+using Build1.PostMVC.Core.Extensions.MVCS.Events;
+using Build1.PostMVC.Core.Extensions.MVCS.Events.Impl;
 
-namespace Build1.PostMVC.Extensions.MVCS.Commands.Impl
+namespace Build1.PostMVC.Core.Extensions.MVCS.Commands.Impl
 {
     internal class CommandParams : CommandParamsBase
     {

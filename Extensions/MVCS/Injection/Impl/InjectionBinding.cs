@@ -1,7 +1,7 @@
 using System;
-using Build1.PostMVC.Extensions.MVCS.Injection.Api;
+using Build1.PostMVC.Core.Extensions.MVCS.Injection.Api;
 
-namespace Build1.PostMVC.Extensions.MVCS.Injection.Impl
+namespace Build1.PostMVC.Core.Extensions.MVCS.Injection.Impl
 {
     internal class InjectionBinding : IInjectionBinding, IInjectionBindingTo, IInjectionBindingToBinding,
                                       IInjectionBindingToProvider, IInjectionBindingToProviderInstance,

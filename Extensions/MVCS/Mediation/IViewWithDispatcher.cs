@@ -1,6 +1,6 @@
-using Build1.PostMVC.Extensions.MVCS.Events;
+using Build1.PostMVC.Core.Extensions.MVCS.Events;
 
-namespace Build1.PostMVC.Extensions.MVCS.Mediation
+namespace Build1.PostMVC.Core.Extensions.MVCS.Mediation
 {
     public interface IViewWithDispatcher : IView, IEventDispatcher
     {

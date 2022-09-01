@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Build1.PostMVC.Extensions.MVCS.Events.Impl
+namespace Build1.PostMVC.Core.Extensions.MVCS.Events.Impl
 {
-    internal partial class EventMap : IEventMap
+    public class EventMap : IEventMap
     {
         private readonly EventDispatcherWithCommandProcessing _dispatcher; // The final type must be specified to escape AOT issues.
         private readonly IEventBus                            _bus;

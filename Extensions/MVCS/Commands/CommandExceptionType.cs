@@ -1,4 +1,4 @@
-namespace Build1.PostMVC.Extensions.MVCS.Commands
+namespace Build1.PostMVC.Core.Extensions.MVCS.Commands
 {
     public enum CommandExceptionType
     {

@@ -1,4 +1,4 @@
-namespace Build1.PostMVC.Extensions
+namespace Build1.PostMVC.Core.Extensions
 {
     public enum ExtensionExceptionType
     {
