@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Build1.PostMVC.Core.Utils.Pooling;
 
 namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 {
@@ -8,10 +9,10 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
         private readonly EventDispatcherWithCommandProcessing _dispatcher; // The final type must be specified to escape AOT issues.
         private readonly IEventBus                            _bus;
 
-        private readonly List<IEventMapInfo> _infos;
-        private readonly EventMapInfoPool    _infosPool;
+        protected readonly List<IEventMapInfo> _infos;
+        protected readonly Pool<IEventMapInfo> _infosPool;
 
-        public EventMap(IEventDispatcher dispatcher, IEventBus bus, EventMapInfoPool infosPool)
+        public EventMap(IEventDispatcher dispatcher, IEventBus bus, Pool<IEventMapInfo> infosPool)
         {
             _dispatcher = (EventDispatcherWithCommandProcessing)dispatcher;
             _bus = bus;
@@ -145,7 +146,7 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 
         internal EventMapInfoExact AddMapInfo(Event @event, Action listener, bool isOnceScenario)
         {
-            var info = _infosPool.TakeExact();
+            var info = _infosPool.Take<EventMapInfoExact>();
             info.Setup(_dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
             _infos.Add(info);
             return info;
@@ -153,7 +154,7 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 
         internal EventMapInfoExact<T1> AddMapInfo<T1>(Event<T1> @event, Action<T1> listener, bool isOnceScenario)
         {
-            var info = _infosPool.TakeExact<T1>();
+            var info = _infosPool.Take<EventMapInfoExact<T1>>();
             info.Setup(_dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
             _infos.Add(info);
             return info;
@@ -161,7 +162,7 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 
         internal EventMapInfoExact<T1, T2> AddMapInfo<T1, T2>(Event<T1, T2> @event, Action<T1, T2> listener, bool isOnceScenario)
         {
-            var info = _infosPool.TakeExact<T1, T2>();
+            var info = _infosPool.Take<EventMapInfoExact<T1, T2>>();
             info.Setup(_dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
             _infos.Add(info);
             return info;
@@ -169,7 +170,7 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 
         internal EventMapInfoExact<T1, T2, T3> AddMapInfo<T1, T2, T3>(Event<T1, T2, T3> @event, Action<T1, T2, T3> listener, bool isOnceScenario)
         {
-            var info = _infosPool.TakeExact<T1, T2, T3>();
+            var info = _infosPool.Take<EventMapInfoExact<T1, T2, T3>>();
             info.Setup(_dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
             _infos.Add(info);
             return info;
@@ -181,7 +182,7 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
         
         private EventMapInfoInterface AddMapInfo(IEventDispatcher dispatcher, Event @event, Action listener, bool isOnceScenario)
         {
-            var info = _infosPool.TakeInterface();
+            var info = _infosPool.Take<EventMapInfoInterface>();
             info.Setup(dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
             _infos.Add(info);
             return info;
@@ -189,7 +190,7 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 
         private EventMapInfoInterface<T1> AddMapInfo<T1>(IEventDispatcher dispatcher, Event<T1> @event, Action<T1> listener, bool isOnceScenario)
         {
-            var info = _infosPool.TakeInterface<T1>();
+            var info = _infosPool.Take<EventMapInfoInterface<T1>>();
             info.Setup(dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
             _infos.Add(info);
             return info;
@@ -197,7 +198,7 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 
         private EventMapInfoInterface<T1, T2> AddMapInfo<T1, T2>(IEventDispatcher dispatcher, Event<T1, T2> @event, Action<T1, T2> listener, bool isOnceScenario)
         {
-            var info = _infosPool.TakeInterface<T1, T2>();
+            var info = _infosPool.Take<EventMapInfoInterface<T1, T2>>();
             info.Setup(dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
             _infos.Add(info);
             return info;
@@ -205,7 +206,7 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 
         private EventMapInfoInterface<T1, T2, T3> AddMapInfo<T1, T2, T3>(IEventDispatcher dispatcher, Event<T1, T2, T3> @event, Action<T1, T2, T3> listener, bool isOnceScenario)
         {
-            var info = _infosPool.TakeInterface<T1, T2, T3>();
+            var info = _infosPool.Take<EventMapInfoInterface<T1, T2, T3>>();
             info.Setup(dispatcher, @event, listener, RemoveMapInfo, isOnceScenario);
             _infos.Add(info);
             return info;

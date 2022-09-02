@@ -1,18 +1,19 @@
 using System.Collections.Generic;
 using Build1.PostMVC.Core.MVCS.Injection;
+using Build1.PostMVC.Core.Utils.Pooling;
 
 namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 {
     public abstract class EventMapProviderBase<T> : InjectionProvider<T>
     {
-        protected readonly EventMapInfoPool _infoPools;
+        protected readonly Pool<IEventMapInfo> _infoPools;
         
         private readonly Stack<T> _availableInstances;
         private readonly List<T>  _usedInstances;
 
         protected EventMapProviderBase()
         {
-            _infoPools = new EventMapInfoPool();
+            _infoPools = new Pool<IEventMapInfo>();
             
             _availableInstances = new Stack<T>();
             _usedInstances = new List<T>();
