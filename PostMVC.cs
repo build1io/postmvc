@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Build1.PostMVC.Core.Contexts;
 using Build1.PostMVC.Core.Contexts.Impl;
 using Build1.PostMVC.Core.MVCS;
@@ -7,13 +8,16 @@ namespace Build1.PostMVC.Core
 {
     public static class PostMVC
     {
+        public static int ActiveContextsCount => _contexts?.Count ?? 0;
+        
         public static event Action<IContext> OnContextStarting;
         public static event Action<IContext> OnContextStarted;
         public static event Action<IContext> OnContextQuitting;
         public static event Action<IContext> OnContextStopping;
         public static event Action<IContext> OnContextStopped;
 
-        private static IContext _rootContext;
+        private static IContext       _rootContext;
+        private static List<IContext> _contexts;
 
         /*
          * Init.
@@ -21,20 +25,32 @@ namespace Build1.PostMVC.Core
 
         public static IContext Context(string name = null)
         {
-            if (_rootContext == null)
+            var context = new Context(_contexts?.Count ?? 0, name, _rootContext);
+            context.AddExtension<MVCSExtension>();
+            context.OnStopped += OnContextStoppedListener;
+
+            if (_contexts == null)
             {
-                _rootContext = new Context(name, null);
-                _rootContext.AddExtension<MVCSExtension>();
-                _rootContext.OnStopped += OnRootStopped;
+                _contexts = new List<IContext> { context };
+                _rootContext = context;
             }
-            return _rootContext;
+            else
+            {
+                _contexts.Add(context);
+            }
+
+            return context;
         }
         
         public static void Stop()
         {
             if (_rootContext == null)
                 throw new ContextException(ContextExceptionType.ContextNotStarted);
-            _rootContext.Stop();
+
+            for (var i = _contexts.Count - 1; i >= 0; i--)
+                _contexts[i].Stop();
+            
+            _rootContext = null;
         }
 
         /*
@@ -80,13 +96,15 @@ namespace Build1.PostMVC.Core
          * Event Handlers.
          */
 
-        private static void OnRootStopped()
+        private static void OnContextStoppedListener(IContext context)
         {
-            if (_rootContext == null)
+            if (!_contexts.Remove(context))
                 return;
+            
+            context.OnStopped -= OnContextStoppedListener;
 
-            _rootContext.OnStopped -= OnRootStopped;
-            _rootContext = null;
+            if (context == _rootContext)
+                _rootContext = context;
         }
     }
 }

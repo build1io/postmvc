@@ -7,6 +7,7 @@ namespace Build1.PostMVC.Core.Contexts.Impl
 {
     internal sealed class Context : IContext
     {
+        public int    Id            { get; }
         public string Name          { get; }
         public bool   IsRootContext { get; }
         public bool   IsStarted     { get; private set; }
@@ -16,11 +17,11 @@ namespace Build1.PostMVC.Core.Contexts.Impl
         public event Action<Module> OnModuleConstructing;
         public event Action<Module> OnModuleDisposing;
 
-        public event Action OnStarting;
-        public event Action OnStarted;
-        public event Action OnQuitting;
-        public event Action OnStopping;
-        public event Action OnStopped;
+        public event Action<IContext> OnStarting;
+        public event Action<IContext> OnStarted;
+        public event Action<IContext> OnQuitting;
+        public event Action<IContext> OnStopping;
+        public event Action<IContext> OnStopped;
 
         private readonly IContext _rootContext;
 
@@ -30,7 +31,7 @@ namespace Build1.PostMVC.Core.Contexts.Impl
         private readonly List<Type>               _modules;
         private readonly Dictionary<Type, Module> _moduleInstances;
 
-        public Context(string name, IContext rootContext)
+        public Context(int id, string name, IContext rootContext)
         {
             _rootContext = rootContext ?? this;
 
@@ -40,6 +41,7 @@ namespace Build1.PostMVC.Core.Contexts.Impl
             _modules = new List<Type>();
             _moduleInstances = new Dictionary<Type, Module>();
 
+            Id = id;
             Name = name;
             IsRootContext = _rootContext == this;
         }
@@ -160,7 +162,7 @@ namespace Build1.PostMVC.Core.Contexts.Impl
          * Start / Stop.
          */
 
-        public void Start()
+        public IContext Start()
         {
             if (IsStarted)
                 throw new ContextException(ContextExceptionType.ContextAlreadyStarted);
@@ -168,13 +170,15 @@ namespace Build1.PostMVC.Core.Contexts.Impl
             InitializeExtensions();
             InitializeModules();
 
-            OnStarting?.Invoke();
+            OnStarting?.Invoke(this);
             PostMVC.OnContextStartingHandler(this);
 
             IsStarted = true;
 
-            OnStarted?.Invoke();
+            OnStarted?.Invoke(this);
             PostMVC.OnContextStartedHandler(this);
+
+            return this;
         }
 
         public void SetQuitting()
@@ -187,7 +191,7 @@ namespace Build1.PostMVC.Core.Contexts.Impl
 
             IsQuitting = true;
 
-            OnQuitting?.Invoke();
+            OnQuitting?.Invoke(this);
             PostMVC.OnContextQuittingHandler(this);
         }
 
@@ -198,13 +202,13 @@ namespace Build1.PostMVC.Core.Contexts.Impl
 
             IsStopping = true;
 
-            OnStopping?.Invoke();
+            OnStopping?.Invoke(this);
             PostMVC.OnContextStoppingHandler(this);
 
             IsStopping = false;
             IsStarted = false;
 
-            OnStopped?.Invoke();
+            OnStopped?.Invoke(this);
             PostMVC.OnContextStoppedHandler(this);
 
             DisposeModules();

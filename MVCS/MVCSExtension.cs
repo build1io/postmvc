@@ -1,3 +1,4 @@
+using Build1.PostMVC.Core.Contexts;
 using Build1.PostMVC.Core.Extensions;
 using Build1.PostMVC.Core.Modules;
 using Build1.PostMVC.Core.MVCS.Commands;
@@ -71,7 +72,7 @@ namespace Build1.PostMVC.Core.MVCS
          * Context.
          */
 
-        private void OnContextStarting()
+        private void OnContextStarting(IContext context)
         {
             InjectionBinder.ForEachBinding(binding =>
             {
@@ -80,17 +81,17 @@ namespace Build1.PostMVC.Core.MVCS
             });
         }
 
-        private void OnContextStarted()
+        private void OnContextStarted(IContext context)
         {
             EventDispatcher.Dispatch(ContextEvent.Started);
         }
 
-        private void OnContextQuitting()
+        private void OnContextQuitting(IContext context)
         {
             ((CommandBinder)CommandBinder).UnbindOnQuit();
         }
 
-        private void OnContextStopped()
+        private void OnContextStopped(IContext context)
         {
             EventDispatcher.Dispatch(ContextEvent.Stopped);
         }
