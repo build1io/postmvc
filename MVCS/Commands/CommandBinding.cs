@@ -54,6 +54,12 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             AddCommand<TCommand, bool>(param);
             return this;
         }
+        
+        public ICommandBinding To1<TCommand>(string param) where TCommand : Command<string>, new()
+        {
+            AddCommand<TCommand, string>(param);
+            return this;
+        }
 
         public ICommandBinding To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
         {
@@ -80,6 +86,12 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         public ICommandBinding To2<TCommand, TCP1>(TCP1 param01, bool param02) where TCommand : Command<TCP1, bool>, new()
         {
             AddCommand<TCommand, TCP1, bool>(param01, param02);
+            return this;
+        }
+        
+        public ICommandBinding To2<TCommand, TCP1>(TCP1 param01, string param02) where TCommand : Command<TCP1, string>, new()
+        {
+            AddCommand<TCommand, TCP1, string>(param01, param02);
             return this;
         }
 

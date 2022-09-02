@@ -14,12 +14,13 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         ICommandBinding To1<TCommand>(int param) where TCommand : Command<int>, new();
         ICommandBinding To1<TCommand>(float param) where TCommand : Command<float>, new();
         ICommandBinding To1<TCommand>(bool param) where TCommand : Command<bool>, new();
-
+        ICommandBinding To1<TCommand>(string param) where TCommand : Command<string>, new();
         ICommandBinding To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new();
         
         ICommandBinding To2<TCommand, TCP1>(TCP1 param01, int param02) where TCommand : Command<TCP1, int>, new();
         ICommandBinding To2<TCommand, TCP1>(TCP1 param01, float param02) where TCommand : Command<TCP1, float>, new();
         ICommandBinding To2<TCommand, TCP1>(TCP1 param01, bool param02) where TCommand : Command<TCP1, bool>, new();
+        ICommandBinding To2<TCommand, TCP1>(TCP1 param01, string param02) where TCommand : Command<TCP1, string>, new();
         ICommandBinding To2<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02) where TCommand : Command<TCP1, TCP2>, new();
         
         ICommandBinding To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new();

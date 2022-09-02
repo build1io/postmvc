@@ -67,7 +67,14 @@ namespace Build1.PostMVC.Core.MVCS.Commands
                 binding.To1<TCommand>(param);
             return this;
         }
-
+        
+        public ICommandBinding To1<TCommand>(string param) where TCommand : Command<string>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
+        
         public ICommandBinding To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
         {
             foreach (var binding in _bindings)
@@ -97,6 +104,13 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         {
             foreach (var binding in _bindings)
                 binding.To2<TCommand, TCP1, bool>(param01, param02);
+            return this;
+        }
+        
+        public ICommandBinding To2<TCommand, TCP1>(TCP1 param01, string param02) where TCommand : Command<TCP1, string>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To2<TCommand, TCP1, string>(param01, param02);
             return this;
         }
         
