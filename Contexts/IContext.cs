@@ -6,10 +6,11 @@ namespace Build1.PostMVC.Core.Contexts
 {
     public interface IContext
     {
-        bool IsRootContext { get; }
-        bool IsStarted     { get; }
-        bool IsQuitting    { get; }
-        bool IsStopping    { get; }
+        string Name          { get; }
+        bool   IsRootContext { get; }
+        bool   IsStarted     { get; }
+        bool   IsQuitting    { get; }
+        bool   IsStopping    { get; }
 
         event Action<Module> OnModuleConstructing;
         event Action<Module> OnModuleDisposing;

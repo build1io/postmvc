@@ -21,7 +21,7 @@ namespace Build1.PostMVC.Core.MVCS
         public ICommandBinder   CommandBinder   { get; }
         public IMediationBinder MediationBinder { get; }
 
-        public MVCSExtension() : this(MediationMode.Strict)
+        public MVCSExtension() : this(MediationMode.NonStrict)
         {
         }
 
@@ -82,7 +82,7 @@ namespace Build1.PostMVC.Core.MVCS
 
         private void OnContextStarted()
         {
-            InjectionBinder.GetInstance<IEventDispatcher>().Dispatch(ContextEvent.Started);
+            EventDispatcher.Dispatch(ContextEvent.Started);
         }
 
         private void OnContextQuitting()
@@ -92,7 +92,7 @@ namespace Build1.PostMVC.Core.MVCS
 
         private void OnContextStopped()
         {
-            InjectionBinder.GetInstance<IEventDispatcher>().Dispatch(ContextEvent.Stopped);
+            EventDispatcher.Dispatch(ContextEvent.Stopped);
         }
 
         /*

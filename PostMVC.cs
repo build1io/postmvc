@@ -1,10 +1,7 @@
 using System;
 using Build1.PostMVC.Core.Contexts;
-using Build1.PostMVC.Core.Contexts.Internal;
-using Build1.PostMVC.Core.Extensions;
-using Build1.PostMVC.Core.Modules;
+using Build1.PostMVC.Core.Contexts.Impl;
 using Build1.PostMVC.Core.MVCS;
-using Build1.PostMVC.Core.MVCS.Mediation;
 
 namespace Build1.PostMVC.Core
 {
@@ -22,15 +19,15 @@ namespace Build1.PostMVC.Core
          * Init.
          */
 
-        public static IContext AddExtension(Extension extension)            { return GetRootContext().AddExtension(extension); }
-        public static IContext AddExtension<T>() where T : Extension, new() { return GetRootContext().AddExtension<T>(); }
-        public static IContext AddModule<T>() where T : Module, new()       { return GetRootContext().AddModule<T>(); }
-
-        public static void Start()
+        public static IContext Context(string name = null)
         {
-            if (_rootContext != null)
-                throw new ContextException(ContextExceptionType.ContextAlreadyStarted);
-            GetRootContext().Start();
+            if (_rootContext == null)
+            {
+                _rootContext = new Context(name, null);
+                _rootContext.AddExtension<MVCSExtension>();
+                _rootContext.OnStopped += OnRootStopped;
+            }
+            return _rootContext;
         }
         
         public static void Stop()
@@ -38,17 +35,6 @@ namespace Build1.PostMVC.Core
             if (_rootContext == null)
                 throw new ContextException(ContextExceptionType.ContextNotStarted);
             _rootContext.Stop();
-        }
-
-        private static IContext GetRootContext()
-        {
-            if (_rootContext == null)
-            {
-                _rootContext = new Context(null);
-                _rootContext.AddExtension(new MVCSExtension(MediationMode.NonStrict));
-                _rootContext.OnStopped += OnRootStopped;
-            }
-            return _rootContext;
         }
 
         /*

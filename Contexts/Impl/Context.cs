@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using Build1.PostMVC.Core.Extensions;
 using Build1.PostMVC.Core.Modules;
 
-namespace Build1.PostMVC.Core.Contexts.Internal
+namespace Build1.PostMVC.Core.Contexts.Impl
 {
     internal sealed class Context : IContext
     {
-        public bool IsRootContext { get; }
-        public bool IsStarted     { get; private set; }
-        public bool IsQuitting    { get; private set; }
-        public bool IsStopping    { get; private set; }
+        public string Name          { get; }
+        public bool   IsRootContext { get; }
+        public bool   IsStarted     { get; private set; }
+        public bool   IsQuitting    { get; private set; }
+        public bool   IsStopping    { get; private set; }
 
         public event Action<Module> OnModuleConstructing;
         public event Action<Module> OnModuleDisposing;
@@ -22,24 +23,25 @@ namespace Build1.PostMVC.Core.Contexts.Internal
         public event Action OnStopped;
 
         private readonly IContext _rootContext;
-        
-        private readonly HashSet<Type>                _extensions;
+
+        private readonly HashSet<Type>               _extensions;
         private readonly Dictionary<Type, Extension> _extensionInstances;
 
-        private readonly List<Type>                _modules;
+        private readonly List<Type>               _modules;
         private readonly Dictionary<Type, Module> _moduleInstances;
 
-        public Context(IContext rootContext)
+        public Context(string name, IContext rootContext)
         {
             _rootContext = rootContext ?? this;
-            
+
             _extensions = new HashSet<Type>();
             _extensionInstances = new Dictionary<Type, Extension>();
 
             _modules = new List<Type>();
             _moduleInstances = new Dictionary<Type, Module>();
 
-            IsRootContext = rootContext == this;
+            Name = name;
+            IsRootContext = _rootContext == this;
         }
 
         /*
@@ -184,7 +186,7 @@ namespace Build1.PostMVC.Core.Contexts.Internal
                 throw new ContextException(ContextExceptionType.ContextNotStarted);
 
             IsQuitting = true;
-            
+
             OnQuitting?.Invoke();
             PostMVC.OnContextQuittingHandler(this);
         }
