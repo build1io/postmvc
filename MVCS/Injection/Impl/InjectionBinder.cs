@@ -230,12 +230,12 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
 
         public T GetInstance<T>()
         {
-            return (T)GetInstance(GetBinding<T>());
+            return (T)GetInstance(GetBinding<T>(), this, null);
         }
 
         public object GetInstance(Type key)
         {
-            return GetInstance(GetBinding(key));
+            return GetInstance(GetBinding(key), this, null);
         }
 
         public object GetInstance(IInjectionBinding binding)
