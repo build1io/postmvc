@@ -25,6 +25,9 @@ namespace Build1.PostMVC.Core
 
         public static IContext Context(string name = null)
         {
+            if (_rootContext != null)
+                throw new ContextException(ContextExceptionType.ContextAlreadyStarted);
+            
             var context = new Context(_contexts?.Count ?? 0, name, _rootContext);
             context.AddExtension<MVCSExtension>();
             context.OnStopped += OnContextStoppedListener;
