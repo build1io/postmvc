@@ -98,10 +98,8 @@ namespace Build1.PostMVC.Core.Tests.Commands.Command00Tests
             {
                 _dispatcher.Dispatch(CommandTestEvent.Event00);
             }
-            catch (Exception exception)
+            catch
             {
-                Debug.LogException(exception);
-                
                 @catch++;
             }
             

@@ -7,7 +7,6 @@ using Build1.PostMVC.Core.MVCS.Injection.Impl;
 using Build1.PostMVC.Core.Tests.Commands.Command03Tests.Commands;
 using Build1.PostMVC.Core.Tests.Commands.Common;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace Build1.PostMVC.Core.Tests.Commands.Command03Tests
 {
@@ -66,9 +65,8 @@ namespace Build1.PostMVC.Core.Tests.Commands.Command03Tests
             {
                 _dispatcher.Dispatch(CommandTestEvent.Event03, 0, null, null);
             }
-            catch (Exception exception)
+            catch
             {
-                Debug.LogException(exception);
                 @catch++;
             }
             
@@ -99,9 +97,8 @@ namespace Build1.PostMVC.Core.Tests.Commands.Command03Tests
             {
                 _dispatcher.Dispatch(CommandTestEvent.Event03, 0, null, null);
             }
-            catch (Exception exception)
+            catch
             {
-                Debug.LogException(exception);
                 @catch++;
             }
             
