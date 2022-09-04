@@ -136,17 +136,23 @@ namespace Build1.PostMVC.Core.Contexts.Impl
             return this;
         }
 
-        private void InitializeModules(int extensionModulesStartIndex, int extensionModulesCount)
+        private void InitializeModules(int extensionModulesStartIndex)
         {
-            // Modules initialization must be done in a for loop as modules list might change during execution.
-            
-            for (var i = extensionModulesStartIndex; i < extensionModulesCount; i++)
+            // Initializing extensions modules.
+            for (var i = extensionModulesStartIndex; i < _modules.Count; i++)
                 InitializeModule(_modules[i]);
+
+            var lastModuleIndex = _modules.Count;
             
-            for (var i = 0; i < _modules.Count; i++)
+            // Initializing other modules.
+            for (var i = 0; i < extensionModulesStartIndex; i++)
+                InitializeModule(_modules[i]);
+
+            // Initializing new modules if any was added.
+            if (_modules.Count > lastModuleIndex)
             {
-                if (i < extensionModulesStartIndex || i >= extensionModulesCount)
-                    InitializeModule(_modules[i]);
+                for (var i = lastModuleIndex; i < _modules.Count; i++)
+                    InitializeModule(_modules[i]);    
             }
         }
 
@@ -179,11 +185,7 @@ namespace Build1.PostMVC.Core.Contexts.Impl
             var startModulesCount = _modules.Count;
             
             InitializeExtensions();
-
-            var extensionsModulesStartIndex = startModulesCount;
-            var extensionsModulesCount = _modules.Count - startModulesCount; 
-            
-            InitializeModules(extensionsModulesStartIndex, extensionsModulesCount);
+            InitializeModules(startModulesCount);
 
             OnStarting?.Invoke(this);
             PostMVC.OnContextStartingHandler(this);

@@ -1,4 +1,5 @@
 using Build1.PostMVC.Core.Contexts;
+using Build1.PostMVC.Core.Modules;
 
 namespace Build1.PostMVC.Core.Extensions
 {
@@ -17,6 +18,12 @@ namespace Build1.PostMVC.Core.Extensions
         public virtual void Setup()      { }
         public virtual void Dispose()    { }
 
+        protected Extension AddModule<T>() where T : Module, new()
+        {
+            Context.AddModule<T>();
+            return this;
+        }
+        
         protected T GetDependentExtension<T>() where T : Extension
         {
             if (Context.TryGetExtension<T>(out var extension))
