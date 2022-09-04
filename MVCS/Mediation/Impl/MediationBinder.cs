@@ -18,7 +18,7 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
         {
             _mode = mode;
             _injectionBinder = injectionBinder;
-            
+
             _bindings = new Dictionary<object, IMediationBinding>();
             _bindingsCache = new Dictionary<object, IInjectionBinding>();
             _mediators = new Dictionary<IView, IMediator>();
@@ -88,7 +88,7 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
             _bindings.Add(viewType, binding);
             return binding;
         }
-        
+
         /*
          * Rebinding.
          */
@@ -104,7 +104,7 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
             Unbind(viewType);
             return Bind(viewType, viewInterfaceType);
         }
-        
+
         /*
          * Unbinding.
          */
@@ -123,8 +123,14 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
             if (_mediators.ContainsKey(view))
                 throw new MediationException(MediationExceptionType.ViewInstanceAlreadyAdded, view.GetType().FullName);
 
-            if (!_bindings.TryGetValue(view.GetType(), out var binding) && _mode == MediationMode.Strict)
+            var type = view.GetType();
+
+            if (!_bindings.TryGetValue(type, out var binding) &&
+                !TryRegisterMediatorUsingMetadata(type, out binding) &&
+                _mode == MediationMode.Strict)
+            {
                 throw new MediationException(MediationExceptionType.MediationBindingNotFound, view.GetType().FullName);
+            }
 
             _injectionBinder.Construct(view, true);
 
@@ -179,6 +185,24 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
             return false;
         }
 
+        private bool TryRegisterMediatorUsingMetadata(Type viewType, out IMediationBinding binding)
+        {
+            var injections = viewType.GetCustomAttributes(typeof(MediatorAttribute), true);
+            if (injections.Length == 0)
+            {
+                binding = null;
+                return false;
+            }
+
+            var attribute = (MediatorAttribute)injections[0];
+
+            binding = attribute.viewInterfaceType != null
+                          ? Rebind(viewType, attribute.viewInterfaceType).To(attribute.mediatorType)
+                          : Rebind(viewType).To(attribute.mediatorType);
+
+            return true;
+        }
+        
         private void InjectViewAndDependencies(IMediationBinding binding, IMediator mediator, IView view, bool triggerPostConstructors)
         {
             var injectionType = binding.ViewInterface != null ? binding.ViewInterface : binding.ViewType;

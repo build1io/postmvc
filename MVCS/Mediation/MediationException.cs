@@ -1,8 +1,8 @@
 using System;
 
-namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
+namespace Build1.PostMVC.Core.MVCS.Mediation
 {
-    internal sealed class MediationException : Exception
+    public sealed class MediationException : Exception
     {
         public MediationException(MediationExceptionType type) : base(type.ToString())
         {

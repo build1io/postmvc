@@ -1,6 +1,6 @@
-namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
+namespace Build1.PostMVC.Core.MVCS.Mediation
 {
-    internal enum MediationExceptionType
+    public enum MediationExceptionType
     {
         ViewTypeAlreadyRegistered                 = 1,
         ViewTypeIsNotAClass                       = 2,
@@ -12,9 +12,10 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
         ViewInterfaceDoesntImplementRequiredInterface = 12,
 
         MediatorTypeIsNotAClass                        = 20,
-        MediatorTypeDoesntImplementRequiredInterface   = 21,
-        MediatorTypeDoesntHaveParameterlessConstructor = 22,
-        
+        MediatorTypeCantBeNull                         = 21,
+        MediatorTypeDoesntImplementRequiredInterface   = 22,
+        MediatorTypeDoesntHaveParameterlessConstructor = 23,
+
         MediationBindingNotFound = 30,
 
         ViewInstanceAlreadyAdded       = 40,

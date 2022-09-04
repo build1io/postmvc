@@ -27,6 +27,9 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
         
         public IMediationBinding To(Type mediatorType)
         {
+            if (mediatorType == null)
+                throw new MediationException(MediationExceptionType.MediatorTypeCantBeNull, $"ViewType: {ViewType.FullName}");
+            
             if (!mediatorType.IsClass)
                 throw new MediationException(MediationExceptionType.MediatorTypeIsNotAClass, mediatorType.FullName);
 
