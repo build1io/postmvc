@@ -136,19 +136,28 @@ namespace Build1.PostMVC.Core.Contexts.Impl
             return this;
         }
 
-        private void InitializeModules()
+        private void InitializeModules(int extensionModulesStartIndex, int extensionModulesCount)
         {
-            // This must be done in for loop as modules list might change during loop execution.
+            // Modules initialization must be done in a for loop as modules list might change during execution.
+            
+            for (var i = extensionModulesStartIndex; i < extensionModulesCount; i++)
+                InitializeModule(_modules[i]);
+            
             for (var i = 0; i < _modules.Count; i++)
             {
-                var moduleType = _modules[i];
-                var module = (Module)Activator.CreateInstance(moduleType);
-                module.SetContext(this);
-
-                OnModuleConstructing?.Invoke(module);
-
-                _moduleInstances.Add(moduleType, module);
+                if (i < extensionModulesStartIndex || i >= extensionModulesCount)
+                    InitializeModule(_modules[i]);
             }
+        }
+
+        private void InitializeModule(Type moduleType)
+        {
+            var module = (Module)Activator.CreateInstance(moduleType);
+            module.SetContext(this);
+
+            OnModuleConstructing?.Invoke(module);
+
+            _moduleInstances.Add(moduleType, module);
         }
 
         private void DisposeModules()
@@ -167,8 +176,14 @@ namespace Build1.PostMVC.Core.Contexts.Impl
             if (IsStarted)
                 throw new ContextException(ContextExceptionType.ContextAlreadyStarted);
 
+            var startModulesCount = _modules.Count;
+            
             InitializeExtensions();
-            InitializeModules();
+
+            var extensionsModulesStartIndex = startModulesCount;
+            var extensionsModulesCount = _modules.Count - startModulesCount; 
+            
+            InitializeModules(extensionsModulesStartIndex, extensionsModulesCount);
 
             OnStarting?.Invoke(this);
             PostMVC.OnContextStartingHandler(this);
