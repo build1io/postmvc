@@ -51,7 +51,7 @@ namespace Build1.PostMVC.Core.MVCS
             InjectionBinder.Bind(MediationBinder);
             
             InjectionBinder.Bind<IEventBus, EventBus>();
-            InjectionBinder.Bind<IEventMap, EventMapProvider, Inject>();
+            InjectionBinder.Bind<IEventMapCore, EventMapProvider, Inject>();
         }
 
         public override void Dispose()

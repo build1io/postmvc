@@ -4,7 +4,7 @@ using Build1.PostMVC.Core.Utils.Pooling;
 
 namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 {
-    public class EventMap : IEventMap
+    public class EventMap : IEventMapCore
     {
         private readonly EventDispatcherWithCommandProcessing _dispatcher; // The final type must be specified to escape AOT issues.
         private readonly IEventBus                            _bus;

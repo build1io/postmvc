@@ -9,7 +9,7 @@ namespace Build1.PostMVC.Core.Tests.Events.EventMap
 {
     public sealed class EventMapTests
     {
-        private IEventMap        _map;
+        private IEventMapCore    _map;
         private IEventDispatcher _dispatcher;
 
         [SetUp]
