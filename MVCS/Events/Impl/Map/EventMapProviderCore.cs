@@ -4,14 +4,14 @@ using Build1.PostMVC.Core.Utils.Pooling;
 
 namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 {
-    public abstract class EventMapProviderBase<T> : InjectionProvider<T>
+    public abstract class EventMapProviderCore<T> : InjectionProvider<T>
     {
         protected readonly Pool<IEventMapInfo> _infoPools;
         
         private readonly Stack<T> _availableInstances;
         private readonly List<T>  _usedInstances;
 
-        protected EventMapProviderBase()
+        protected EventMapProviderCore()
         {
             _infoPools = new Pool<IEventMapInfo>();
             
