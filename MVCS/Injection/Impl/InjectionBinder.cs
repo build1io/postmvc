@@ -404,7 +404,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
                     }
                     catch (MissingMethodException)
                     {
-                        throw new InjectionException(InjectionExceptionType.ConstructingTypeCantBeInstantiated);
+                        throw new InjectionException(InjectionExceptionType.ConstructingTypeCantBeInstantiated, type.FullName);
                     }
 
                     if (binding.ToConstruct)
@@ -430,7 +430,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
                         }
                         catch (MissingMethodException)
                         {
-                            throw new InjectionException(InjectionExceptionType.ConstructingTypeCantBeInstantiated);
+                            throw new InjectionException(InjectionExceptionType.ConstructingTypeCantBeInstantiated, type.FullName);
                         }
                         
                         ConstructImpl(value, true);
