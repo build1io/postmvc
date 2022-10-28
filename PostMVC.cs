@@ -8,8 +8,9 @@ namespace Build1.PostMVC.Core
 {
     public static class PostMVC
     {
-        public static int ActiveContextsCount => _contexts?.Count ?? 0;
-        
+        public static bool IsRunning           => _contexts?.Count > 0;
+        public static int  ActiveContextsCount => _contexts?.Count ?? 0;
+
         public static event Action<IContext> OnContextStarting;
         public static event Action<IContext> OnContextStarted;
         public static event Action<IContext> OnContextQuitting;
@@ -27,7 +28,7 @@ namespace Build1.PostMVC.Core
         {
             if (_rootContext != null)
                 throw new ContextException(ContextExceptionType.ContextAlreadyStarted);
-            
+
             var context = new Context(_contexts?.Count ?? 0, name, _rootContext);
             context.AddExtension<MVCSExtension>();
             context.OnStopped += OnContextStoppedListener;
@@ -44,7 +45,7 @@ namespace Build1.PostMVC.Core
 
             return context;
         }
-        
+
         public static void Stop()
         {
             if (_rootContext == null)
@@ -52,7 +53,7 @@ namespace Build1.PostMVC.Core
 
             for (var i = _contexts.Count - 1; i >= 0; i--)
                 _contexts[i].Stop();
-            
+
             _rootContext = null;
         }
 
@@ -103,7 +104,7 @@ namespace Build1.PostMVC.Core
         {
             if (!_contexts.Remove(context))
                 return;
-            
+
             context.OnStopped -= OnContextStoppedListener;
 
             if (context == _rootContext)
