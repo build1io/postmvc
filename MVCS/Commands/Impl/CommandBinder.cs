@@ -277,7 +277,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             foreach (var binding in bindings)
             {
                 if (binding.IsExecuting)
-                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
+                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
                 if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke())
                     continue;
@@ -301,7 +301,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             foreach (var binding in bindings)
             {
                 if (binding.IsExecuting)
-                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
+                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
                 if (binding.TriggerValuesSet && !EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01))
                     continue;
@@ -331,7 +331,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             foreach (var binding in bindings)
             {
                 if (binding.IsExecuting)
-                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
+                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
                 if (binding.TriggerValuesSet &&
                     (!EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01) ||
@@ -364,7 +364,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             foreach (var binding in bindings)
             {
                 if (binding.IsExecuting)
-                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting);
+                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
                 if (binding.TriggerValuesSet &&
                     (!EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01) ||
