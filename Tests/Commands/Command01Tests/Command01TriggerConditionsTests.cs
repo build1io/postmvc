@@ -94,24 +94,111 @@ namespace Build1.PostMVC.Core.Tests.Commands.Command01Tests
             Assert.AreEqual(10, param01Received);
         }
         
+        [Test]
+        public void MultipleConditions()
+        {
+            var count = 0;
+            
+            _binder.Bind(CommandTestEvent.Event01)
+                   .TriggerCondition(_ =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .TriggerCondition(_ =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .To<Command01>();
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
+            
+            Assert.AreEqual(2, count);
+        }
+        
+        [Test]
+        public void MultipleConditionsBreak01()
+        {
+            var count = 0;
+            
+            _binder.Bind(CommandTestEvent.Event01)
+                   .TriggerCondition(_ =>
+                    {
+                        count++;
+                        return false;
+                    })
+                   .TriggerCondition(_ =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .To<Command01>();
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
+            
+            Assert.AreEqual(1, count);
+        }
+        
+        [Test]
+        public void MultipleConditionsBreak02()
+        {
+            var count = 0;
+            
+            _binder.Bind(CommandTestEvent.Event01)
+                   .TriggerCondition(_ =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .TriggerCondition(_ =>
+                    {
+                        count++;
+                        return false;
+                    })
+                   .To<Command01>();
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
+            
+            Assert.AreEqual(2, count);
+        }
+        
         /*
          * Values.
          */
         
         [Test]
-        public void ValuesTest()
+        public void ValueTest()
         {
             var count = 0;
-            Command01.OnExecute += p01 => { count++; };
+            Command01.OnExecute += _ => { count++; };
 
             _binder.Bind(CommandTestEvent.Event01)
-                   .TriggerValue(10)
+                   .TriggerCondition(10)
                    .To<Command01>();
             
             _dispatcher.Dispatch(CommandTestEvent.Event01, 20);
             Assert.AreEqual(0, count);
             
             _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
+            Assert.AreEqual(1, count);
+        }
+        
+        [Test]
+        public void MultipleValuesTest()
+        {
+            var count = 0;
+            Command01.OnExecute += _ => { count++; };
+
+            _binder.Bind(CommandTestEvent.Event01)
+                   .TriggerCondition(10)
+                   .TriggerCondition(11)
+                   .To<Command01>();
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 20);
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 10);
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event01, 11);
             Assert.AreEqual(1, count);
         }
     }

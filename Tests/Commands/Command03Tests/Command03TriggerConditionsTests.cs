@@ -108,20 +108,89 @@ namespace Build1.PostMVC.Core.Tests.Commands.Command03Tests
             Assert.AreEqual(data, param03Received);
         }
         
+        [Test]
+        public void MultipleConditions()
+        {
+            var count = 0;
+            var data = new CommandData(2);
+            
+            _binder.Bind(CommandTestEvent.Event03)
+                   .TriggerCondition((_, _, _) =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .TriggerCondition((_, _, _) =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .To<Command03>();
+            _dispatcher.Dispatch(CommandTestEvent.Event03, 10, "12345", data);
+            
+            Assert.AreEqual(2, count);
+        }
+        
+        [Test]
+        public void MultipleConditionsBreak01()
+        {
+            var count = 0;
+            var data = new CommandData(2);
+            
+            _binder.Bind(CommandTestEvent.Event03)
+                   .TriggerCondition((_, _, _) =>
+                    {
+                        count++;
+                        return false;
+                    })
+                   .TriggerCondition((_, _, _) =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .To<Command03>();
+            _dispatcher.Dispatch(CommandTestEvent.Event03, 10, "12345", data);
+            
+            Assert.AreEqual(1, count);
+        }
+        
+        [Test]
+        public void MultipleConditionsBreak02()
+        {
+            var count = 0;
+            var data = new CommandData(2);
+            
+            _binder.Bind(CommandTestEvent.Event03)
+                   .TriggerCondition((_, _, _) =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .TriggerCondition((_, _, _) =>
+                    {
+                        count++;
+                        return false;
+                    })
+                   .To<Command03>();
+            _dispatcher.Dispatch(CommandTestEvent.Event03, 10, "12345", data);
+            
+            Assert.AreEqual(2, count);
+        }
+        
         /*
          * Values.
          */
         
         [Test]
-        public void ValuesTest()
+        public void ValueTest()
         {
             var count = 0;
-            Command03.OnExecute += (p01, p02, p03) => { count++; };
+            Command03.OnExecute += (_, _, _) => { count++; };
 
             var dataRequired = new CommandData(1); 
             
             _binder.Bind(CommandTestEvent.Event03)
-                   .TriggerValues(10, "12345", dataRequired)
+                   .TriggerCondition(10, "12345", dataRequired)
                    .To<Command03>();
             
             _dispatcher.Dispatch(CommandTestEvent.Event03, 20, "12345", dataRequired);
@@ -143,6 +212,45 @@ namespace Build1.PostMVC.Core.Tests.Commands.Command03Tests
             Assert.AreEqual(0, count);
             
             _dispatcher.Dispatch(CommandTestEvent.Event03, 10, "12345", dataRequired);
+            Assert.AreEqual(1, count);
+        }
+        
+        [Test]
+        public void MultipleValuesTest()
+        {
+            var count = 0;
+            Command03.OnExecute += (_, _, _) => { count++; };
+
+            var dataRequired01 = new CommandData(1); 
+            var dataRequired02 = new CommandData(2); 
+            
+            _binder.Bind(CommandTestEvent.Event03)
+                   .TriggerCondition(10, "12345", dataRequired01)
+                   .TriggerCondition(11, "1112345", dataRequired02)
+                   .To<Command03>();
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event03, 20, "12345", dataRequired01);
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event03, 10, "123456", dataRequired01);
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event03, 10, "12345", null);
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event03, 20, "123456", dataRequired01);
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event03, 10, "123456", null);
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event03, 20, "12345", null);
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event03, 10, "12345", dataRequired01);
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event03, 11, "1112345", dataRequired02);
             Assert.AreEqual(1, count);
         }
     }

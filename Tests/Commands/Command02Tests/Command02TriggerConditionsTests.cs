@@ -100,18 +100,84 @@ namespace Build1.PostMVC.Core.Tests.Commands.Command02Tests
             Assert.AreEqual("12345", param02Received);
         }
         
+        [Test]
+        public void MultipleConditions()
+        {
+            var count = 0;
+            
+            _binder.Bind(CommandTestEvent.Event02)
+                   .TriggerCondition((_, _) =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .TriggerCondition((_, _) =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .To<Command02>();
+            _dispatcher.Dispatch(CommandTestEvent.Event02, 10, "12345");
+            
+            Assert.AreEqual(2, count);
+        }
+        
+        [Test]
+        public void MultipleConditionsBreak01()
+        {
+            var count = 0;
+            
+            _binder.Bind(CommandTestEvent.Event02)
+                   .TriggerCondition((_, _) =>
+                    {
+                        count++;
+                        return false;
+                    })
+                   .TriggerCondition((_, _) =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .To<Command02>();
+            _dispatcher.Dispatch(CommandTestEvent.Event02, 10, "12345");
+            
+            Assert.AreEqual(1, count);
+        }
+        
+        [Test]
+        public void MultipleConditionsBreak02()
+        {
+            var count = 0;
+            
+            _binder.Bind(CommandTestEvent.Event02)
+                   .TriggerCondition((_, _) =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .TriggerCondition((_, _) =>
+                    {
+                        count++;
+                        return false;
+                    })
+                   .To<Command02>();
+            _dispatcher.Dispatch(CommandTestEvent.Event02, 10, "12345");
+            
+            Assert.AreEqual(2, count);
+        }
+        
         /*
          * Values.
          */
         
         [Test]
-        public void ValuesTest()
+        public void ValueTest()
         {
             var count = 0;
-            Command02.OnExecute += (p01, p02) => { count++; };
+            Command02.OnExecute += (_, _) => { count++; };
 
             _binder.Bind(CommandTestEvent.Event02)
-                   .TriggerValues(10, "12345")
+                   .TriggerCondition(10, "12345")
                    .To<Command02>();
             
             _dispatcher.Dispatch(CommandTestEvent.Event02, 20, "12345");
@@ -124,6 +190,33 @@ namespace Build1.PostMVC.Core.Tests.Commands.Command02Tests
             Assert.AreEqual(0, count);
             
             _dispatcher.Dispatch(CommandTestEvent.Event02, 10, "12345");
+            Assert.AreEqual(1, count);
+        }
+        
+        [Test]
+        public void MultipleValuesTest()
+        {
+            var count = 0;
+            Command02.OnExecute += (_, _) => { count++; };
+
+            _binder.Bind(CommandTestEvent.Event02)
+                   .TriggerCondition(10, "12345")
+                   .TriggerCondition(11, "1112345")
+                   .To<Command02>();
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event02, 20, "12345");
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event02, 10, "123456");
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event02, 20, "123456");
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event02, 10, "12345");
+            Assert.AreEqual(0, count);
+            
+            _dispatcher.Dispatch(CommandTestEvent.Event02, 11, "1112345");
             Assert.AreEqual(1, count);
         }
     }

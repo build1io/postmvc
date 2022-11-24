@@ -410,10 +410,10 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Triggering.
          */
 
-        public ICommandBinding<T1> TriggerValue(T1 value01)
+        public ICommandBinding<T1> TriggerCondition(T1 value01)
         {
             foreach (var binding in _bindings)
-                binding.TriggerValue(value01);
+                binding.TriggerCondition(value01);
             return this;
         }
 
@@ -719,10 +719,10 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Triggering.
          */
 
-        public ICommandBinding<T1, T2> TriggerValues(T1 value01, T2 value02)
+        public ICommandBinding<T1, T2> TriggerCondition(T1 value01, T2 value02)
         {
             foreach (var binding in _bindings)
-                binding.TriggerValues(value01, value02);
+                binding.TriggerCondition(value01, value02);
             return this;
         }
 
@@ -1056,10 +1056,10 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Triggering.
          */
 
-        public ICommandBinding<T1, T2, T3> TriggerValues(T1 value01, T2 value02, T3 value03)
+        public ICommandBinding<T1, T2, T3> TriggerCondition(T1 value01, T2 value02, T3 value03)
         {
             foreach (var binding in _bindings)
-                binding.TriggerValues(value01, value02, value03);
+                binding.TriggerCondition(value01, value02, value03);
             return this;
         }
 

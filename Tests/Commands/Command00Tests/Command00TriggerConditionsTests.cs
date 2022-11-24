@@ -73,5 +73,71 @@ namespace Build1.PostMVC.Core.Tests.Commands.Command00Tests
 
             Assert.AreEqual(0, count);
         }
+
+        [Test]
+        public void MultipleConditions()
+        {
+            var count = 0;
+            
+            _binder.Bind(CommandTestEvent.Event00)
+                   .TriggerCondition(() =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .TriggerCondition(() =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .To<Command00>();
+            _dispatcher.Dispatch(CommandTestEvent.Event00);
+            
+            Assert.AreEqual(2, count);
+        }
+        
+        [Test]
+        public void MultipleConditionsBreak01()
+        {
+            var count = 0;
+            
+            _binder.Bind(CommandTestEvent.Event00)
+                   .TriggerCondition(() =>
+                    {
+                        count++;
+                        return false;
+                    })
+                   .TriggerCondition(() =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .To<Command00>();
+            _dispatcher.Dispatch(CommandTestEvent.Event00);
+            
+            Assert.AreEqual(1, count);
+        }
+        
+        [Test]
+        public void MultipleConditionsBreak02()
+        {
+            var count = 0;
+            
+            _binder.Bind(CommandTestEvent.Event00)
+                   .TriggerCondition(() =>
+                    {
+                        count++;
+                        return true;
+                    })
+                   .TriggerCondition(() =>
+                    {
+                        count++;
+                        return false;
+                    })
+                   .To<Command00>();
+            _dispatcher.Dispatch(CommandTestEvent.Event00);
+            
+            Assert.AreEqual(2, count);
+        }
     }
 }

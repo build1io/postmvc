@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Build1.PostMVC.Core.MVCS.Commands.Impl;
 using Build1.PostMVC.Core.MVCS.Events;
 using Build1.PostMVC.Core.MVCS.Events.Impl;
@@ -8,7 +10,8 @@ namespace Build1.PostMVC.Core.MVCS.Commands
 {
     public sealed class CommandBinding : CommandBindingBase, ICommandBinding
     {
-        internal Func<bool> TriggerPredicate { get; private set; }
+        private Func<bool>       _triggerPredicate;
+        private List<Func<bool>> _triggerPredicates;
 
         internal CommandBinding(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(type, binder, paramsPool)
         {
@@ -54,7 +57,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             AddCommand<TCommand, bool>(param);
             return this;
         }
-        
+
         public ICommandBinding To1<TCommand>(string param) where TCommand : Command<string>, new()
         {
             AddCommand<TCommand, string>(param);
@@ -88,7 +91,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             AddCommand<TCommand, TCP1, bool>(param01, param02);
             return this;
         }
-        
+
         public ICommandBinding To2<TCommand, TCP1>(TCP1 param01, string param02) where TCommand : Command<TCP1, string>, new()
         {
             AddCommand<TCommand, TCP1, string>(param01, param02);
@@ -117,8 +120,34 @@ namespace Build1.PostMVC.Core.MVCS.Commands
 
         public ICommandBinding TriggerCondition(Func<bool> predicate)
         {
-            TriggerPredicate = predicate;
+            if (_triggerPredicate == null)
+            {
+                _triggerPredicate = predicate;
+            }
+            else
+            {
+                if (_triggerPredicates == null)
+                {
+                    _triggerPredicates = new List<Func<bool>>(2)
+                    {
+                        _triggerPredicate,
+                        predicate
+                    };
+                }
+                else
+                {
+                    _triggerPredicates.Add(predicate);
+                }
+            }
+
             return this;
+        }
+
+        internal bool CheckTriggerCondition()
+        {
+            if (_triggerPredicates != null)
+                return _triggerPredicates.All(predicate => predicate());
+            return _triggerPredicate == null || _triggerPredicate();
         }
 
         /*
@@ -140,9 +169,10 @@ namespace Build1.PostMVC.Core.MVCS.Commands
 
     public sealed class CommandBinding<T1> : CommandBindingBase, ICommandBinding<T1>
     {
-        internal T1             TriggerValue01   { get; private set; }
-        internal bool           TriggerValuesSet { get; private set; }
-        internal Func<T1, bool> TriggerPredicate { get; private set; }
+        private T1                   _triggerValue01;
+        private bool                 _triggerValuesSet;
+        private Func<T1, bool>       _triggerPredicate;
+        private List<Func<T1, bool>> _triggerPredicates;
 
         internal CommandBinding(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(type, binder, paramsPool)
         {
@@ -303,17 +333,55 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Triggering.
          */
 
-        public ICommandBinding<T1> TriggerValue(T1 value01)
+        public ICommandBinding<T1> TriggerCondition(T1 value01)
         {
-            TriggerValue01 = value01;
-            TriggerValuesSet = true;
+            _triggerValue01 = value01;
+            _triggerValuesSet = true;
             return this;
         }
 
         public ICommandBinding<T1> TriggerCondition(Func<T1, bool> predicate)
         {
-            TriggerPredicate = predicate;
+            if (_triggerPredicate == null)
+            {
+                _triggerPredicate = predicate;
+            }
+            else
+            {
+                if (_triggerPredicates == null)
+                {
+                    _triggerPredicates = new List<Func<T1, bool>>(2)
+                    {
+                        _triggerPredicate,
+                        predicate
+                    };
+                }
+                else
+                {
+                    _triggerPredicates.Add(predicate);
+                }
+            }
+
             return this;
+        }
+
+        internal bool CheckTriggerCondition(T1 param01)
+        {
+            if (_triggerValuesSet && !EqualityComparer<T1>.Default.Equals(_triggerValue01, param01))
+                return false;
+
+            if (_triggerPredicates != null)
+            {
+                foreach (var predicate in _triggerPredicates)
+                {
+                    if (!predicate(param01)) 
+                        return false;
+                }
+
+                return true;
+            }
+            
+            return _triggerPredicate == null || _triggerPredicate(param01);
         }
 
         /*
@@ -347,10 +415,11 @@ namespace Build1.PostMVC.Core.MVCS.Commands
 
     public sealed class CommandBinding<T1, T2> : CommandBindingBase, ICommandBinding<T1, T2>
     {
-        internal T1                 TriggerValue01   { get; private set; }
-        internal T2                 TriggerValue02   { get; private set; }
-        internal bool               TriggerValuesSet { get; private set; }
-        internal Func<T1, T2, bool> TriggerPredicate { get; private set; }
+        private T1                       _triggerValue01;
+        private T2                       _triggerValue02;
+        private bool                     _triggerValuesSet;
+        private Func<T1, T2, bool>       _triggerPredicate;
+        private List<Func<T1, T2, bool>> _triggerPredicates;
 
         internal CommandBinding(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(type, binder, paramsPool)
         {
@@ -529,18 +598,58 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Triggering.
          */
 
-        public ICommandBinding<T1, T2> TriggerValues(T1 value01, T2 value02)
+        public ICommandBinding<T1, T2> TriggerCondition(T1 value01, T2 value02)
         {
-            TriggerValue01 = value01;
-            TriggerValue02 = value02;
-            TriggerValuesSet = true;
+            _triggerValue01 = value01;
+            _triggerValue02 = value02;
+            _triggerValuesSet = true;
             return this;
         }
 
         public ICommandBinding<T1, T2> TriggerCondition(Func<T1, T2, bool> predicate)
         {
-            TriggerPredicate = predicate;
+            if (_triggerPredicate == null)
+            {
+                _triggerPredicate = predicate;
+            }
+            else
+            {
+                if (_triggerPredicates == null)
+                {
+                    _triggerPredicates = new List<Func<T1, T2, bool>>(2)
+                    {
+                        _triggerPredicate,
+                        predicate
+                    };
+                }
+                else
+                {
+                    _triggerPredicates.Add(predicate);
+                }
+            }
+
             return this;
+        }
+
+        internal bool CheckTriggerCondition(T1 param01, T2 param02)
+        {
+            if (_triggerValuesSet &&
+                (!EqualityComparer<T1>.Default.Equals(_triggerValue01, param01) ||
+                 !EqualityComparer<T2>.Default.Equals(_triggerValue02, param02)))
+                return false;
+
+            if (_triggerPredicates != null)
+            {
+                foreach (var predicate in _triggerPredicates)
+                {
+                    if (!predicate(param01, param02)) 
+                        return false;
+                }
+
+                return true;
+            }
+
+            return _triggerPredicate == null || _triggerPredicate(param01, param02);
         }
 
         /*
@@ -586,11 +695,12 @@ namespace Build1.PostMVC.Core.MVCS.Commands
 
     public sealed class CommandBinding<T1, T2, T3> : CommandBindingBase, ICommandBinding<T1, T2, T3>
     {
-        internal T1                     TriggerValue01   { get; private set; }
-        internal T2                     TriggerValue02   { get; private set; }
-        internal T3                     TriggerValue03   { get; private set; }
-        internal bool                   TriggerValuesSet { get; private set; }
-        internal Func<T1, T2, T3, bool> TriggerPredicate { get; private set; }
+        private T1                           _triggerValue01;
+        private T2                           _triggerValue02;
+        private T3                           _triggerValue03;
+        private bool                         _triggerValuesSet;
+        private Func<T1, T2, T3, bool>       _triggerPredicate;
+        private List<Func<T1, T2, T3, bool>> _triggerPredicates;
 
         internal CommandBinding(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(type, binder, paramsPool)
         {
@@ -775,19 +885,59 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Triggering.
          */
 
-        public ICommandBinding<T1, T2, T3> TriggerValues(T1 value01, T2 value02, T3 value03)
+        public ICommandBinding<T1, T2, T3> TriggerCondition(T1 value01, T2 value02, T3 value03)
         {
-            TriggerValue01 = value01;
-            TriggerValue02 = value02;
-            TriggerValue03 = value03;
-            TriggerValuesSet = true;
+            _triggerValue01 = value01;
+            _triggerValue02 = value02;
+            _triggerValue03 = value03;
+            _triggerValuesSet = true;
             return this;
         }
 
         public ICommandBinding<T1, T2, T3> TriggerCondition(Func<T1, T2, T3, bool> predicate)
         {
-            TriggerPredicate = predicate;
+            if (_triggerPredicate == null)
+            {
+                _triggerPredicate = predicate;
+            }
+            else
+            {
+                if (_triggerPredicates == null)
+                {
+                    _triggerPredicates = new List<Func<T1, T2, T3, bool>>(2)
+                    {
+                        _triggerPredicate,
+                        predicate
+                    };
+                }
+                else
+                {
+                    _triggerPredicates.Add(predicate);
+                }
+            }
+
             return this;
+        }
+
+        internal bool CheckTriggerCondition(T1 param01, T2 param02, T3 param03)
+        {
+            if (_triggerValuesSet &&
+                (!EqualityComparer<T1>.Default.Equals(_triggerValue01, param01) ||
+                 !EqualityComparer<T2>.Default.Equals(_triggerValue02, param02) ||
+                 !EqualityComparer<T3>.Default.Equals(_triggerValue03, param03)))
+                return false;
+
+            if (_triggerPredicates != null)
+            {
+                foreach (var predicate in _triggerPredicates)
+                {
+                    if (!predicate(param01, param02, param03)) 
+                        return false;
+                }
+                return true;
+            }
+
+            return _triggerPredicate == null || _triggerPredicate(param01, param02, param03);
         }
 
         /*

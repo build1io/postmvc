@@ -279,7 +279,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
-                if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke())
+                if (!binding.CheckTriggerCondition())
                     continue;
 
                 binding.StartExecution();
@@ -303,10 +303,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
-                if (binding.TriggerValuesSet && !EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01))
-                    continue;
-
-                if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke(param01))
+                if (!binding.CheckTriggerCondition(param01))
                     continue;
 
                 var param = _commandsParamsPool.Take<CommandParams<T1>>();
@@ -333,12 +330,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
-                if (binding.TriggerValuesSet &&
-                    (!EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01) ||
-                     !EqualityComparer<T2>.Default.Equals(binding.TriggerValue02, param02)))
-                    continue;
-
-                if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke(param01, param02))
+                if (!binding.CheckTriggerCondition(param01, param02))
                     continue;
 
                 var param = _commandsParamsPool.Take<CommandParams<T1, T2>>();
@@ -366,13 +358,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
-                if (binding.TriggerValuesSet &&
-                    (!EqualityComparer<T1>.Default.Equals(binding.TriggerValue01, param01) ||
-                     !EqualityComparer<T2>.Default.Equals(binding.TriggerValue02, param02) ||
-                     !EqualityComparer<T3>.Default.Equals(binding.TriggerValue03, param03)))
-                    continue;
-
-                if (binding.TriggerPredicate != null && !binding.TriggerPredicate.Invoke(param01, param02, param03))
+                if (!binding.CheckTriggerCondition(param01 ,param02, param03))
                     continue;
 
                 var param = _commandsParamsPool.Take<CommandParams<T1, T2, T3>>();
