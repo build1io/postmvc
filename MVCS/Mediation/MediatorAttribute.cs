@@ -2,7 +2,7 @@ using System;
 
 namespace Build1.PostMVC.Core.MVCS.Mediation
 {
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public sealed class MediatorAttribute : Attribute
     {
         internal readonly Type mediatorType;
