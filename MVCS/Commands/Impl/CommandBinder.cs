@@ -276,11 +276,11 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
 
             foreach (var binding in bindings)
             {
-                if (binding.IsExecuting)
-                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
-
                 if (!binding.CheckTriggerCondition())
                     continue;
+                
+                if (binding.IsExecuting)
+                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
                 binding.StartExecution();
                 ProcessBindingCommand(binding, 0, NoParams);
@@ -300,11 +300,11 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
 
             foreach (var binding in bindings)
             {
-                if (binding.IsExecuting)
-                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
-
                 if (!binding.CheckTriggerCondition(param01))
                     continue;
+                
+                if (binding.IsExecuting)
+                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
                 var param = _commandsParamsPool.Take<CommandParams<T1>>();
                 param.Param01 = param01;
@@ -327,11 +327,11 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
 
             foreach (var binding in bindings)
             {
-                if (binding.IsExecuting)
-                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
-
                 if (!binding.CheckTriggerCondition(param01, param02))
                     continue;
+                
+                if (binding.IsExecuting)
+                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
                 var param = _commandsParamsPool.Take<CommandParams<T1, T2>>();
                 param.Param01 = param01;
@@ -355,11 +355,11 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
 
             foreach (var binding in bindings)
             {
-                if (binding.IsExecuting)
-                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
-
                 if (!binding.CheckTriggerCondition(param01 ,param02, param03))
                     continue;
+                
+                if (binding.IsExecuting)
+                    throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
                 var param = _commandsParamsPool.Take<CommandParams<T1, T2, T3>>();
                 param.Param01 = param01;
