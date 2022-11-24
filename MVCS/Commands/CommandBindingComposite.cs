@@ -4,7 +4,7 @@ using Build1.PostMVC.Core.MVCS.Events;
 
 namespace Build1.PostMVC.Core.MVCS.Commands
 {
-    internal sealed class CommandBindingComposite : ICommandBinding
+    internal sealed class CommandBindingComposite : ICommandBindingComposite, ICommandBinding
     {
         private readonly List<CommandBinding> _bindings;
 
@@ -227,9 +227,19 @@ namespace Build1.PostMVC.Core.MVCS.Commands
                 binding.UnbindOnQuit();
             return this;
         }
+        
+        /*
+         * For Each.
+         */
+
+        public void ForEachBinding(Action<CommandBindingBase> handler)
+        {
+            foreach (var binding in _bindings)
+                handler(binding);
+        }
     }
 
-    internal sealed class CommandBindingComposite<T1> : ICommandBinding<T1>
+    internal sealed class CommandBindingComposite<T1> : ICommandBindingComposite, ICommandBinding<T1>
     {
         private readonly List<CommandBinding<T1>> _bindings;
 
@@ -522,9 +532,19 @@ namespace Build1.PostMVC.Core.MVCS.Commands
                 binding.UnbindOnQuit();
             return this;
         }
+        
+        /*
+         * For Each.
+         */
+        
+        public void ForEachBinding(Action<CommandBindingBase> handler)
+        {
+            foreach (var binding in _bindings)
+                handler(binding);
+        }
     }
 
-    internal sealed class CommandBindingComposite<T1, T2> : ICommandBinding<T1, T2>
+    internal sealed class CommandBindingComposite<T1, T2> : ICommandBindingComposite, ICommandBinding<T1, T2>
     {
         private readonly List<CommandBinding<T1, T2>> _bindings;
 
@@ -845,9 +865,19 @@ namespace Build1.PostMVC.Core.MVCS.Commands
                 binding.UnbindOnQuit();
             return this;
         }
+        
+        /*
+         * For Each.
+         */
+        
+        public void ForEachBinding(Action<CommandBindingBase> handler)
+        {
+            foreach (var binding in _bindings)
+                handler(binding);
+        }
     }
 
-    internal sealed class CommandBindingComposite<T1, T2, T3> : ICommandBinding<T1, T2, T3>
+    internal sealed class CommandBindingComposite<T1, T2, T3> : ICommandBindingComposite, ICommandBinding<T1, T2, T3>
     {
         private readonly List<CommandBinding<T1, T2, T3>> _bindings;
         
@@ -1195,6 +1225,16 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             foreach (var binding in _bindings)
                 binding.UnbindOnQuit();
             return this;
+        }
+                
+        /*
+         * For Each.
+         */
+        
+        public void ForEachBinding(Action<CommandBindingBase> handler)
+        {
+            foreach (var binding in _bindings)
+                handler(binding);
         }
     }
 }

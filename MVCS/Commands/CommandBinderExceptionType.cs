@@ -4,6 +4,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
     {
         BindingAlreadyExecuting = 1,
         IncompatibleEventType   = 2,
-        IncompatibleCommand     = 3
+        IncompatibleCommand     = 3,
+        UnknownBindingType      = 4
     }
 }

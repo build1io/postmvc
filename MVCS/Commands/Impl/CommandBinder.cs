@@ -83,16 +83,19 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
          * Unbinding.
          */
 
-        public void Unbind(CommandBindingBase binding)
+        public void Unbind(ICommandBindingBase binding)
         {
-            if (!_bindings.TryGetValue(binding.Event, out var bindings) || !bindings.Contains(binding))
-                return;
-
-            bindings.Remove(binding);
-            binding.Dispose();
-
-            if (bindings.Count == 0)
-                UnbindAll(binding.Event);
+            switch (binding)
+            {
+                case CommandBindingBase bindingBase:
+                    UnbindImpl(bindingBase);
+                    break;
+                case ICommandBindingComposite bindingComposite:
+                    bindingComposite.ForEachBinding(UnbindImpl);
+                    break;
+                default:
+                    throw new CommandBinderException(CommandBinderExceptionType.UnknownBindingType, binding.GetType().FullName);
+            }
         }
 
         public void UnbindAll(EventBase type)
@@ -124,6 +127,18 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
                 if (binding.IsUnbindOnQuit)
                     _bindingsToUnbind.Add(binding);
             UnbindScheduled();
+        }
+
+        private void UnbindImpl(CommandBindingBase binding)
+        {
+            if (!_bindings.TryGetValue(binding.Event, out var bindings) || !bindings.Contains(binding))
+                return;
+
+            bindings.Remove(binding);
+            binding.Dispose();
+
+            if (bindings.Count == 0)
+                UnbindAll(binding.Event);  
         }
 
         private void UnbindOrScheduleIfOnce(CommandBindingBase binding)
@@ -378,10 +393,26 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
          * Breaking.
          */
 
-        public void Break(CommandBindingBase binding)
+        public void Break(ICommandBindingBase binding)
         {
-            if (binding.IsExecuting)
-                binding.RegisterBreak();
+            switch (binding)
+            {
+                case CommandBindingBase bindingBase:
+                {
+                    if (bindingBase.IsExecuting)
+                        bindingBase.RegisterBreak();
+                    break;
+                }
+                case ICommandBindingComposite bindingComposite:
+                    bindingComposite.ForEachBinding(innerBinding =>
+                    {
+                        if (innerBinding.IsExecuting)
+                            innerBinding.RegisterBreak();
+                    });
+                    break;
+                default:
+                    throw new CommandBinderException(CommandBinderExceptionType.UnknownBindingType, binding.GetType().FullName);
+            }
         }
 
         public void BreakAll(EventBase @event)
