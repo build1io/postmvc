@@ -40,27 +40,33 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * 1 params.
          */
 
-        public ICommandBinding To1<TCommand>(int param) where TCommand : Command<int>, new()
+        public ICommandBinding To1<TCommand>(int param01) where TCommand : Command<int>, new()
         {
-            AddCommand<TCommand, int>(param);
+            AddCommand<TCommand, int>(param01);
             return this;
         }
 
-        public ICommandBinding To1<TCommand>(float param) where TCommand : Command<float>, new()
+        public ICommandBinding To1<TCommand>(float param01) where TCommand : Command<float>, new()
         {
-            AddCommand<TCommand, float>(param);
+            AddCommand<TCommand, float>(param01);
             return this;
         }
 
-        public ICommandBinding To1<TCommand>(bool param) where TCommand : Command<bool>, new()
+        public ICommandBinding To1<TCommand>(bool param01) where TCommand : Command<bool>, new()
         {
-            AddCommand<TCommand, bool>(param);
+            AddCommand<TCommand, bool>(param01);
             return this;
         }
 
-        public ICommandBinding To1<TCommand>(string param) where TCommand : Command<string>, new()
+        public ICommandBinding To1<TCommand>(string param01) where TCommand : Command<string>, new()
         {
-            AddCommand<TCommand, string>(param);
+            AddCommand<TCommand, string>(param01);
+            return this;
+        }
+
+        public ICommandBinding To1<TCommand>(Exception param01) where TCommand : Command<Exception>, new()
+        {
+            AddCommand<TCommand, Exception>(param01);
             return this;
         }
 
@@ -107,6 +113,12 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         /*
          * 3 param.
          */
+
+        public ICommandBinding To3<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02, string param03) where TCommand : Command<TCP1, TCP2, string>, new()
+        {
+            AddCommand<TCommand, TCP1, TCP2, string>(param01, param02, param03);
+            return this;
+        }
 
         public ICommandBinding To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new()
         {

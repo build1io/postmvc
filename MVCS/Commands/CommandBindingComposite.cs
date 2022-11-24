@@ -74,6 +74,13 @@ namespace Build1.PostMVC.Core.MVCS.Commands
                 binding.To1<TCommand>(param);
             return this;
         }
+
+        public ICommandBinding To1<TCommand>(Exception param01) where TCommand : Command<Exception>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param01);
+            return this;
+        }
         
         public ICommandBinding To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
         {
@@ -124,6 +131,13 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         /*
          * Params 3.
          */
+        
+        public ICommandBinding To3<TCommand, TCP1, TCP2>(TCP1 param01, TCP2 param02, string param03) where TCommand : Command<TCP1, TCP2, string>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To3<TCommand, TCP1, TCP2, string>(param01, param02, param03);
+            return this;
+        }
 
         public ICommandBinding To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new()
         {
