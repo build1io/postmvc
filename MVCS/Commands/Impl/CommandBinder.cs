@@ -138,7 +138,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             binding.Dispose();
 
             if (bindings.Count == 0)
-                UnbindAll(binding.Event);  
+                UnbindAll(binding.Event);
         }
 
         private void UnbindOrScheduleIfOnce(CommandBindingBase binding)
@@ -163,6 +163,28 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
                 Unbind(binding);
             _bindingsToUnbind.Clear();
         }
+
+        /*
+         * Sequences.
+         */
+
+        // TODO: add pooling?
+        
+        public FlowBinding             Flow()             { return new FlowBinding(this, _commandsParamsPool); }
+        public FlowBinding<T1>         Flow<T1>()         { return new FlowBinding<T1>(this, _commandsParamsPool); }
+        public FlowBinding<T1, T2>     Flow<T1, T2>()     { return new FlowBinding<T1, T2>(this, _commandsParamsPool); }
+        public FlowBinding<T1, T2, T3> Flow<T1, T2, T3>() { return new FlowBinding<T1, T2, T3>(this, _commandsParamsPool); }
+
+        /*
+         * Commands.
+         */
+
+        // TODO: add pooling?
+        
+        public SingleCommandBinding             Command<TCommand>() where TCommand : Command                         { throw new NotImplementedException(); }
+        public SingleCommandBinding<T1>         Command<TCommand, T1>() where TCommand : Command<T1>                 { throw new NotImplementedException(); }
+        public SingleCommandBinding<T1, T2>     Command<TCommand, T1, T2>() where TCommand : Command<T1, T2>         { throw new NotImplementedException(); }
+        public SingleCommandBinding<T1, T2, T3> Command<TCommand, T1, T2, T3>() where TCommand : Command<T1, T2, T3> { throw new NotImplementedException(); }
 
         /*
          * Get.
@@ -293,7 +315,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             {
                 if (!binding.CheckTriggerCondition())
                     continue;
-                
+
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
@@ -317,7 +339,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             {
                 if (!binding.CheckTriggerCondition(param01))
                     continue;
-                
+
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
@@ -344,7 +366,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             {
                 if (!binding.CheckTriggerCondition(param01, param02))
                     continue;
-                
+
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
@@ -370,9 +392,9 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
 
             foreach (var binding in bindings)
             {
-                if (!binding.CheckTriggerCondition(param01 ,param02, param03))
+                if (!binding.CheckTriggerCondition(param01, param02, param03))
                     continue;
-                
+
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
 
@@ -387,6 +409,58 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
 
             _commandsExecutionIterationTokens--;
             TryUnbindScheduled();
+        }
+
+        /*
+         * Sequences.
+         */
+
+        public void ProcessSequence(FlowBinding binding)
+        {
+            if (binding.IsExecuting)
+                throw new CommandBinderException(CommandBinderExceptionType.FlowAlreadyExecuting);
+
+            binding.StartExecution();
+            ProcessBindingCommand(binding, 0, NoParams);
+        }
+
+        public void ProcessSequence<T1>(FlowBinding<T1> binding, T1 param01)
+        {
+            if (binding.IsExecuting)
+                throw new CommandBinderException(CommandBinderExceptionType.FlowAlreadyExecuting);
+
+            var param = _commandsParamsPool.Take<CommandParams<T1>>();
+            param.Param01 = param01;
+
+            binding.StartExecution();
+            ProcessBindingCommand(binding, 0, param);
+        }
+
+        public void ProcessSequence<T1, T2>(FlowBinding<T1, T2> binding, T1 param01, T2 param02)
+        {
+            if (binding.IsExecuting)
+                throw new CommandBinderException(CommandBinderExceptionType.FlowAlreadyExecuting);
+
+            var param = _commandsParamsPool.Take<CommandParams<T1, T2>>();
+            param.Param01 = param01;
+            param.Param02 = param02;
+
+            binding.StartExecution();
+            ProcessBindingCommand(binding, 0, param);
+        }
+
+        public void ProcessSequence<T1, T2, T3>(FlowBinding<T1, T2, T3> binding, T1 param01, T2 param02, T3 param03)
+        {
+            if (binding.IsExecuting)
+                throw new CommandBinderException(CommandBinderExceptionType.FlowAlreadyExecuting);
+
+            var param = _commandsParamsPool.Take<CommandParams<T1, T2, T3>>();
+            param.Param01 = param01;
+            param.Param02 = param02;
+            param.Param03 = param03;
+
+            binding.StartExecution();
+            ProcessBindingCommand(binding, 0, param);
         }
 
         /*

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Build1.PostMVC.Core.MVCS.Commands.Impl;
-using Build1.PostMVC.Core.MVCS.Events;
 using Build1.PostMVC.Core.MVCS.Events.Impl;
 using Build1.PostMVC.Core.Utils.Pooling;
 
@@ -13,16 +12,16 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         internal CommandBinder                      CommandBinder     { get; }
         internal Pool<CommandParamsBase>            CommandParamsPool { get; }
         internal List<Type>                         Commands          { get; }
-        internal Dictionary<int, CommandParamsBase> Params            { get; private set; }
-        internal int                                CommandsExecuted  { get; private set; }
-        internal int                                CommandsReleased  { get; private set; }
-        internal List<Exception>                    CommandsFailed    { get; private set; }
+        internal Dictionary<int, CommandParamsBase> Params            { get; set; }
+        internal int                                CommandsExecuted  { get; set; }
+        internal int                                CommandsReleased  { get; set; }
+        internal List<Exception>                    CommandsFailed    { get; set; }
         internal EventBase                          CompleteEvent     { get; set; }
         internal EventBase                          BreakEvent        { get; set; }
-        internal EventBase                          FailEvent         { get; private set; }
-        internal bool                               IsSequence        { get; private set; }
-        internal OnceBehavior                       OnceBehavior      { get; private set; }
-        internal bool                               IsUnbindOnQuit    { get; private set; }
+        internal EventBase                          FailEvent         { get; set; }
+        internal bool                               IsSequence        { get; set; }
+        internal OnceBehavior                       OnceBehavior      { get; set; }
+        internal bool                               IsUnbindOnQuit    { get; set; }
 
         internal bool IsExecuting { get; private set; }
         internal bool IsBreak     { get; private set; }
@@ -138,56 +137,6 @@ namespace Build1.PostMVC.Core.MVCS.Commands
 
             foreach (var param in Params.Values)
                 CommandParamsPool.Return(param);
-        }
-
-        /*
-         * On Fail.
-         */
-
-        public ICommandBindingBase OnFail(Event<Exception> @event)
-        {
-            FailEvent = @event;
-            return this;
-        }
-
-        public ICommandBindingBase OnFail(Event @event)
-        {
-            FailEvent = @event;
-            return this;
-        }
-
-        /*
-         * Configuration.
-         */
-
-        public ICommandBindingBase InParallel()
-        {
-            IsSequence = false;
-            return this;
-        }
-
-        public ICommandBindingBase InSequence()
-        {
-            IsSequence = true;
-            return this;
-        }
-
-        public ICommandBindingBase Once()
-        {
-            OnceBehavior = OnceBehavior.Default;
-            return this;
-        }
-
-        public ICommandBindingBase Once(OnceBehavior behavior)
-        {
-            OnceBehavior = behavior;
-            return this;
-        }
-
-        public ICommandBindingBase UnbindOnQuit()
-        {
-            IsUnbindOnQuit = true;
-            return this;
         }
     }
 }

@@ -10,9 +10,19 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         CommandBinding<T1>         Bind<T1>(Event<T1> @event);
         CommandBinding<T1, T2>     Bind<T1, T2>(Event<T1, T2> @event);
         CommandBinding<T1, T2, T3> Bind<T1, T2, T3>(Event<T1, T2, T3> @event);
-        
+
         void Unbind(ICommandBindingBase binding);
         void UnbindAll(EventBase @event);
+
+        FlowBinding             Flow();
+        FlowBinding<T1>         Flow<T1>();
+        FlowBinding<T1, T2>     Flow<T1, T2>();
+        FlowBinding<T1, T2, T3> Flow<T1, T2, T3>();
+
+        SingleCommandBinding             Command<TCommand>() where TCommand : Command;
+        SingleCommandBinding<T1>         Command<TCommand, T1>() where TCommand : Command<T1>;
+        SingleCommandBinding<T1, T2>     Command<TCommand, T1, T2>() where TCommand : Command<T1, T2>;
+        SingleCommandBinding<T1, T2, T3> Command<TCommand, T1, T2, T3>() where TCommand : Command<T1, T2, T3>;
 
         public IList<CommandBinding>             GetBindings(Event @event);
         public IList<CommandBinding<T1>>         GetBindings<T1>(Event<T1> @event);

@@ -175,14 +175,14 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             return this;
         }
 
-        public ICommandBindingBase OnFail(Event<Exception> @event)
+        public ICommandBinding OnFail(Event<Exception> @event)
         {
             foreach (var binding in _bindings)
                 binding.OnFail(@event);
             return this;
         }
 
-        public ICommandBindingBase OnFail(Event @event)
+        public ICommandBinding OnFail(Event @event)
         {
             foreach (var binding in _bindings)
                 binding.OnFail(@event);
@@ -193,35 +193,35 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Other.
          */
 
-        public ICommandBindingBase InParallel()
+        public ICommandBinding InParallel()
         {
             foreach (var binding in _bindings)
                 binding.InParallel();
             return this;
         }
         
-        public ICommandBindingBase InSequence()
+        public ICommandBinding InSequence()
         {
             foreach (var binding in _bindings)
                 binding.InSequence();
             return this;
         }
 
-        public ICommandBindingBase Once()
+        public ICommandBinding Once()
         {
             foreach (var binding in _bindings)
                 binding.Once();
             return this;
         }
         
-        public ICommandBindingBase Once(OnceBehavior behavior)
+        public ICommandBinding Once(OnceBehavior behavior)
         {
             foreach (var binding in _bindings)
                 binding.Once(behavior);
             return this;
         }
         
-        public ICommandBindingBase UnbindOnQuit()
+        public ICommandBinding UnbindOnQuit()
         {
             foreach (var binding in _bindings)
                 binding.UnbindOnQuit();
@@ -480,14 +480,14 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             return this;
         }
         
-        public ICommandBindingBase OnFail(Event<Exception> @event)
+        public ICommandBinding<T1> OnFail(Event<Exception> @event)
         {
             foreach (var binding in _bindings)
                 binding.OnFail(@event);
             return this;
         }
 
-        public ICommandBindingBase OnFail(Event @event)
+        public ICommandBinding<T1> OnFail(Event @event)
         {
             foreach (var binding in _bindings)
                 binding.OnFail(@event);
@@ -498,35 +498,35 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Events.
          */
         
-        public ICommandBindingBase InParallel()
+        public ICommandBinding<T1> InParallel()
         {
             foreach (var binding in _bindings)
                 binding.InParallel();
             return this;
         }
         
-        public ICommandBindingBase InSequence()
+        public ICommandBinding<T1> InSequence()
         {
             foreach (var binding in _bindings)
                 binding.InSequence();
             return this;
         }
         
-        public ICommandBindingBase Once()
+        public ICommandBinding<T1> Once()
         {
             foreach (var binding in _bindings)
                 binding.Once();
             return this;
         }
         
-        public ICommandBindingBase Once(OnceBehavior behavior)
+        public ICommandBinding<T1> Once(OnceBehavior behavior)
         {
             foreach (var binding in _bindings)
                 binding.Once(behavior);
             return this;
         }
         
-        public ICommandBindingBase UnbindOnQuit()
+        public ICommandBinding<T1> UnbindOnQuit()
         {
             foreach (var binding in _bindings)
                 binding.UnbindOnQuit();
@@ -813,14 +813,14 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             return this;
         }
         
-        public ICommandBindingBase OnFail(Event<Exception> @event)
+        public ICommandBinding<T1, T2> OnFail(Event<Exception> @event)
         {
             foreach (var binding in _bindings)
                 binding.OnFail(@event);
             return this;
         }
 
-        public ICommandBindingBase OnFail(Event @event)
+        public ICommandBinding<T1, T2> OnFail(Event @event)
         {
             foreach (var binding in _bindings)
                 binding.OnFail(@event);
@@ -831,35 +831,35 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Other.
          */
         
-        public ICommandBindingBase InParallel()
+        public ICommandBinding<T1, T2> InParallel()
         {
             foreach (var binding in _bindings)
                 binding.InParallel();
             return this;
         }
         
-        public ICommandBindingBase InSequence()
+        public ICommandBinding<T1, T2> InSequence()
         {
             foreach (var binding in _bindings)
                 binding.InSequence();
             return this;
         }
         
-        public ICommandBindingBase Once()
+        public ICommandBinding<T1, T2> Once()
         {
             foreach (var binding in _bindings)
                 binding.Once();
             return this;
         }
         
-        public ICommandBindingBase Once(OnceBehavior behavior)
+        public ICommandBinding<T1, T2> Once(OnceBehavior behavior)
         {
             foreach (var binding in _bindings)
                 binding.Once(behavior);
             return this;
         }
         
-        public ICommandBindingBase UnbindOnQuit()
+        public ICommandBinding<T1, T2> UnbindOnQuit()
         {
             foreach (var binding in _bindings)
                 binding.UnbindOnQuit();
@@ -1174,14 +1174,14 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             return this;
         }
         
-        public ICommandBindingBase OnFail(Event<Exception> @event)
+        public ICommandBinding<T1, T2, T3> OnFail(Event<Exception> @event)
         {
             foreach (var binding in _bindings)
                 binding.OnFail(@event);
             return this;
         }
 
-        public ICommandBindingBase OnFail(Event @event)
+        public ICommandBinding<T1, T2, T3> OnFail(Event @event)
         {
             foreach (var binding in _bindings)
                 binding.OnFail(@event);
@@ -1192,35 +1192,35 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Other.
          */
         
-        public ICommandBindingBase InParallel()
+        public ICommandBinding<T1, T2, T3> InParallel()
         {
             foreach (var binding in _bindings)
                 binding.InParallel();
             return this;
         }
         
-        public ICommandBindingBase InSequence()
+        public ICommandBinding<T1, T2, T3> InSequence()
         {
             foreach (var binding in _bindings)
                 binding.InSequence();
             return this;
         }
         
-        public ICommandBindingBase Once()
+        public ICommandBinding<T1, T2, T3> Once()
         {
             foreach (var binding in _bindings)
                 binding.Once();
             return this;
         }
         
-        public ICommandBindingBase Once(OnceBehavior behavior)
+        public ICommandBinding<T1, T2, T3> Once(OnceBehavior behavior)
         {
             foreach (var binding in _bindings)
                 binding.Once(behavior);
             return this;
         }
         
-        public ICommandBindingBase UnbindOnQuit()
+        public ICommandBinding<T1, T2, T3> UnbindOnQuit()
         {
             foreach (var binding in _bindings)
                 binding.UnbindOnQuit();

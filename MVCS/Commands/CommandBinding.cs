@@ -177,6 +177,52 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             BreakEvent = @event;
             return this;
         }
+
+        public ICommandBinding OnFail(Event<Exception> @event)
+        {
+            FailEvent = @event;
+            return this;
+        }
+
+        public ICommandBinding OnFail(Event @event)
+        {
+            FailEvent = @event;
+            return this;
+        }
+
+        /*
+         * Other.
+         */
+
+        public ICommandBinding InParallel()
+        {
+            IsSequence = false;
+            return this;
+        }
+
+        public ICommandBinding InSequence()
+        {
+            IsSequence = true;
+            return this;
+        }
+        
+        public ICommandBinding Once()
+        {
+            OnceBehavior = OnceBehavior.Default;
+            return this;
+        }
+
+        public ICommandBinding Once(OnceBehavior behavior)
+        {
+            OnceBehavior = behavior;
+            return this;
+        }
+        
+        public ICommandBinding UnbindOnQuit()
+        {
+            IsUnbindOnQuit = true;
+            return this;
+        }
     }
 
     public sealed class CommandBinding<T1> : CommandBindingBase, ICommandBinding<T1>
@@ -421,6 +467,52 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         public ICommandBinding<T1> OnBreak(Event @event)
         {
             BreakEvent = @event;
+            return this;
+        }
+
+        public ICommandBinding<T1> OnFail(Event<Exception> @event)
+        {
+            FailEvent = @event;
+            return this;
+        }
+
+        public ICommandBinding<T1> OnFail(Event @event)
+        {
+            FailEvent = @event;
+            return this;
+        }
+
+        /*
+         * Other.
+         */
+
+        public ICommandBinding<T1> InParallel()
+        {
+            IsSequence = false;
+            return this;
+        }
+
+        public ICommandBinding<T1> InSequence()
+        {
+            IsSequence = true;
+            return this;
+        }
+        
+        public ICommandBinding<T1> Once()
+        {
+            OnceBehavior = OnceBehavior.Default;
+            return this;
+        }
+
+        public ICommandBinding<T1> Once(OnceBehavior behavior)
+        {
+            OnceBehavior = behavior;
+            return this;
+        }
+        
+        public ICommandBinding<T1> UnbindOnQuit()
+        {
+            IsUnbindOnQuit = true;
             return this;
         }
     }
@@ -701,6 +793,52 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         public ICommandBinding<T1, T2> OnBreak(Event @event)
         {
             BreakEvent = @event;
+            return this;
+        }
+
+        public ICommandBinding<T1, T2> OnFail(Event<Exception> @event)
+        {
+            FailEvent = @event;
+            return this;
+        }
+
+        public ICommandBinding<T1, T2> OnFail(Event @event)
+        {
+            FailEvent = @event;
+            return this;
+        }
+
+        /*
+         * Other.
+         */
+
+        public ICommandBinding<T1, T2> InParallel()
+        {
+            IsSequence = false;
+            return this;
+        }
+
+        public ICommandBinding<T1, T2> InSequence()
+        {
+            IsSequence = true;
+            return this;
+        }
+        
+        public ICommandBinding<T1, T2> Once()
+        {
+            OnceBehavior = OnceBehavior.Default;
+            return this;
+        }
+
+        public ICommandBinding<T1, T2> Once(OnceBehavior behavior)
+        {
+            OnceBehavior = behavior;
+            return this;
+        }
+        
+        public ICommandBinding<T1, T2> UnbindOnQuit()
+        {
+            IsUnbindOnQuit = true;
             return this;
         }
     }
@@ -1001,6 +1139,52 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         public ICommandBinding<T1, T2, T3> OnBreak(Event @event)
         {
             BreakEvent = @event;
+            return this;
+        }
+
+        public ICommandBinding<T1, T2, T3> OnFail(Event<Exception> @event)
+        {
+            FailEvent = @event;
+            return this;
+        }
+
+        public ICommandBinding<T1, T2, T3> OnFail(Event @event)
+        {
+            FailEvent = @event;
+            return this;
+        }
+
+        /*
+         * Other.
+         */
+
+        public ICommandBinding<T1, T2, T3> InParallel()
+        {
+            IsSequence = false;
+            return this; 
+        }
+
+        public ICommandBinding<T1, T2, T3> InSequence()
+        {
+            IsSequence = true;
+            return this;
+        }
+        
+        public ICommandBinding<T1, T2, T3> Once()
+        {
+            OnceBehavior = OnceBehavior.Default;
+            return this;
+        }
+
+        public ICommandBinding<T1, T2, T3> Once(OnceBehavior behavior)
+        {
+            OnceBehavior = behavior;
+            return this;
+        }
+        
+        public ICommandBinding<T1, T2, T3> UnbindOnQuit()
+        {
+            IsUnbindOnQuit = true;
             return this;
         }
     }
