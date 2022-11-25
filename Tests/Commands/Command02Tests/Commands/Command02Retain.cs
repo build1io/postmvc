@@ -5,7 +5,8 @@ namespace Build1.PostMVC.Core.Tests.Commands.Command02Tests.Commands
 {
     public sealed class Command02Retain : Command<int, string>
     {
-        public static Command02Retain Instance { get; private set; }
+        public static Command02Retain Instance  { get; private set; }
+        public static Exception       Exception { get; } = new("Test exception");
         
         public static Action<int, string> OnExecute;
         public static Action              OnFail;
@@ -30,7 +31,7 @@ namespace Build1.PostMVC.Core.Tests.Commands.Command02Tests.Commands
         public void FailImpl()
         {
             OnFail?.Invoke();
-            Fail(new Exception("Test exception"));
+            Fail(Exception);
         }
     }
 }
