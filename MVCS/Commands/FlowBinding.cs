@@ -161,9 +161,19 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             return this;
         }
 
-        public void Execute()
+        public IFlowBinding Execute()
         {
-            CommandBinder.ProcessSequence(this);
+            CommandBinder.ProcessFlow(this);
+            return this;
+        }
+
+        public bool Break()
+        {
+            if (!IsExecuting)
+                return false;
+            
+            RegisterBreak();
+            return true;
         }
     }
     
@@ -377,9 +387,19 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             return this;
         }
 
-        public void Execute(T1 param01)
+        public IFlowBinding<T1> Execute(T1 param01)
         {
-            CommandBinder.ProcessSequence(this, param01);
+            CommandBinder.ProcessFlow(this, param01);
+            return this;
+        }
+
+        public bool Break()
+        {
+            if (!IsExecuting)
+                return false;
+            
+            RegisterBreak();
+            return true;
         }
     }
     
@@ -623,9 +643,19 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             return this;
         }
 
-        public void Execute(T1 param01, T2 param02)
+        public IFlowBinding<T1, T2> Execute(T1 param01, T2 param02)
         {
-            CommandBinder.ProcessSequence(this, param01, param02);
+            CommandBinder.ProcessFlow(this, param01, param02);
+            return this;
+        }
+
+        public bool Break()
+        {
+            if (!IsExecuting)
+                return false;
+            
+            RegisterBreak();
+            return true;
         }
     }
     
@@ -887,9 +917,19 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             return this;
         }
 
-        public void Execute(T1 param01, T2 param02, T3 param03)
+        public IFlowBinding<T1, T2, T3> Execute(T1 param01, T2 param02, T3 param03)
         {
-            CommandBinder.ProcessSequence(this, param01, param02, param03);
+            CommandBinder.ProcessFlow(this, param01, param02, param03);
+            return this;
+        }
+
+        public bool Break()
+        {
+            if (!IsExecuting)
+                return false;
+            
+            RegisterBreak();
+            return true;
         }
     }
 }

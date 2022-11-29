@@ -415,7 +415,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
          * Sequences.
          */
 
-        public void ProcessSequence(FlowBinding binding)
+        public void ProcessFlow(FlowBinding binding)
         {
             if (binding.IsExecuting)
                 throw new CommandBinderException(CommandBinderExceptionType.FlowAlreadyExecuting);
@@ -424,7 +424,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             ProcessBindingCommand(binding, 0, NoParams);
         }
 
-        public void ProcessSequence<T1>(FlowBinding<T1> binding, T1 param01)
+        public void ProcessFlow<T1>(FlowBinding<T1> binding, T1 param01)
         {
             if (binding.IsExecuting)
                 throw new CommandBinderException(CommandBinderExceptionType.FlowAlreadyExecuting);
@@ -436,7 +436,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             ProcessBindingCommand(binding, 0, param);
         }
 
-        public void ProcessSequence<T1, T2>(FlowBinding<T1, T2> binding, T1 param01, T2 param02)
+        public void ProcessFlow<T1, T2>(FlowBinding<T1, T2> binding, T1 param01, T2 param02)
         {
             if (binding.IsExecuting)
                 throw new CommandBinderException(CommandBinderExceptionType.FlowAlreadyExecuting);
@@ -449,7 +449,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             ProcessBindingCommand(binding, 0, param);
         }
 
-        public void ProcessSequence<T1, T2, T3>(FlowBinding<T1, T2, T3> binding, T1 param01, T2 param02, T3 param03)
+        public void ProcessFlow<T1, T2, T3>(FlowBinding<T1, T2, T3> binding, T1 param01, T2 param02, T3 param03)
         {
             if (binding.IsExecuting)
                 throw new CommandBinderException(CommandBinderExceptionType.FlowAlreadyExecuting);

@@ -25,18 +25,19 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         IFlowBinding To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new();
 
         IFlowBinding OnComplete(Event @event);
-        
+
         IFlowBinding OnBreak(Event @event);
-        
+
         IFlowBinding OnFail(Event<Exception> @event);
         IFlowBinding OnFail(Event @event);
 
         IFlowBinding InParallel();
         IFlowBinding InSequence();
 
-        void Execute();
+        IFlowBinding Execute();
+        bool         Break();
     }
-    
+
     public interface IFlowBinding<T1>
     {
         IFlowBinding<T1> To0<TCommand>() where TCommand : Command, new();
@@ -71,16 +72,17 @@ namespace Build1.PostMVC.Core.MVCS.Commands
 
         IFlowBinding<T1> OnBreak(Event<T1> @event);
         IFlowBinding<T1> OnBreak(Event @event);
-        
+
         IFlowBinding<T1> OnFail(Event<Exception> @event);
         IFlowBinding<T1> OnFail(Event @event);
 
         IFlowBinding<T1> InParallel();
         IFlowBinding<T1> InSequence();
 
-        void Execute(T1 param01);
+        IFlowBinding<T1> Execute(T1 param01);
+        bool             Break();
     }
-    
+
     public interface IFlowBinding<T1, T2>
     {
         IFlowBinding<T1, T2> To0<TCommand>() where TCommand : Command, new();
@@ -123,16 +125,17 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         IFlowBinding<T1, T2> OnBreak(Event<T1, T2> @event);
         IFlowBinding<T1, T2> OnBreak(Event<T1> @event);
         IFlowBinding<T1, T2> OnBreak(Event @event);
-        
+
         IFlowBinding<T1, T2> OnFail(Event<Exception> @event);
         IFlowBinding<T1, T2> OnFail(Event @event);
 
         IFlowBinding<T1, T2> InParallel();
         IFlowBinding<T1, T2> InSequence();
 
-        void Execute(T1 param01, T2 param02);
+        IFlowBinding<T1, T2> Execute(T1 param01, T2 param02);
+        bool                 Break();
     }
-    
+
     public interface IFlowBinding<T1, T2, T3>
     {
         IFlowBinding<T1, T2, T3> To0<TCommand>() where TCommand : Command, new();
@@ -175,13 +178,14 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         IFlowBinding<T1, T2, T3> OnBreak(Event<T1, T2> @event);
         IFlowBinding<T1, T2, T3> OnBreak(Event<T1> @event);
         IFlowBinding<T1, T2, T3> OnBreak(Event @event);
-        
+
         IFlowBinding<T1, T2, T3> OnFail(Event<Exception> @event);
         IFlowBinding<T1, T2, T3> OnFail(Event @event);
 
         IFlowBinding<T1, T2, T3> InParallel();
         IFlowBinding<T1, T2, T3> InSequence();
 
-        void Execute(T1 param01, T2 param02, T3 param03);
+        IFlowBinding<T1, T2, T3> Execute(T1 param01, T2 param02, T3 param03);
+        bool                     Break();
     }
 }

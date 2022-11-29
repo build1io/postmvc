@@ -23,7 +23,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         internal OnceBehavior                       OnceBehavior      { get; set; }
         internal bool                               IsUnbindOnQuit    { get; set; }
 
-        internal bool IsExecuting { get; private set; }
+        public   bool IsExecuting { get; private set; }
         internal bool IsBreak     { get; private set; }
 
         internal bool HasFails => CommandsFailed != null && CommandsFailed.Count > 0;
@@ -49,11 +49,11 @@ namespace Build1.PostMVC.Core.MVCS.Commands
 
             var param = CommandParamsPool.Take<CommandParams<T1>>();
             param.Param01 = param01;
-            
+
             Params ??= new Dictionary<int, CommandParamsBase>();
             Params.Add(Commands.Count - 1, param);
         }
-        
+
         protected void AddCommand<TCommand, T1, T2>(T1 param01, T2 param02) where TCommand : CommandBase
         {
             Commands.Add(typeof(TCommand));
@@ -61,11 +61,11 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             var param = CommandParamsPool.Take<CommandParams<T1, T2>>();
             param.Param01 = param01;
             param.Param02 = param02;
-            
+
             Params ??= new Dictionary<int, CommandParamsBase>();
             Params.Add(Commands.Count - 1, param);
         }
-        
+
         protected void AddCommand<TCommand, T1, T2, T3>(T1 param01, T2 param02, T3 param03) where TCommand : CommandBase
         {
             Commands.Add(typeof(TCommand));
@@ -74,7 +74,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             param.Param01 = param01;
             param.Param02 = param02;
             param.Param03 = param03;
-            
+
             Params ??= new Dictionary<int, CommandParamsBase>();
             Params.Add(Commands.Count - 1, param);
         }
