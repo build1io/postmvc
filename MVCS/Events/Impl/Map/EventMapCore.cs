@@ -103,6 +103,9 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl.Map
 
         public void UnmapAll()
         {
+            if (_infos.Count == 0)
+                return;
+            
             foreach (var info in _infos)
             {
                 info.Unbind();
