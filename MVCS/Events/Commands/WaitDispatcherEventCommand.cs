@@ -3,7 +3,7 @@ using Build1.PostMVC.Core.MVCS.Commands;
 namespace Build1.PostMVC.Core.MVCS.Events.Commands
 {
     [Poolable]
-    public sealed class WaitForDispatcherEventCommand : Command<IEventDispatcher, Event>
+    public sealed class WaitDispatcherEventCommand : Command<IEventDispatcher, Event>
     {
         private IEventDispatcher _dispatcher;
         

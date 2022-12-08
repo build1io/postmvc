@@ -4,7 +4,7 @@ using Build1.PostMVC.Core.MVCS.Injection;
 namespace Build1.PostMVC.Core.MVCS.Events.Commands
 {
     [Poolable]
-    public sealed class WaitForEventCommand : Command<Event>
+    public sealed class WaitEventCommand : Command<Event>
     {
         [Inject] public IEventDispatcher Dispatcher { get; set; }
         
