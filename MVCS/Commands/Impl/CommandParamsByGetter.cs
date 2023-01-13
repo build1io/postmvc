@@ -1,9 +1,10 @@
+using System;
 using Build1.PostMVC.Core.MVCS.Events;
 using Build1.PostMVC.Core.MVCS.Events.Impl;
 
 namespace Build1.PostMVC.Core.MVCS.Commands.Impl
 {
-    internal class CommandParams : ICommandParams
+    internal class CommandParamsByGetter : ICommandParams
     {
         public void DispatchParams(IEventDispatcher dispatcher, EventBase @event)
         {
@@ -13,11 +14,15 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
                 throw new CommandBinderException(CommandBinderExceptionType.IncompatibleEventType);
         }
     }
-
-    internal class CommandParams<T1> : ICommandParams<T1>
+    
+    internal class CommandParamsByGetter<T1> : ICommandParams<T1>
     {
-        public T1 Param01 { get; set; }
+        public T1 Param01 => _param01Func.Invoke();
 
+        private Func<T1> _param01Func;
+        
+        internal void SetParam01Func(Func<T1> param01Func) { _param01Func = param01Func; }
+        
         public void DispatchParams(IEventDispatcher dispatcher, EventBase @event)
         {
             switch (@event)
@@ -33,11 +38,17 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             }
         }
     }
-
-    internal class CommandParams<T1, T2> : ICommandParams<T1, T2>
+    
+    internal class CommandParamsByGetter<T1, T2> : ICommandParams<T1, T2>
     {
-        public T1 Param01 { get; set; }
-        public T2 Param02 { get; set; }
+        public T1 Param01 => _param01Func.Invoke();
+        public T2 Param02 => _param02Func.Invoke();
+
+        private Func<T1> _param01Func;
+        private Func<T2> _param02Func;
+        
+        internal void SetParam01Func(Func<T1> param01Func) { _param01Func = param01Func; }
+        internal void SetParam02Func(Func<T2> param02Func) { _param02Func = param02Func; }
 
         public void DispatchParams(IEventDispatcher dispatcher, EventBase @event)
         {
@@ -57,13 +68,21 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             }
         }
     }
-
-    internal class CommandParams<T1, T2, T3> : ICommandParams<T1, T2, T3>
+    
+    internal class CommandParamsByGetter<T1, T2, T3> : ICommandParams<T1, T2>
     {
-        public T1 Param01 { get; set; }
-        public T2 Param02 { get; set; }
-        public T3 Param03 { get; set; }
+        public T1 Param01 => _param01Func.Invoke();
+        public T2 Param02 => _param02Func.Invoke();
+        public T3 Param03 => _param03Func.Invoke();
 
+        private Func<T1> _param01Func;
+        private Func<T2> _param02Func;
+        private Func<T3> _param03Func;
+        
+        internal void SetParam01Func(Func<T1> param01Func) { _param01Func = param01Func; }
+        internal void SetParam02Func(Func<T2> param02Func) { _param02Func = param02Func; }
+        internal void SetParam03Func(Func<T3> param03Func) { _param03Func = param03Func; }
+        
         public void DispatchParams(IEventDispatcher dispatcher, EventBase @event)
         {
             switch (@event)

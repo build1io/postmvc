@@ -7,7 +7,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
 {
     public sealed class FlowBinding : CommandBindingBase, IFlowBinding
     {
-        internal FlowBinding(CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(null, binder, paramsPool)
+        internal FlowBinding(CommandBinder binder, Pool<ICommandParams> paramsPool) : base(null, binder, paramsPool)
         {
         }
 
@@ -179,7 +179,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
     
     public sealed class FlowBinding<T1> : CommandBindingBase, IFlowBinding<T1>
     {
-        internal FlowBinding(CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(null, binder, paramsPool)
+        internal FlowBinding(CommandBinder binder, Pool<ICommandParams> paramsPool) : base(null, binder, paramsPool)
         {
         }
 
@@ -405,7 +405,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
     
     public sealed class FlowBinding<T1, T2> : CommandBindingBase, IFlowBinding<T1, T2>
     {
-        internal FlowBinding(CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(null, binder, paramsPool)
+        internal FlowBinding(CommandBinder binder, Pool<ICommandParams> paramsPool) : base(null, binder, paramsPool)
         {
         }
 
@@ -661,7 +661,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
     
     public sealed class FlowBinding<T1, T2, T3> : CommandBindingBase, IFlowBinding<T1, T2, T3>
     {
-        internal FlowBinding(CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(null, binder, paramsPool)
+        internal FlowBinding(CommandBinder binder, Pool<ICommandParams> paramsPool) : base(null, binder, paramsPool)
         {
         }
 

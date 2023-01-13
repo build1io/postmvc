@@ -13,7 +13,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         private Func<bool>       _triggerPredicate;
         private List<Func<bool>> _triggerPredicates;
 
-        internal CommandBinding(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(type, binder, paramsPool)
+        internal CommandBinding(EventBase type, CommandBinder binder, Pool<ICommandParams> paramsPool) : base(type, binder, paramsPool)
         {
         }
 
@@ -64,6 +64,12 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             return this;
         }
 
+        public ICommandBinding To1<TCommand>(Func<string> param01) where TCommand : Command<string>, new()
+        {
+            AddCommand<TCommand, string>(param01);
+            return this;
+        }
+
         public ICommandBinding To1<TCommand>(Exception param01) where TCommand : Command<Exception>, new()
         {
             AddCommand<TCommand, Exception>(param01);
@@ -71,6 +77,12 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         }
 
         public ICommandBinding To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
+        {
+            AddCommand<TCommand, TCP1>(param01);
+            return this;
+        }
+        
+        public ICommandBinding To1<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new()
         {
             AddCommand<TCommand, TCP1>(param01);
             return this;
@@ -232,7 +244,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         private Func<T1, bool>       _triggerPredicate;
         private List<Func<T1, bool>> _triggerPredicates;
 
-        internal CommandBinding(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(type, binder, paramsPool)
+        internal CommandBinding(EventBase type, CommandBinder binder, Pool<ICommandParams> paramsPool) : base(type, binder, paramsPool)
         {
         }
 
@@ -525,7 +537,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         private Func<T1, T2, bool>       _triggerPredicate;
         private List<Func<T1, T2, bool>> _triggerPredicates;
 
-        internal CommandBinding(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(type, binder, paramsPool)
+        internal CommandBinding(EventBase type, CommandBinder binder, Pool<ICommandParams> paramsPool) : base(type, binder, paramsPool)
         {
         }
 
@@ -852,7 +864,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         private Func<T1, T2, T3, bool>       _triggerPredicate;
         private List<Func<T1, T2, T3, bool>> _triggerPredicates;
 
-        internal CommandBinding(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool) : base(type, binder, paramsPool)
+        internal CommandBinding(EventBase type, CommandBinder binder, Pool<ICommandParams> paramsPool) : base(type, binder, paramsPool)
         {
         }
 

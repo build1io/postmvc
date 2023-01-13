@@ -8,29 +8,29 @@ namespace Build1.PostMVC.Core.MVCS.Commands
 {
     public abstract class CommandBindingBase : ICommandBindingBase
     {
-        internal EventBase                          Event             { get; }
-        internal CommandBinder                      CommandBinder     { get; }
-        internal Pool<CommandParamsBase>            CommandParamsPool { get; }
-        internal List<Type>                         Commands          { get; }
-        internal Dictionary<int, CommandParamsBase> Params            { get; set; }
-        internal int                                CommandsExecuted  { get; set; }
-        internal int                                CommandsReleased  { get; set; }
-        internal List<Exception>                    CommandsFailed    { get; set; }
-        internal EventBase                          CompleteEvent     { get; set; }
-        internal EventBase                          BreakEvent        { get; set; }
-        internal EventBase                          FailEvent         { get; set; }
-        internal bool                               IsSequence        { get; set; }
-        internal OnceBehavior                       OnceBehavior      { get; set; }
-        internal bool                               IsUnbindOnQuit    { get; set; }
+        internal EventBase                       Event             { get; }
+        internal CommandBinder                   CommandBinder     { get; }
+        internal Pool<ICommandParams>            CommandParamsPool { get; }
+        internal List<Type>                      Commands          { get; }
+        internal Dictionary<int, ICommandParams> Params            { get; set; }
+        internal int                             CommandsExecuted  { get; set; }
+        internal int                             CommandsReleased  { get; set; }
+        internal List<Exception>                 CommandsFailed    { get; set; }
+        internal EventBase                       CompleteEvent     { get; set; }
+        internal EventBase                       BreakEvent        { get; set; }
+        internal EventBase                       FailEvent         { get; set; }
+        internal bool                            IsSequence        { get; set; }
+        internal OnceBehavior                    OnceBehavior      { get; set; }
+        internal bool                            IsUnbindOnQuit    { get; set; }
 
         public   bool IsExecuting { get; private set; }
         internal bool IsBreak     { get; private set; }
 
         internal bool HasFails => CommandsFailed != null && CommandsFailed.Count > 0;
 
-        private Pool<CommandParamsBase> _commandParamsPool;
+        private Pool<ICommandParams> _commandParamsPool;
 
-        internal CommandBindingBase(EventBase type, CommandBinder binder, Pool<CommandParamsBase> paramsPool)
+        internal CommandBindingBase(EventBase type, CommandBinder binder, Pool<ICommandParams> paramsPool)
         {
             Event = type;
             CommandBinder = binder;
@@ -50,7 +50,18 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             var param = CommandParamsPool.Take<CommandParams<T1>>();
             param.Param01 = param01;
 
-            Params ??= new Dictionary<int, CommandParamsBase>();
+            Params ??= new Dictionary<int, ICommandParams>();
+            Params.Add(Commands.Count - 1, param);
+        }
+        
+        protected void AddCommand<TCommand, T1>(Func<T1> param01) where TCommand : CommandBase
+        {
+            Commands.Add(typeof(TCommand));
+
+            var param = CommandParamsPool.Take<CommandParamsByGetter<T1>>();
+            param.SetParam01Func(param01);
+
+            Params ??= new Dictionary<int, ICommandParams>();
             Params.Add(Commands.Count - 1, param);
         }
 
@@ -62,7 +73,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             param.Param01 = param01;
             param.Param02 = param02;
 
-            Params ??= new Dictionary<int, CommandParamsBase>();
+            Params ??= new Dictionary<int, ICommandParams>();
             Params.Add(Commands.Count - 1, param);
         }
 
@@ -75,7 +86,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             param.Param02 = param02;
             param.Param03 = param03;
 
-            Params ??= new Dictionary<int, CommandParamsBase>();
+            Params ??= new Dictionary<int, ICommandParams>();
             Params.Add(Commands.Count - 1, param);
         }
 

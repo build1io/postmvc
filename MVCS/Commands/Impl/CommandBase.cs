@@ -10,7 +10,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
 
         internal int                Index      { get; private set; } = DefaultIndex;
         internal CommandBindingBase Binding    { get; private set; }
-        internal CommandParamsBase  Params     { get; private set; }
+        internal ICommandParams     Params     { get; private set; }
         internal Exception          Exception  { get; set; }
         internal bool               IsExecuted { get; private set; }
         internal bool               IsRetained { get; set; }
@@ -38,7 +38,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             _commandBinder = commandBinder;
         }
 
-        internal void Setup(int index, CommandBindingBase binding, CommandParamsBase param)
+        internal void Setup(int index, CommandBindingBase binding, ICommandParams param)
         {
             Index = index;
             Binding = binding;
@@ -68,7 +68,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
          * Public.
          */
 
-        internal abstract void InternalExecute(CommandParamsBase param, CommandParamsBase paramAdditional);
+        internal abstract void InternalExecute(ICommandParams param, ICommandParams paramAdditional);
 
         /*
          * Protected.

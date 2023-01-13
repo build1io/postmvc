@@ -74,6 +74,13 @@ namespace Build1.PostMVC.Core.MVCS.Commands
                 binding.To1<TCommand>(param);
             return this;
         }
+        
+        public ICommandBinding To1<TCommand>(Func<string> param) where TCommand : Command<string>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand>(param);
+            return this;
+        }
 
         public ICommandBinding To1<TCommand>(Exception param01) where TCommand : Command<Exception>, new()
         {
@@ -83,6 +90,13 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         }
         
         public ICommandBinding To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To1<TCommand, TCP1>(param01);
+            return this;
+        }
+        
+        public ICommandBinding To1<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new()
         {
             foreach (var binding in _bindings)
                 binding.To1<TCommand, TCP1>(param01);

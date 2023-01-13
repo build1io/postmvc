@@ -20,10 +20,10 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
         private readonly Dictionary<EventBase, IList> _bindings;
         private readonly List<CommandBindingBase>     _bindingsToUnbind;
 
-        private readonly Pool<CommandBase>       _commandsPool;
-        private readonly Pool<CommandParamsBase> _commandsParamsPool;
-        private readonly Dictionary<Type, bool>  _commandsPoolableData;
-        private          int                     _commandsExecutionIterationTokens;
+        private readonly Pool<CommandBase>      _commandsPool;
+        private readonly Pool<ICommandParams>   _commandsParamsPool;
+        private readonly Dictionary<Type, bool> _commandsPoolableData;
+        private          int                    _commandsExecutionIterationTokens;
 
         public CommandBinder()
         {
@@ -31,7 +31,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             _bindingsToUnbind = new List<CommandBindingBase>(8);
 
             _commandsPool = new Pool<CommandBase>();
-            _commandsParamsPool = new Pool<CommandParamsBase>();
+            _commandsParamsPool = new Pool<ICommandParams>();
             _commandsPoolableData = new Dictionary<Type, bool>(64);
         }
 
@@ -505,7 +505,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
          * Command Processing.
          */
 
-        private void ProcessBindingCommand(CommandBindingBase binding, int index, CommandParamsBase param)
+        private void ProcessBindingCommand(CommandBindingBase binding, int index, ICommandParams param)
         {
             if (binding.CheckAllReleased())
             {
@@ -552,7 +552,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
          * Finishing.
          */
 
-        private void FinishBindingExecution(CommandBindingBase binding, CommandParamsBase param)
+        private void FinishBindingExecution(CommandBindingBase binding, ICommandParams param)
         {
             if (binding.IsBreak)
             {
