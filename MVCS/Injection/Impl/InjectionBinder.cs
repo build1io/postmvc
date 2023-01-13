@@ -36,7 +36,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             _bindings.Add(type, binding);
             return binding;
         }
-        
+
         public IInjectionBindingTo Bind(Type type)
         {
             if (_bindings.ContainsKey(type))
@@ -85,14 +85,14 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             _bindings.Add(type, binding);
             return binding;
         }
-        
+
         public void Bind(IInjectionBinding binding)
         {
             if (_bindings.ContainsKey(binding.Key))
                 throw new BindingException(BindingExceptionType.BindingAlreadyRegistered, binding.Key.FullName);
             _bindings.Add(binding.Key, binding);
         }
-        
+
         /*
          * Rebinding.
          */
@@ -102,7 +102,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             Unbind(typeof(T));
             return Bind<T>();
         }
-        
+
         public IInjectionBindingTo Rebind(Type type)
         {
             Unbind(type);
@@ -114,7 +114,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             Unbind(typeof(T));
             return Bind<T, V>();
         }
-        
+
         public IInjectionBindingToValue Rebind<T>(T value)
         {
             Unbind(typeof(T));
@@ -126,14 +126,14 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             Unbind(type);
             return Bind(type, value);
         }
-        
+
         public IInjectionBindingToBinding Rebind<V, P, A>() where P : IInjectionProvider<V, A>, new()
                                                             where A : Inject
         {
             Unbind(typeof(V));
             return Bind<V, P, A>();
         }
-        
+
         /*
          * Unbinding.
          */
@@ -228,21 +228,15 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
          * Instances.
          */
 
-        public T GetInstance<T>()
-        {
-            return (T)GetInstance(GetBinding<T>(), this, null);
-        }
+        public T Get<T>()         { return (T)GetInstance(GetBinding<T>(), this, null); }
+        public T GetInstance<T>() { return (T)GetInstance(GetBinding<T>(), this, null); }
 
-        public object GetInstance(Type key)
-        {
-            return GetInstance(GetBinding(key), this, null);
-        }
+        public object Get(Type key)         { return GetInstance(GetBinding(key), this, null); }
+        public object GetInstance(Type key) { return GetInstance(GetBinding(key), this, null); }
 
-        public object GetInstance(IInjectionBinding binding)
-        {
-            return GetInstance(binding, this, null);
-        }
-        
+        public object Get(IInjectionBinding binding)         { return GetInstance(binding, this, null); }
+        public object GetInstance(IInjectionBinding binding) { return GetInstance(binding, this, null); }
+
         private object GetInstance(IInjectionBinding binding, object callerInstance, IInjectionInfo injectionInfo)
         {
             if (binding == null)
@@ -270,8 +264,9 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             if (!CheckIsConstructed(instance))
             {
                 ConstructImpl(instance, triggerPostConstructors);
-                MarkConstructed(instance);    
+                MarkConstructed(instance);
             }
+
             return instance;
         }
 
@@ -280,11 +275,12 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             if (!CheckIsConstructed(instance))
             {
                 ConstructImpl(instance, triggerPostConstructors);
-                MarkConstructed(instance);    
+                MarkConstructed(instance);
             }
+
             return instance;
         }
-        
+
         private void ConstructImpl(object instance, bool triggerPostConstructors)
         {
             if (instance == null)
@@ -311,6 +307,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
                 DestroyImpl(instance, triggerPreDestroys);
                 UnmarkConstructed(instance);
             }
+
             return instance;
         }
 
@@ -321,9 +318,10 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
                 DestroyImpl(instance, triggerPreDestroys);
                 UnmarkConstructed(instance);
             }
+
             return instance;
         }
-        
+
         private void DestroyImpl(object instance, bool triggerPreDestroys)
         {
             if (instance == null)
@@ -340,7 +338,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
 
             UnInject(instance, info);
         }
-        
+
         /*
          * Injections.
          */
@@ -395,7 +393,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
                 case InjectionBindingType.Type when binding.InjectionMode == InjectionMode.Factory:
                 {
                     var type = (Type)binding.Value;
-                    
+
                     object value;
 
                     try
@@ -432,7 +430,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
                         {
                             throw new InjectionException(InjectionExceptionType.ConstructingTypeCantBeInstantiated, type.FullName);
                         }
-                        
+
                         ConstructImpl(value, true);
                         binding.SetValue(value);
                         MarkConstructed(binding.Value);
