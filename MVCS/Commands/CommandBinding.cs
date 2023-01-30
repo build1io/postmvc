@@ -1,3 +1,5 @@
+// @formatter:off
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +15,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         private Func<bool>       _triggerPredicate;
         private List<Func<bool>> _triggerPredicates;
 
-        internal CommandBinding(EventBase type, CommandBinder binder, Pool<ICommandParams> paramsPool) : base(type, binder, paramsPool)
-        {
-        }
+        internal CommandBinding(EventBase type, CommandBinder binder, Pool<ICommandParams> paramsPool) : base(type, binder, paramsPool) { }
 
         public ICommandBinding And(Event @event)  { return new CommandBindingComposite(this).And(@event); }
         public ICommandBinding Bind(Event @event) { return new CommandBindingComposite(this).Bind(@event); }
@@ -24,70 +24,28 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Params 0.
          */
 
-        public ICommandBinding To<TCommand>() where TCommand : Command, new()
-        {
-            AddCommand<TCommand>();
-            return this;
-        }
-
-        public ICommandBinding To0<TCommand>() where TCommand : Command, new()
-        {
-            AddCommand<TCommand>();
-            return this;
-        }
+        public ICommandBinding To<TCommand>()  where TCommand : Command, new() { AddCommand<TCommand>(); return this; }
+        public ICommandBinding To0<TCommand>() where TCommand : Command, new() { AddCommand<TCommand>(); return this; }
 
         /*
          * 1 params.
          */
 
-        public ICommandBinding To1<TCommand>(int param01) where TCommand : Command<int>, new()
-        {
-            AddCommand<TCommand, int>(param01);
-            return this;
-        }
-
-        public ICommandBinding To1<TCommand>(float param01) where TCommand : Command<float>, new()
-        {
-            AddCommand<TCommand, float>(param01);
-            return this;
-        }
-
-        public ICommandBinding To1<TCommand>(bool param01) where TCommand : Command<bool>, new()
-        {
-            AddCommand<TCommand, bool>(param01);
-            return this;
-        }
-
-        public ICommandBinding To1<TCommand>(string param01) where TCommand : Command<string>, new()
-        {
-            AddCommand<TCommand, string>(param01);
-            return this;
-        }
-
-        public ICommandBinding To1<TCommand>(Func<string> param01) where TCommand : Command<string>, new()
-        {
-            AddCommand<TCommand, string>(param01);
-            return this;
-        }
-
-        public ICommandBinding To1<TCommand>(Exception param01) where TCommand : Command<Exception>, new()
-        {
-            AddCommand<TCommand, Exception>(param01);
-            return this;
-        }
-
-        public ICommandBinding To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
-        {
-            AddCommand<TCommand, TCP1>(param01);
-            return this;
-        }
+        public ICommandBinding To1<TCommand>(int param01)       where TCommand : Command<int>, new()       { AddCommand<TCommand, int>(param01);       return this; }
+        public ICommandBinding To1<TCommand>(float param01)     where TCommand : Command<float>, new()     { AddCommand<TCommand, float>(param01);     return this; }
+        public ICommandBinding To1<TCommand>(bool param01)      where TCommand : Command<bool>, new()      { AddCommand<TCommand, bool>(param01);      return this; }
+        public ICommandBinding To1<TCommand>(string param01)    where TCommand : Command<string>, new()    { AddCommand<TCommand, string>(param01);    return this; }
+        public ICommandBinding To1<TCommand>(Event param01)     where TCommand : Command<Event>, new()     { AddCommand<TCommand, Event>(param01);     return this; }
+        public ICommandBinding To1<TCommand>(Exception param01) where TCommand : Command<Exception>, new() { AddCommand<TCommand, Exception>(param01); return this; }
         
-        public ICommandBinding To1<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new()
-        {
-            AddCommand<TCommand, TCP1>(param01);
-            return this;
-        }
-
+        public ICommandBinding To1<TCommand>(Func<int> param01)       where TCommand : Command<int>, new()    { AddCommand<TCommand, int>(param01);    return this; }
+        public ICommandBinding To1<TCommand>(Func<float> param01)     where TCommand : Command<float>, new()  { AddCommand<TCommand, float>(param01);  return this; }
+        public ICommandBinding To1<TCommand>(Func<bool> param01)      where TCommand : Command<bool>, new()   { AddCommand<TCommand, bool>(param01);   return this; }
+        public ICommandBinding To1<TCommand>(Func<string> param01)    where TCommand : Command<string>, new() { AddCommand<TCommand, string>(param01); return this; }
+        
+        public ICommandBinding To1<TCommand, TCP1>(TCP1 param01)       where TCommand : Command<TCP1>, new() { AddCommand<TCommand, TCP1>(param01); return this; }
+        public ICommandBinding To1<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new() { AddCommand<TCommand, TCP1>(param01); return this; }
+        
         /*
          * 2 param.
          */
@@ -178,63 +136,20 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Events.
          */
 
-        public ICommandBinding OnComplete(Event @event)
-        {
-            CompleteEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding OnBreak(Event @event)
-        {
-            BreakEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding OnFail(Event<Exception> @event)
-        {
-            FailEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding OnFail(Event @event)
-        {
-            FailEvent = @event;
-            return this;
-        }
+        public ICommandBinding OnComplete(Event @event)        { CompleteEvent = @event; return this; }
+        public ICommandBinding OnBreak(Event @event)           { BreakEvent = @event;    return this; }
+        public ICommandBinding OnFail(Event<Exception> @event) { FailEvent = @event;     return this; }
+        public ICommandBinding OnFail(Event @event)            { FailEvent = @event;     return this; }
 
         /*
          * Other.
          */
 
-        public ICommandBinding InParallel()
-        {
-            IsSequence = false;
-            return this;
-        }
-
-        public ICommandBinding InSequence()
-        {
-            IsSequence = true;
-            return this;
-        }
-        
-        public ICommandBinding Once()
-        {
-            OnceBehavior = OnceBehavior.Default;
-            return this;
-        }
-
-        public ICommandBinding Once(OnceBehavior behavior)
-        {
-            OnceBehavior = behavior;
-            return this;
-        }
-        
-        public ICommandBinding UnbindOnQuit()
-        {
-            IsUnbindOnQuit = true;
-            return this;
-        }
+        public ICommandBinding InParallel()                { IsSequence = false;                  return this; }
+        public ICommandBinding InSequence()                { IsSequence = true;                   return this; }
+        public ICommandBinding Once()                      { OnceBehavior = OnceBehavior.Default; return this; }
+        public ICommandBinding Once(OnceBehavior behavior) { OnceBehavior = behavior;             return this; }
+        public ICommandBinding UnbindOnQuit()              { IsUnbindOnQuit = true;               return this; }
     }
 
     public sealed class CommandBinding<T1> : CommandBindingBase, ICommandBinding<T1>
@@ -244,9 +159,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         private Func<T1, bool>       _triggerPredicate;
         private List<Func<T1, bool>> _triggerPredicates;
 
-        internal CommandBinding(EventBase type, CommandBinder binder, Pool<ICommandParams> paramsPool) : base(type, binder, paramsPool)
-        {
-        }
+        internal CommandBinding(EventBase type, CommandBinder binder, Pool<ICommandParams> paramsPool) : base(type, binder, paramsPool) { }
 
         public ICommandBinding<T1> And(Event<T1> @event)  { return new CommandBindingComposite<T1>(this).And(@event); }
         public ICommandBinding<T1> Bind(Event<T1> @event) { return new CommandBindingComposite<T1>(this).Bind(@event); }
@@ -255,75 +168,43 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Params 0.
          */
 
-        public ICommandBinding<T1> To0<TCommand>() where TCommand : Command, new()
-        {
-            AddCommand<TCommand>();
-            return this;
-        }
+        public ICommandBinding<T1> To0<TCommand>() where TCommand : Command, new() { AddCommand<TCommand>(); return this; }
 
         /*
          * Params 1.
          */
 
-        public ICommandBinding<T1> To<TCommand>() where TCommand : Command<T1>, new()
-        {
-            AddCommand<TCommand>();
-            return this;
-        }
+        public ICommandBinding<T1> To<TCommand>()                where TCommand : Command<T1>, new()        { AddCommand<TCommand>();                 return this; }
+        public ICommandBinding<T1> To<TCommand>(int param)       where TCommand : Command<int>, new()       { AddCommand<TCommand, int>(param);       return this; }
+        public ICommandBinding<T1> To<TCommand>(float param)     where TCommand : Command<float>, new()     { AddCommand<TCommand, float>(param);     return this; }
+        public ICommandBinding<T1> To<TCommand>(bool param)      where TCommand : Command<bool>, new()      { AddCommand<TCommand, bool>(param);      return this; }
+        public ICommandBinding<T1> To<TCommand>(string param)    where TCommand : Command<string>, new()    { AddCommand<TCommand, string>(param);    return this; }
+        public ICommandBinding<T1> To<TCommand>(Event param)     where TCommand : Command<Event>, new()     { AddCommand<TCommand, Event>(param);     return this; }
+        public ICommandBinding<T1> To<TCommand>(Exception param) where TCommand : Command<Exception>, new() { AddCommand<TCommand, Exception>(param); return this; }
+        
+        public ICommandBinding<T1> To<TCommand>(Func<int> param)       where TCommand : Command<int>, new()       { AddCommand<TCommand, int>(param);       return this; }
+        public ICommandBinding<T1> To<TCommand>(Func<float> param)     where TCommand : Command<float>, new()     { AddCommand<TCommand, float>(param);     return this; }
+        public ICommandBinding<T1> To<TCommand>(Func<bool> param)      where TCommand : Command<bool>, new()      { AddCommand<TCommand, bool>(param);      return this; }
+        public ICommandBinding<T1> To<TCommand>(Func<string> param)    where TCommand : Command<string>, new()    { AddCommand<TCommand, string>(param);    return this; }
+        
+        public ICommandBinding<T1> To<TCommand, TCP1>(TCP1 param01)       where TCommand : Command<TCP1>, new() { AddCommand<TCommand, TCP1>(param01); return this; }
+        public ICommandBinding<T1> To<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new() { AddCommand<TCommand, TCP1>(param01); return this; }
 
-        public ICommandBinding<T1> To<TCommand>(int param) where TCommand : Command<int>, new()
-        {
-            AddCommand<TCommand, int>(param);
-            return this;
-        }
+        public ICommandBinding<T1> To1<TCommand>()                where TCommand : Command<T1>, new()        { AddCommand<TCommand>();                 return this; }
+        public ICommandBinding<T1> To1<TCommand>(int param)       where TCommand : Command<int>, new()       { AddCommand<TCommand, int>(param);       return this; }
+        public ICommandBinding<T1> To1<TCommand>(float param)     where TCommand : Command<float>, new()     { AddCommand<TCommand, float>(param);     return this; }
+        public ICommandBinding<T1> To1<TCommand>(bool param)      where TCommand : Command<bool>, new()      { AddCommand<TCommand, bool>(param);      return this; }
+        public ICommandBinding<T1> To1<TCommand>(string param)    where TCommand : Command<string>, new()    { AddCommand<TCommand, string>(param);    return this; }
+        public ICommandBinding<T1> To1<TCommand>(Event param)     where TCommand : Command<Event>, new()     { AddCommand<TCommand, Event>(param);     return this; }
+        public ICommandBinding<T1> To1<TCommand>(Exception param) where TCommand : Command<Exception>, new() { AddCommand<TCommand, Exception>(param); return this; }
 
-        public ICommandBinding<T1> To<TCommand>(float param) where TCommand : Command<float>, new()
-        {
-            AddCommand<TCommand, float>(param);
-            return this;
-        }
-
-        public ICommandBinding<T1> To<TCommand>(bool param) where TCommand : Command<bool>, new()
-        {
-            AddCommand<TCommand, bool>(param);
-            return this;
-        }
-
-        public ICommandBinding<T1> To<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
-        {
-            AddCommand<TCommand, TCP1>(param01);
-            return this;
-        }
-
-        public ICommandBinding<T1> To1<TCommand>() where TCommand : Command<T1>, new()
-        {
-            AddCommand<TCommand>();
-            return this;
-        }
-
-        public ICommandBinding<T1> To1<TCommand>(int param) where TCommand : Command<int>, new()
-        {
-            AddCommand<TCommand, int>(param);
-            return this;
-        }
-
-        public ICommandBinding<T1> To1<TCommand>(float param) where TCommand : Command<float>, new()
-        {
-            AddCommand<TCommand, float>(param);
-            return this;
-        }
-
-        public ICommandBinding<T1> To1<TCommand>(bool param) where TCommand : Command<bool>, new()
-        {
-            AddCommand<TCommand, bool>(param);
-            return this;
-        }
-
-        public ICommandBinding<T1> To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
-        {
-            AddCommand<TCommand, TCP1>(param01);
-            return this;
-        }
+        public ICommandBinding<T1> To1<TCommand>(Func<int> param)       where TCommand : Command<int>, new()       { AddCommand<TCommand, int>(param);       return this; }
+        public ICommandBinding<T1> To1<TCommand>(Func<float> param)     where TCommand : Command<float>, new()     { AddCommand<TCommand, float>(param);     return this; }
+        public ICommandBinding<T1> To1<TCommand>(Func<bool> param)      where TCommand : Command<bool>, new()      { AddCommand<TCommand, bool>(param);      return this; }
+        public ICommandBinding<T1> To1<TCommand>(Func<string> param)    where TCommand : Command<string>, new()    { AddCommand<TCommand, string>(param);    return this; }
+        
+        public ICommandBinding<T1> To1<TCommand, TCP1>(TCP1 param01)       where TCommand : Command<TCP1>, new() { AddCommand<TCommand, TCP1>(param01); return this; }
+        public ICommandBinding<T1> To1<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new() { AddCommand<TCommand, TCP1>(param01); return this; }
 
         /*
          * Params 2.
@@ -458,75 +339,22 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Events.
          */
 
-        public ICommandBinding<T1> OnComplete(Event<T1> @event)
-        {
-            CompleteEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1> OnComplete(Event @event)
-        {
-            CompleteEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1> OnBreak(Event<T1> @event)
-        {
-            BreakEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1> OnBreak(Event @event)
-        {
-            BreakEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1> OnFail(Event<Exception> @event)
-        {
-            FailEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1> OnFail(Event @event)
-        {
-            FailEvent = @event;
-            return this;
-        }
+        public ICommandBinding<T1> OnComplete(Event<T1> @event)    { CompleteEvent = @event; return this; }
+        public ICommandBinding<T1> OnComplete(Event @event)        { CompleteEvent = @event; return this; }
+        public ICommandBinding<T1> OnBreak(Event<T1> @event)       { BreakEvent = @event;    return this; }
+        public ICommandBinding<T1> OnBreak(Event @event)           { BreakEvent = @event;    return this; }
+        public ICommandBinding<T1> OnFail(Event<Exception> @event) { FailEvent = @event;     return this; }
+        public ICommandBinding<T1> OnFail(Event @event)            { FailEvent = @event;     return this; }
 
         /*
          * Other.
          */
 
-        public ICommandBinding<T1> InParallel()
-        {
-            IsSequence = false;
-            return this;
-        }
-
-        public ICommandBinding<T1> InSequence()
-        {
-            IsSequence = true;
-            return this;
-        }
-        
-        public ICommandBinding<T1> Once()
-        {
-            OnceBehavior = OnceBehavior.Default;
-            return this;
-        }
-
-        public ICommandBinding<T1> Once(OnceBehavior behavior)
-        {
-            OnceBehavior = behavior;
-            return this;
-        }
-        
-        public ICommandBinding<T1> UnbindOnQuit()
-        {
-            IsUnbindOnQuit = true;
-            return this;
-        }
+        public ICommandBinding<T1> InParallel()                { IsSequence = false;                  return this; }
+        public ICommandBinding<T1> InSequence()                { IsSequence = true;                   return this; }
+        public ICommandBinding<T1> Once()                      { OnceBehavior = OnceBehavior.Default; return this; }
+        public ICommandBinding<T1> Once(OnceBehavior behavior) { OnceBehavior = behavior;             return this; }
+        public ICommandBinding<T1> UnbindOnQuit()              { IsUnbindOnQuit = true;               return this; }
     }
 
     public sealed class CommandBinding<T1, T2> : CommandBindingBase, ICommandBinding<T1, T2>
@@ -537,9 +365,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         private Func<T1, T2, bool>       _triggerPredicate;
         private List<Func<T1, T2, bool>> _triggerPredicates;
 
-        internal CommandBinding(EventBase type, CommandBinder binder, Pool<ICommandParams> paramsPool) : base(type, binder, paramsPool)
-        {
-        }
+        internal CommandBinding(EventBase type, CommandBinder binder, Pool<ICommandParams> paramsPool) : base(type, binder, paramsPool) { }
 
         public ICommandBinding<T1, T2> And(Event<T1, T2> @event)  { return new CommandBindingComposite<T1, T2>(this).And(@event); }
         public ICommandBinding<T1, T2> Bind(Event<T1, T2> @event) { return new CommandBindingComposite<T1, T2>(this).Bind(@event); }
@@ -772,87 +598,24 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Events.
          */
 
-        public ICommandBinding<T1, T2> OnComplete(Event<T1, T2> @event)
-        {
-            CompleteEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> OnComplete(Event<T1> @event)
-        {
-            CompleteEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> OnComplete(Event @event)
-        {
-            CompleteEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> OnBreak(Event<T1, T2> @event)
-        {
-            BreakEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> OnBreak(Event<T1> @event)
-        {
-            BreakEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> OnBreak(Event @event)
-        {
-            BreakEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> OnFail(Event<Exception> @event)
-        {
-            FailEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> OnFail(Event @event)
-        {
-            FailEvent = @event;
-            return this;
-        }
+        public ICommandBinding<T1, T2> OnComplete(Event<T1, T2> @event) { CompleteEvent = @event; return this; }
+        public ICommandBinding<T1, T2> OnComplete(Event<T1> @event)     { CompleteEvent = @event; return this; }
+        public ICommandBinding<T1, T2> OnComplete(Event @event)         { CompleteEvent = @event; return this; }
+        public ICommandBinding<T1, T2> OnBreak(Event<T1, T2> @event)    { BreakEvent = @event;    return this; }
+        public ICommandBinding<T1, T2> OnBreak(Event<T1> @event)        { BreakEvent = @event;    return this; }
+        public ICommandBinding<T1, T2> OnBreak(Event @event)            { BreakEvent = @event;    return this; }
+        public ICommandBinding<T1, T2> OnFail(Event<Exception> @event)  { FailEvent = @event;     return this; }
+        public ICommandBinding<T1, T2> OnFail(Event @event)             { FailEvent = @event;     return this; }
 
         /*
          * Other.
          */
 
-        public ICommandBinding<T1, T2> InParallel()
-        {
-            IsSequence = false;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> InSequence()
-        {
-            IsSequence = true;
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2> Once()
-        {
-            OnceBehavior = OnceBehavior.Default;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> Once(OnceBehavior behavior)
-        {
-            OnceBehavior = behavior;
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2> UnbindOnQuit()
-        {
-            IsUnbindOnQuit = true;
-            return this;
-        }
+        public ICommandBinding<T1, T2> InParallel()                { IsSequence = false;                  return this; }
+        public ICommandBinding<T1, T2> InSequence()                { IsSequence = true;                   return this; }
+        public ICommandBinding<T1, T2> Once()                      { OnceBehavior = OnceBehavior.Default; return this; }
+        public ICommandBinding<T1, T2> Once(OnceBehavior behavior) { OnceBehavior = behavior;             return this; }
+        public ICommandBinding<T1, T2> UnbindOnQuit()              { IsUnbindOnQuit = true;               return this; }
     }
 
     public sealed class CommandBinding<T1, T2, T3> : CommandBindingBase, ICommandBinding<T1, T2, T3>
@@ -864,9 +627,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         private Func<T1, T2, T3, bool>       _triggerPredicate;
         private List<Func<T1, T2, T3, bool>> _triggerPredicates;
 
-        internal CommandBinding(EventBase type, CommandBinder binder, Pool<ICommandParams> paramsPool) : base(type, binder, paramsPool)
-        {
-        }
+        internal CommandBinding(EventBase type, CommandBinder binder, Pool<ICommandParams> paramsPool) : base(type, binder, paramsPool) { }
 
         public ICommandBinding<T1, T2, T3> And(Event<T1, T2, T3> @event)  { return new CommandBindingComposite<T1, T2, T3>(this).And(@event); }
         public ICommandBinding<T1, T2, T3> Bind(Event<T1, T2, T3> @event) { return new CommandBindingComposite<T1, T2, T3>(this).Bind(@event); }
@@ -1106,98 +867,27 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Events.
          */
 
-        public ICommandBinding<T1, T2, T3> OnComplete(Event<T1, T2, T3> @event)
-        {
-            CompleteEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnComplete(Event<T1, T2> @event)
-        {
-            CompleteEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnComplete(Event<T1> @event)
-        {
-            CompleteEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnComplete(Event @event)
-        {
-            CompleteEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnBreak(Event<T1, T2, T3> @event)
-        {
-            BreakEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnBreak(Event<T1, T2> @event)
-        {
-            BreakEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnBreak(Event<T1> @event)
-        {
-            BreakEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnBreak(Event @event)
-        {
-            BreakEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnFail(Event<Exception> @event)
-        {
-            FailEvent = @event;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnFail(Event @event)
-        {
-            FailEvent = @event;
-            return this;
-        }
+        public ICommandBinding<T1, T2, T3> OnComplete(Event<T1, T2, T3> @event) { CompleteEvent = @event; return this; }
+        public ICommandBinding<T1, T2, T3> OnComplete(Event<T1, T2> @event)     { CompleteEvent = @event; return this; }
+        public ICommandBinding<T1, T2, T3> OnComplete(Event<T1> @event)         { CompleteEvent = @event; return this; }
+        public ICommandBinding<T1, T2, T3> OnComplete(Event @event)             { CompleteEvent = @event; return this; }
+        public ICommandBinding<T1, T2, T3> OnBreak(Event<T1, T2, T3> @event)    { BreakEvent = @event;    return this; }
+        public ICommandBinding<T1, T2, T3> OnBreak(Event<T1, T2> @event)        { BreakEvent = @event;    return this; }
+        public ICommandBinding<T1, T2, T3> OnBreak(Event<T1> @event)            { BreakEvent = @event;    return this; }
+        public ICommandBinding<T1, T2, T3> OnBreak(Event @event)                { BreakEvent = @event;    return this; }
+        public ICommandBinding<T1, T2, T3> OnFail(Event<Exception> @event)      { FailEvent = @event;     return this; }
+        public ICommandBinding<T1, T2, T3> OnFail(Event @event)                 { FailEvent = @event;     return this; }
 
         /*
          * Other.
          */
 
-        public ICommandBinding<T1, T2, T3> InParallel()
-        {
-            IsSequence = false;
-            return this; 
-        }
-
-        public ICommandBinding<T1, T2, T3> InSequence()
-        {
-            IsSequence = true;
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2, T3> Once()
-        {
-            OnceBehavior = OnceBehavior.Default;
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> Once(OnceBehavior behavior)
-        {
-            OnceBehavior = behavior;
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2, T3> UnbindOnQuit()
-        {
-            IsUnbindOnQuit = true;
-            return this;
-        }
+        public ICommandBinding<T1, T2, T3> InParallel()                { IsSequence = false;                  return this; }
+        public ICommandBinding<T1, T2, T3> InSequence()                { IsSequence = true;                   return this; }
+        public ICommandBinding<T1, T2, T3> Once()                      { OnceBehavior = OnceBehavior.Default; return this; }
+        public ICommandBinding<T1, T2, T3> Once(OnceBehavior behavior) { OnceBehavior = behavior;             return this; }
+        public ICommandBinding<T1, T2, T3> UnbindOnQuit()              { IsUnbindOnQuit = true;               return this; }
     }
 }
+
+// @formatter:on

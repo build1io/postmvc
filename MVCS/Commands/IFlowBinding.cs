@@ -12,8 +12,16 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         IFlowBinding To1<TCommand>(float param01) where TCommand : Command<float>, new();
         IFlowBinding To1<TCommand>(bool param01) where TCommand : Command<bool>, new();
         IFlowBinding To1<TCommand>(string param01) where TCommand : Command<string>, new();
+        IFlowBinding To1<TCommand>(Event param01) where TCommand : Command<Event>, new();
         IFlowBinding To1<TCommand>(Exception param01) where TCommand : Command<Exception>, new();
+
+        IFlowBinding To1<TCommand>(Func<int> param01) where TCommand : Command<int>, new();
+        IFlowBinding To1<TCommand>(Func<float> param01) where TCommand : Command<float>, new();
+        IFlowBinding To1<TCommand>(Func<bool> param01) where TCommand : Command<bool>, new();
+        IFlowBinding To1<TCommand>(Func<string> param01) where TCommand : Command<string>, new();
+
         IFlowBinding To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new();
+        IFlowBinding To1<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new();
 
         IFlowBinding To2<TCommand, TCP1>(TCP1 param01, int param02) where TCommand : Command<TCP1, int>, new();
         IFlowBinding To2<TCommand, TCP1>(TCP1 param01, float param02) where TCommand : Command<TCP1, float>, new();
@@ -43,16 +51,38 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         IFlowBinding<T1> To0<TCommand>() where TCommand : Command, new();
 
         IFlowBinding<T1> To<TCommand>() where TCommand : Command<T1>, new();
+
         IFlowBinding<T1> To<TCommand>(int param) where TCommand : Command<int>, new();
         IFlowBinding<T1> To<TCommand>(float param) where TCommand : Command<float>, new();
         IFlowBinding<T1> To<TCommand>(bool param) where TCommand : Command<bool>, new();
+        IFlowBinding<T1> To<TCommand>(string param) where TCommand : Command<string>, new();
+        IFlowBinding<T1> To<TCommand>(Event param) where TCommand : Command<Event>, new();
+        IFlowBinding<T1> To<TCommand>(Exception param) where TCommand : Command<Exception>, new();
+
+        IFlowBinding<T1> To<TCommand>(Func<int> param) where TCommand : Command<int>, new();
+        IFlowBinding<T1> To<TCommand>(Func<float> param) where TCommand : Command<float>, new();
+        IFlowBinding<T1> To<TCommand>(Func<bool> param) where TCommand : Command<bool>, new();
+        IFlowBinding<T1> To<TCommand>(Func<string> param) where TCommand : Command<string>, new();
+
         IFlowBinding<T1> To<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new();
+        IFlowBinding<T1> To<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new();
 
         IFlowBinding<T1> To1<TCommand>() where TCommand : Command<T1>, new();
+
         IFlowBinding<T1> To1<TCommand>(int param) where TCommand : Command<int>, new();
         IFlowBinding<T1> To1<TCommand>(float param) where TCommand : Command<float>, new();
         IFlowBinding<T1> To1<TCommand>(bool param) where TCommand : Command<bool>, new();
+        IFlowBinding<T1> To1<TCommand>(string param) where TCommand : Command<string>, new();
+        IFlowBinding<T1> To1<TCommand>(Event param) where TCommand : Command<Event>, new();
+        IFlowBinding<T1> To1<TCommand>(Exception param) where TCommand : Command<Exception>, new();
+        
+        IFlowBinding<T1> To1<TCommand>(Func<int> param) where TCommand : Command<int>, new();
+        IFlowBinding<T1> To1<TCommand>(Func<float> param) where TCommand : Command<float>, new();
+        IFlowBinding<T1> To1<TCommand>(Func<bool> param) where TCommand : Command<bool>, new();
+        IFlowBinding<T1> To1<TCommand>(Func<string> param) where TCommand : Command<string>, new();
+        
         IFlowBinding<T1> To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new();
+        IFlowBinding<T1> To1<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new();
 
         IFlowBinding<T1> To2<TCommand, TCP1>(TCP1 param01) where TCommand : Command<T1, TCP1>, new();
         IFlowBinding<T1> To2<TCommand>(int param01) where TCommand : Command<T1, int>, new();

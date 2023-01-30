@@ -1,3 +1,5 @@
+// @formatter:off
+
 using System;
 using System.Collections.Generic;
 using Build1.PostMVC.Core.MVCS.Events;
@@ -13,95 +15,34 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             _bindings = new List<CommandBinding> { binding };
         }
 
-        public ICommandBinding And(Event @event)
-        {
-            _bindings.Add(_bindings[0].CommandBinder.Bind(@event));
-            return this;
-        }
-
-        public ICommandBinding Bind(Event @event)
-        {
-            _bindings.Add(_bindings[0].CommandBinder.Bind(@event));
-            return this;
-        }
+        public ICommandBinding And(Event @event)  { _bindings.Add(_bindings[0].CommandBinder.Bind(@event)); return this; }
+        public ICommandBinding Bind(Event @event) { _bindings.Add(_bindings[0].CommandBinder.Bind(@event)); return this; }
         
         /*
          * Params 0.
          */
 
-        public ICommandBinding To<TCommand>() where TCommand : Command, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To<TCommand>();
-            return this;
-        }
-
-        public ICommandBinding To0<TCommand>() where TCommand : Command, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To0<TCommand>();
-            return this;
-        }
+        public ICommandBinding To<TCommand>()  where TCommand : Command, new() { foreach (var binding in _bindings) binding.To<TCommand>();  return this; }
+        public ICommandBinding To0<TCommand>() where TCommand : Command, new() { foreach (var binding in _bindings) binding.To0<TCommand>(); return this; }
         
         /*
          * Params 1.
          */
 
-        public ICommandBinding To1<TCommand>(int param) where TCommand : Command<int>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand>(param);
-            return this;
-        }
+        public ICommandBinding To1<TCommand>(int param)       where TCommand : Command<int>, new()       { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding To1<TCommand>(float param)     where TCommand : Command<float>, new()     { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding To1<TCommand>(bool param)      where TCommand : Command<bool>, new()      { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding To1<TCommand>(string param)    where TCommand : Command<string>, new()    { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding To1<TCommand>(Event param)     where TCommand : Command<Event>, new()     { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding To1<TCommand>(Exception param) where TCommand : Command<Exception>, new() { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
         
-        public ICommandBinding To1<TCommand>(float param) where TCommand : Command<float>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand>(param);
-            return this;
-        }
-
-        public ICommandBinding To1<TCommand>(bool param) where TCommand : Command<bool>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand>(param);
-            return this;
-        }
+        public ICommandBinding To1<TCommand>(Func<int> param)       where TCommand : Command<int>, new()       { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding To1<TCommand>(Func<float> param)     where TCommand : Command<float>, new()     { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding To1<TCommand>(Func<bool> param)      where TCommand : Command<bool>, new()      { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding To1<TCommand>(Func<string> param)    where TCommand : Command<string>, new()    { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
         
-        public ICommandBinding To1<TCommand>(string param) where TCommand : Command<string>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand>(param);
-            return this;
-        }
-        
-        public ICommandBinding To1<TCommand>(Func<string> param) where TCommand : Command<string>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand>(param);
-            return this;
-        }
-
-        public ICommandBinding To1<TCommand>(Exception param01) where TCommand : Command<Exception>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand>(param01);
-            return this;
-        }
-        
-        public ICommandBinding To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand, TCP1>(param01);
-            return this;
-        }
-        
-        public ICommandBinding To1<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand, TCP1>(param01);
-            return this;
-        }
+        public ICommandBinding To1<TCommand, TCP1>(TCP1 param01)       where TCommand : Command<TCP1>, new() { foreach (var binding in _bindings) binding.To1<TCommand, TCP1>(param01); return this; }
+        public ICommandBinding To1<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new() { foreach (var binding in _bindings) binding.To1<TCommand, TCP1>(param01); return this; }
         
         /*
          * Params 2.
@@ -175,72 +116,20 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Events.
          */
         
-        public ICommandBinding OnComplete(Event @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnComplete(@event);
-            return this;
-        }
-
-        public ICommandBinding OnBreak(Event @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnBreak(@event);
-            return this;
-        }
-
-        public ICommandBinding OnFail(Event<Exception> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnFail(@event);
-            return this;
-        }
-
-        public ICommandBinding OnFail(Event @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnFail(@event);
-            return this;
-        }
+        public ICommandBinding OnComplete(Event @event)        { foreach (var binding in _bindings) binding.OnComplete(@event); return this; }
+        public ICommandBinding OnBreak(Event @event)           { foreach (var binding in _bindings) binding.OnBreak(@event);    return this; }
+        public ICommandBinding OnFail(Event<Exception> @event) { foreach (var binding in _bindings) binding.OnFail(@event);     return this; }
+        public ICommandBinding OnFail(Event @event)            { foreach (var binding in _bindings) binding.OnFail(@event);     return this; }
         
         /*
          * Other.
          */
 
-        public ICommandBinding InParallel()
-        {
-            foreach (var binding in _bindings)
-                binding.InParallel();
-            return this;
-        }
-        
-        public ICommandBinding InSequence()
-        {
-            foreach (var binding in _bindings)
-                binding.InSequence();
-            return this;
-        }
-
-        public ICommandBinding Once()
-        {
-            foreach (var binding in _bindings)
-                binding.Once();
-            return this;
-        }
-        
-        public ICommandBinding Once(OnceBehavior behavior)
-        {
-            foreach (var binding in _bindings)
-                binding.Once(behavior);
-            return this;
-        }
-        
-        public ICommandBinding UnbindOnQuit()
-        {
-            foreach (var binding in _bindings)
-                binding.UnbindOnQuit();
-            return this;
-        }
+        public ICommandBinding InParallel()                { foreach (var binding in _bindings) binding.InParallel();   return this; }
+        public ICommandBinding InSequence()                { foreach (var binding in _bindings) binding.InSequence();   return this; }
+        public ICommandBinding Once()                      { foreach (var binding in _bindings) binding.Once();         return this; }
+        public ICommandBinding Once(OnceBehavior behavior) { foreach (var binding in _bindings) binding.Once(behavior); return this; }
+        public ICommandBinding UnbindOnQuit()              { foreach (var binding in _bindings) binding.UnbindOnQuit(); return this; }
         
         /*
          * For Each.
@@ -262,102 +151,50 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             _bindings = new List<CommandBinding<T1>> { binding };
         }
 
-        public ICommandBinding<T1> And(Event<T1> @event)
-        {
-            _bindings.Add(_bindings[0].CommandBinder.Bind(@event));
-            return this;
-        }
-
-        public ICommandBinding<T1> Bind(Event<T1> @event)
-        {
-            _bindings.Add(_bindings[0].CommandBinder.Bind(@event));
-            return this;
-        }
+        public ICommandBinding<T1> And(Event<T1> @event)  { _bindings.Add(_bindings[0].CommandBinder.Bind(@event)); return this; }
+        public ICommandBinding<T1> Bind(Event<T1> @event) { _bindings.Add(_bindings[0].CommandBinder.Bind(@event)); return this; }
         
         /*
          * Params 0.
          */
         
-        public ICommandBinding<T1> To0<TCommand>() where TCommand : Command, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To0<TCommand>();
-            return this;
-        }
-
-        public ICommandBinding<T1> To<TCommand>() where TCommand : Command<T1>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To<TCommand>();
-            return this;
-        }
+        public ICommandBinding<T1> To0<TCommand>() where TCommand : Command, new()     { foreach (var binding in _bindings) binding.To0<TCommand>(); return this; }
+        public ICommandBinding<T1> To<TCommand>()  where TCommand : Command<T1>, new() { foreach (var binding in _bindings) binding.To<TCommand>();  return this; }
         
         /*
          * Params 1.
          */
         
-        public ICommandBinding<T1> To<TCommand>(int param) where TCommand : Command<int>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand>(param);
-            return this;
-        }
+        public ICommandBinding<T1> To<TCommand>(int param)       where TCommand : Command<int>, new()       { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To<TCommand>(float param)     where TCommand : Command<float>, new()     { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To<TCommand>(bool param)      where TCommand : Command<bool>, new()      { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To<TCommand>(string param)    where TCommand : Command<string>, new()    { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To<TCommand>(Event param)     where TCommand : Command<Event>, new()     { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To<TCommand>(Exception param) where TCommand : Command<Exception>, new() { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
         
-        public ICommandBinding<T1> To<TCommand>(float param) where TCommand : Command<float>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand>(param);
-            return this;
-        }
-
-        public ICommandBinding<T1> To<TCommand>(bool param) where TCommand : Command<bool>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand>(param);
-            return this;
-        }
-
-        public ICommandBinding<T1> To<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To<TCommand, TCP1>(param01);
-            return this;
-        }
-
-        public ICommandBinding<T1> To1<TCommand>() where TCommand : Command<T1>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand>();
-            return this;
-        }
+        public ICommandBinding<T1> To<TCommand>(Func<int> param)    where TCommand : Command<int>, new()    { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To<TCommand>(Func<float> param)  where TCommand : Command<float>, new()  { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To<TCommand>(Func<bool> param)   where TCommand : Command<bool>, new()   { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To<TCommand>(Func<string> param) where TCommand : Command<string>, new() { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
         
-        public ICommandBinding<T1> To1<TCommand>(int param) where TCommand : Command<int>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand>(param);
-            return this;
-        }
+        public ICommandBinding<T1> To<TCommand, TCP1>(TCP1 param01)       where TCommand : Command<TCP1>, new() { foreach (var binding in _bindings) binding.To<TCommand, TCP1>(param01); return this; }
+        public ICommandBinding<T1> To<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new() { foreach (var binding in _bindings) binding.To<TCommand, TCP1>(param01); return this; }
+
+        public ICommandBinding<T1> To1<TCommand>() where TCommand : Command<T1>, new()                       { foreach (var binding in _bindings) binding.To1<TCommand>(); return this; }
+        public ICommandBinding<T1> To1<TCommand>(int param)       where TCommand : Command<int>, new()       { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To1<TCommand>(float param)     where TCommand : Command<float>, new()     { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To1<TCommand>(bool param)      where TCommand : Command<bool>, new()      { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To1<TCommand>(string param)    where TCommand : Command<string>, new()    { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To1<TCommand>(Event param)     where TCommand : Command<Event>, new()     { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To1<TCommand>(Exception param) where TCommand : Command<Exception>, new() { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
         
-        public ICommandBinding<T1> To1<TCommand>(float param) where TCommand : Command<float>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand>(param);
-            return this;
-        }
-
-        public ICommandBinding<T1> To1<TCommand>(bool param) where TCommand : Command<bool>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand>(param);
-            return this;
-        }
-
-        public ICommandBinding<T1> To1<TCommand, TCP1>(TCP1 param01) where TCommand : Command<TCP1>, new()
-        {
-            foreach (var binding in _bindings)
-                binding.To1<TCommand, TCP1>(param01);
-            return this;
-        }
+        public ICommandBinding<T1> To1<TCommand>(Func<int> param)    where TCommand : Command<int>, new()    { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To1<TCommand>(Func<float> param)  where TCommand : Command<float>, new()  { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To1<TCommand>(Func<bool> param)   where TCommand : Command<bool>, new()   { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        public ICommandBinding<T1> To1<TCommand>(Func<string> param) where TCommand : Command<string>, new() { foreach (var binding in _bindings) binding.To1<TCommand>(param); return this; }
+        
+        public ICommandBinding<T1> To1<TCommand, TCP1>(TCP1 param01)       where TCommand : Command<TCP1>, new() { foreach (var binding in _bindings) binding.To<TCommand, TCP1>(param01); return this; }
+        public ICommandBinding<T1> To1<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new() { foreach (var binding in _bindings) binding.To<TCommand, TCP1>(param01); return this; }
 
         /*
          * Params 2.
@@ -466,86 +303,22 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Events.
          */
         
-        public ICommandBinding<T1> OnComplete(Event<T1> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnComplete(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1> OnComplete(Event @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnComplete(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1> OnBreak(Event<T1> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnBreak(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1> OnBreak(Event @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnBreak(@event);
-            return this;
-        }
-        
-        public ICommandBinding<T1> OnFail(Event<Exception> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnFail(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1> OnFail(Event @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnFail(@event);
-            return this;
-        }
+        public ICommandBinding<T1> OnComplete(Event<T1> @event)    { foreach (var binding in _bindings) binding.OnComplete(@event); return this; }
+        public ICommandBinding<T1> OnComplete(Event @event)        { foreach (var binding in _bindings) binding.OnComplete(@event); return this; }
+        public ICommandBinding<T1> OnBreak(Event<T1> @event)       { foreach (var binding in _bindings) binding.OnBreak(@event);    return this; }
+        public ICommandBinding<T1> OnBreak(Event @event)           { foreach (var binding in _bindings) binding.OnBreak(@event);    return this; }
+        public ICommandBinding<T1> OnFail(Event<Exception> @event) { foreach (var binding in _bindings) binding.OnFail(@event);     return this; }
+        public ICommandBinding<T1> OnFail(Event @event)            { foreach (var binding in _bindings) binding.OnFail(@event);     return this; }
         
         /*
          * Events.
          */
         
-        public ICommandBinding<T1> InParallel()
-        {
-            foreach (var binding in _bindings)
-                binding.InParallel();
-            return this;
-        }
-        
-        public ICommandBinding<T1> InSequence()
-        {
-            foreach (var binding in _bindings)
-                binding.InSequence();
-            return this;
-        }
-        
-        public ICommandBinding<T1> Once()
-        {
-            foreach (var binding in _bindings)
-                binding.Once();
-            return this;
-        }
-        
-        public ICommandBinding<T1> Once(OnceBehavior behavior)
-        {
-            foreach (var binding in _bindings)
-                binding.Once(behavior);
-            return this;
-        }
-        
-        public ICommandBinding<T1> UnbindOnQuit()
-        {
-            foreach (var binding in _bindings)
-                binding.UnbindOnQuit();
-            return this;
-        }
+        public ICommandBinding<T1> InParallel()                { foreach (var binding in _bindings) binding.InParallel();   return this; }
+        public ICommandBinding<T1> InSequence()                { foreach (var binding in _bindings) binding.InSequence();   return this; }
+        public ICommandBinding<T1> Once()                      { foreach (var binding in _bindings) binding.Once();         return this; }
+        public ICommandBinding<T1> Once(OnceBehavior behavior) { foreach (var binding in _bindings) binding.Once(behavior); return this; }
+        public ICommandBinding<T1> UnbindOnQuit()              { foreach (var binding in _bindings) binding.UnbindOnQuit(); return this; }
         
         /*
          * For Each.
@@ -567,17 +340,8 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             _bindings = new List<CommandBinding<T1, T2>> { binding };
         }
 
-        public ICommandBinding<T1, T2> And(Event<T1, T2> @event)
-        {
-            _bindings.Add(_bindings[0].CommandBinder.Bind(@event));
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> Bind(Event<T1, T2> @event)
-        {
-            _bindings.Add(_bindings[0].CommandBinder.Bind(@event));
-            return this;
-        }
+        public ICommandBinding<T1, T2> And(Event<T1, T2> @event)  { _bindings.Add(_bindings[0].CommandBinder.Bind(@event)); return this; }
+        public ICommandBinding<T1, T2> Bind(Event<T1, T2> @event) { _bindings.Add(_bindings[0].CommandBinder.Bind(@event)); return this; }
         
         /*
          * Params 0.
@@ -785,100 +549,24 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Events.
          */
 
-        public ICommandBinding<T1, T2> OnComplete(Event<T1, T2> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnComplete(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> OnComplete(Event<T1> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnComplete(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> OnComplete(Event @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnComplete(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> OnBreak(Event<T1, T2> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnBreak(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> OnBreak(Event<T1> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnBreak(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> OnBreak(Event @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnBreak(@event);
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2> OnFail(Event<Exception> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnFail(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2> OnFail(Event @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnFail(@event);
-            return this;
-        }
+        public ICommandBinding<T1, T2> OnComplete(Event<T1, T2> @event) { foreach (var binding in _bindings) binding.OnComplete(@event); return this; }
+        public ICommandBinding<T1, T2> OnComplete(Event<T1> @event)     { foreach (var binding in _bindings) binding.OnComplete(@event); return this; }
+        public ICommandBinding<T1, T2> OnComplete(Event @event)         { foreach (var binding in _bindings) binding.OnComplete(@event); return this; }
+        public ICommandBinding<T1, T2> OnBreak(Event<T1, T2> @event)    { foreach (var binding in _bindings) binding.OnBreak(@event);    return this; }
+        public ICommandBinding<T1, T2> OnBreak(Event<T1> @event)        { foreach (var binding in _bindings) binding.OnBreak(@event);    return this; }
+        public ICommandBinding<T1, T2> OnBreak(Event @event)            { foreach (var binding in _bindings) binding.OnBreak(@event);    return this; }
+        public ICommandBinding<T1, T2> OnFail(Event<Exception> @event)  { foreach (var binding in _bindings) binding.OnFail(@event);     return this; }
+        public ICommandBinding<T1, T2> OnFail(Event @event)             { foreach (var binding in _bindings) binding.OnFail(@event);     return this; }
         
         /*
          * Other.
          */
         
-        public ICommandBinding<T1, T2> InParallel()
-        {
-            foreach (var binding in _bindings)
-                binding.InParallel();
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2> InSequence()
-        {
-            foreach (var binding in _bindings)
-                binding.InSequence();
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2> Once()
-        {
-            foreach (var binding in _bindings)
-                binding.Once();
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2> Once(OnceBehavior behavior)
-        {
-            foreach (var binding in _bindings)
-                binding.Once(behavior);
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2> UnbindOnQuit()
-        {
-            foreach (var binding in _bindings)
-                binding.UnbindOnQuit();
-            return this;
-        }
+        public ICommandBinding<T1, T2> InParallel()                { foreach (var binding in _bindings) binding.InParallel();   return this; }
+        public ICommandBinding<T1, T2> InSequence()                { foreach (var binding in _bindings) binding.InSequence();   return this; }
+        public ICommandBinding<T1, T2> Once()                      { foreach (var binding in _bindings) binding.Once();         return this; }
+        public ICommandBinding<T1, T2> Once(OnceBehavior behavior) { foreach (var binding in _bindings) binding.Once(behavior); return this; }
+        public ICommandBinding<T1, T2> UnbindOnQuit()              { foreach (var binding in _bindings) binding.UnbindOnQuit(); return this; }
         
         /*
          * For Each.
@@ -900,17 +588,8 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             _bindings = new List<CommandBinding<T1, T2, T3>> { binding };
         }
         
-        public ICommandBinding<T1, T2, T3> And(Event<T1, T2, T3> @event)
-        {
-            _bindings.Add(_bindings[0].CommandBinder.Bind(@event));
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> Bind(Event<T1, T2, T3> @event)
-        {
-            _bindings.Add(_bindings[0].CommandBinder.Bind(@event));
-            return this;
-        }
+        public ICommandBinding<T1, T2, T3> And(Event<T1, T2, T3> @event)  { _bindings.Add(_bindings[0].CommandBinder.Bind(@event)); return this; }
+        public ICommandBinding<T1, T2, T3> Bind(Event<T1, T2, T3> @event) { _bindings.Add(_bindings[0].CommandBinder.Bind(@event)); return this; }
         
         /*
          * Params 0.
@@ -1132,114 +811,26 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Events.
          */
 
-        public ICommandBinding<T1, T2, T3> OnComplete(Event<T1, T2, T3> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnComplete(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnComplete(Event<T1, T2> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnComplete(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnComplete(Event<T1> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnComplete(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnComplete(Event @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnComplete(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnBreak(Event<T1, T2, T3> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnBreak(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnBreak(Event<T1, T2> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnBreak(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnBreak(Event<T1> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnBreak(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnBreak(Event @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnBreak(@event);
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2, T3> OnFail(Event<Exception> @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnFail(@event);
-            return this;
-        }
-
-        public ICommandBinding<T1, T2, T3> OnFail(Event @event)
-        {
-            foreach (var binding in _bindings)
-                binding.OnFail(@event);
-            return this;
-        }
+        public ICommandBinding<T1, T2, T3> OnComplete(Event<T1, T2, T3> @event) { foreach (var binding in _bindings) binding.OnComplete(@event); return this; }
+        public ICommandBinding<T1, T2, T3> OnComplete(Event<T1, T2> @event)     { foreach (var binding in _bindings) binding.OnComplete(@event); return this; }
+        public ICommandBinding<T1, T2, T3> OnComplete(Event<T1> @event)         { foreach (var binding in _bindings) binding.OnComplete(@event); return this; }
+        public ICommandBinding<T1, T2, T3> OnComplete(Event @event)             { foreach (var binding in _bindings) binding.OnComplete(@event); return this; }
+        public ICommandBinding<T1, T2, T3> OnBreak(Event<T1, T2, T3> @event)    { foreach (var binding in _bindings) binding.OnBreak(@event);    return this; }
+        public ICommandBinding<T1, T2, T3> OnBreak(Event<T1, T2> @event)        { foreach (var binding in _bindings) binding.OnBreak(@event);    return this; }
+        public ICommandBinding<T1, T2, T3> OnBreak(Event<T1> @event)            { foreach (var binding in _bindings) binding.OnBreak(@event);    return this; }
+        public ICommandBinding<T1, T2, T3> OnBreak(Event @event)                { foreach (var binding in _bindings) binding.OnBreak(@event);    return this; }
+        public ICommandBinding<T1, T2, T3> OnFail(Event<Exception> @event)      { foreach (var binding in _bindings) binding.OnFail(@event);     return this; }
+        public ICommandBinding<T1, T2, T3> OnFail(Event @event)                 { foreach (var binding in _bindings) binding.OnFail(@event);     return this; }
         
         /*
          * Other.
          */
         
-        public ICommandBinding<T1, T2, T3> InParallel()
-        {
-            foreach (var binding in _bindings)
-                binding.InParallel();
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2, T3> InSequence()
-        {
-            foreach (var binding in _bindings)
-                binding.InSequence();
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2, T3> Once()
-        {
-            foreach (var binding in _bindings)
-                binding.Once();
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2, T3> Once(OnceBehavior behavior)
-        {
-            foreach (var binding in _bindings)
-                binding.Once(behavior);
-            return this;
-        }
-        
-        public ICommandBinding<T1, T2, T3> UnbindOnQuit()
-        {
-            foreach (var binding in _bindings)
-                binding.UnbindOnQuit();
-            return this;
-        }
+        public ICommandBinding<T1, T2, T3> InParallel()                { foreach (var binding in _bindings) binding.InParallel();   return this; }
+        public ICommandBinding<T1, T2, T3> InSequence()                { foreach (var binding in _bindings) binding.InSequence();   return this; }
+        public ICommandBinding<T1, T2, T3> Once()                      { foreach (var binding in _bindings) binding.Once();         return this; }
+        public ICommandBinding<T1, T2, T3> Once(OnceBehavior behavior) { foreach (var binding in _bindings) binding.Once(behavior); return this; }
+        public ICommandBinding<T1, T2, T3> UnbindOnQuit()              { foreach (var binding in _bindings) binding.UnbindOnQuit(); return this; }
                 
         /*
          * For Each.
@@ -1252,3 +843,5 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         }
     }
 }
+
+// @formatter:on
