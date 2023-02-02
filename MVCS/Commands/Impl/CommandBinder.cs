@@ -314,7 +314,10 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             foreach (var binding in bindings)
             {
                 if (!binding.CheckTriggerCondition())
+                {
+                    // TODO: check once behavior and schedule for unbinding
                     continue;
+                }
 
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
@@ -338,7 +341,10 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             foreach (var binding in bindings)
             {
                 if (!binding.CheckTriggerCondition(param01))
+                {
+                    // TODO: check once behavior and schedule for unbinding
                     continue;
+                }
 
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
@@ -365,7 +371,10 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             foreach (var binding in bindings)
             {
                 if (!binding.CheckTriggerCondition(param01, param02))
+                {
+                    // TODO: check once behavior and schedule for unbinding
                     continue;
+                }
 
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
@@ -393,7 +402,10 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             foreach (var binding in bindings)
             {
                 if (!binding.CheckTriggerCondition(param01, param02, param03))
+                {
+                    // TODO: check once behavior and schedule for unbinding
                     continue;
+                }
 
                 if (binding.IsExecuting)
                     throw new CommandBinderException(CommandBinderExceptionType.BindingAlreadyExecuting, binding.Event.Format());
