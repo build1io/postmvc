@@ -1,3 +1,4 @@
 - remove composite bindings due to inability for group rebinding of once behaviors
 - implement UnbindOnFailTrigger once behavior
 - add tests for UnbindOnFailTrigger once behavior
+- commands branches depending on trigger branches
