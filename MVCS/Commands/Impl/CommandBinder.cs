@@ -83,7 +83,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
          * Unbinding.
          */
 
-        public void Unbind(ICommandBindingBase binding)
+        public void Unbind(ICommandBinding binding)
         {
             switch (binding)
             {
@@ -479,7 +479,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
          * Breaking.
          */
 
-        public void Break(ICommandBindingBase binding)
+        public void Break(ICommandBinding binding)
         {
             switch (binding)
             {

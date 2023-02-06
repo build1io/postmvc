@@ -11,7 +11,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         CommandBinding<T1, T2>     Bind<T1, T2>(Event<T1, T2> @event);
         CommandBinding<T1, T2, T3> Bind<T1, T2, T3>(Event<T1, T2, T3> @event);
 
-        void Unbind(ICommandBindingBase binding);
+        void Unbind(ICommandBinding binding);
         void UnbindAll(EventBase @event);
 
         FlowBinding             Flow();
@@ -34,7 +34,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         void ProcessEvent<T1, T2>(Event<T1, T2> @event, T1 param01, T2 param02);
         void ProcessEvent<T1, T2, T3>(Event<T1, T2, T3> @event, T1 param01, T2 param02, T3 param03);
 
-        void Break(ICommandBindingBase binding);
+        void Break(ICommandBinding binding);
         void BreakAll(EventBase @event);
     }
 }

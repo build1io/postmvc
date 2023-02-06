@@ -6,7 +6,7 @@ using Build1.PostMVC.Core.Utils.Pooling;
 
 namespace Build1.PostMVC.Core.MVCS.Commands
 {
-    public abstract class CommandBindingBase : ICommandBindingBase
+    public abstract class CommandBindingBase : ICommandBinding
     {
         internal EventBase                       Event             { get; }
         internal CommandBinder                   CommandBinder     { get; }
