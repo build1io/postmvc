@@ -168,8 +168,6 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
          * Sequences.
          */
 
-        // TODO: add pooling?
-        
         public FlowBinding             Flow()             { return new FlowBinding(this, _commandsParamsPool); }
         public FlowBinding<T1>         Flow<T1>()         { return new FlowBinding<T1>(this, _commandsParamsPool); }
         public FlowBinding<T1, T2>     Flow<T1, T2>()     { return new FlowBinding<T1, T2>(this, _commandsParamsPool); }
@@ -179,8 +177,6 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
          * Commands.
          */
 
-        // TODO: add pooling?
-        
         public SingleCommandBinding             Command<TCommand>() where TCommand : Command                         { throw new NotImplementedException(); }
         public SingleCommandBinding<T1>         Command<TCommand, T1>() where TCommand : Command<T1>                 { throw new NotImplementedException(); }
         public SingleCommandBinding<T1, T2>     Command<TCommand, T1, T2>() where TCommand : Command<T1, T2>         { throw new NotImplementedException(); }
@@ -315,7 +311,8 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             {
                 if (!binding.CheckTriggerCondition())
                 {
-                    // TODO: check once behavior and schedule for unbinding
+                    if ((binding.OnceBehavior & OnceBehavior.UnbindOnTriggerFail) == OnceBehavior.UnbindOnTriggerFail)
+                        UnbindOrScheduleIfOnce(binding);
                     continue;
                 }
 
@@ -342,7 +339,8 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             {
                 if (!binding.CheckTriggerCondition(param01))
                 {
-                    // TODO: check once behavior and schedule for unbinding
+                    if ((binding.OnceBehavior & OnceBehavior.UnbindOnTriggerFail) == OnceBehavior.UnbindOnTriggerFail)
+                        UnbindOrScheduleIfOnce(binding);
                     continue;
                 }
 
@@ -372,7 +370,8 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             {
                 if (!binding.CheckTriggerCondition(param01, param02))
                 {
-                    // TODO: check once behavior and schedule for unbinding
+                    if ((binding.OnceBehavior & OnceBehavior.UnbindOnTriggerFail) == OnceBehavior.UnbindOnTriggerFail)
+                        UnbindOrScheduleIfOnce(binding);
                     continue;
                 }
 
@@ -403,7 +402,8 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             {
                 if (!binding.CheckTriggerCondition(param01, param02, param03))
                 {
-                    // TODO: check once behavior and schedule for unbinding
+                    if ((binding.OnceBehavior & OnceBehavior.UnbindOnTriggerFail) == OnceBehavior.UnbindOnTriggerFail)
+                        UnbindOrScheduleIfOnce(binding);
                     continue;
                 }
 
