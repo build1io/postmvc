@@ -272,6 +272,13 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             return this;
         }
         
+        public CommandBindingComposite<T1> To3<TCommand, TCP1>(TCP1 param01, string param02) where TCommand : Command<T1, TCP1, string>, new()
+        {
+            foreach (var binding in _bindings)
+                binding.To3<TCommand, TCP1, string>(param01, param02);
+            return this;
+        }
+        
         public CommandBindingComposite<T1> To3<TCommand, TCP1, TCP2, TCP3>(TCP1 param01, TCP2 param02, TCP3 param03) where TCommand : Command<TCP1, TCP2, TCP3>, new()
         {
             foreach (var binding in _bindings)
