@@ -228,8 +228,8 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
          * Instances.
          */
 
-        public T Get<T>()         { return (T)GetInstance(GetBinding<T>(), this, null); }
-        public T GetInstance<T>() { return (T)GetInstance(GetBinding<T>(), this, null); }
+        public T Get<T>()         { return GetInstance<T>(GetBinding<T>(), this, null); }
+        public T GetInstance<T>() { return GetInstance<T>(GetBinding<T>(), this, null); }
 
         public object Get(Type key)         { return GetInstance(GetBinding(key), this, null); }
         public object GetInstance(Type key) { return GetInstance(GetBinding(key), this, null); }
@@ -240,11 +240,21 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
         private object GetInstance(IInjectionBinding binding, object callerInstance, IInjectionInfo injectionInfo)
         {
             if (binding == null)
-                throw new BindingException(BindingExceptionType.BindingIsMissing, callerInstance);
+                throw new BindingException(BindingExceptionType.BindingIsMissing);
             IncrementDependencyCounter(binding, callerInstance);
             var instance = GetInjectionValue(callerInstance, binding, injectionInfo);
             DecrementDependencyCounter(binding);
             return instance;
+        }
+        
+        private T GetInstance<T>(IInjectionBinding binding, object callerInstance, IInjectionInfo injectionInfo)
+        {
+            if (binding == null)
+                throw new BindingException(BindingExceptionType.BindingIsMissing, $"Injection key: {(typeof(T).FullName)}");
+            IncrementDependencyCounter(binding, callerInstance);
+            var instance = GetInjectionValue(callerInstance, binding, injectionInfo);
+            DecrementDependencyCounter(binding);
+            return (T)instance;
         }
 
         /*
