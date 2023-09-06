@@ -44,5 +44,12 @@ namespace Build1.PostMVC.Core.MVCS.Events.Impl
                        ? $"{_id} {_type.Name}.{_name}"
                        : $"{_id} {_name}";
         }
+
+        public override string ToString()
+        {
+            if (_type != null)
+                return _name != null ? $"{_type.Name}.{_name} [{_id}]" : $"{_type.Name} [{_id}]";
+            return _name != null ? $"Event.{_name} [{_id}]" : $"Event [{_id}]";
+        }
     }
 }
