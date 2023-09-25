@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Build1.PostMVC.Core.Contexts;
 using Build1.PostMVC.Core.Contexts.Impl;
 using Build1.PostMVC.Core.MVCS;
+using Build1.PostMVC.Core.MVCS.Mediation;
 
 namespace Build1.PostMVC.Core
 {
@@ -24,13 +25,13 @@ namespace Build1.PostMVC.Core
          * Init.
          */
 
-        public static IContext Context(string name = null)
+        public static IContext Context(string name = null, MediationMode mediationMode = MediationMode.NonStrict)
         {
             if (_rootContext != null)
                 throw new ContextException(ContextExceptionType.ContextAlreadyStarted);
 
             var context = new Context(_contexts?.Count ?? 0, name, _rootContext);
-            context.AddExtension<MVCSExtension>();
+            context.AddExtension(new MVCSExtension(mediationMode));
             context.OnStopped += OnContextStoppedListener;
 
             if (_contexts == null)
