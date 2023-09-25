@@ -110,11 +110,11 @@ namespace Build1.PostMVC.Core.Contexts.Impl
                 extension.SetContext(this, _rootContext);
             }
 
-            foreach (var extension in _extensionInstances.Values)
-                extension.Initialize();
-
-            foreach (var extension in _extensionInstances.Values)
-                extension.Setup();
+            foreach (var extensionType in _extensions)
+                _extensionInstances[extensionType].Initialize();
+            
+            foreach (var extensionType in _extensions)
+                _extensionInstances[extensionType].Setup();
         }
 
         private void DisposeExtensions()
