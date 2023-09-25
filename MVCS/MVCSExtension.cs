@@ -22,12 +22,16 @@ namespace Build1.PostMVC.Core.MVCS
         public ICommandBinder   CommandBinder   { get; }
         public IMediationBinder MediationBinder { get; }
 
-        public MVCSExtension() : this(MediationMode.NonStrict)
+        private readonly InjectionParams _injectionParams;
+
+        public MVCSExtension() : this(MediationMode.NonStrict, 0)
         {
         }
 
-        public MVCSExtension(MediationMode mediationMode)
+        public MVCSExtension(MediationMode mediationMode, InjectionParams injectionParams)
         {
+            _injectionParams = injectionParams;
+            
             CommandBinder = new CommandBinder();
             EventDispatcher = new EventDispatcherWithCommandProcessing((CommandBinder)CommandBinder);
             InjectionBinder = new InjectionBinder();
@@ -74,6 +78,9 @@ namespace Build1.PostMVC.Core.MVCS
 
         private void OnContextStarting(IContext context)
         {
+            if ((_injectionParams & InjectionParams.PrepareReflectionDataOnContextStart) == InjectionParams.PrepareReflectionDataOnContextStart)
+                InjectionBinder.PrepareReflectionsData();
+            
             InjectionBinder.ForEachBinding(binding =>
             {
                 if (binding.ToConstructOnStart)
