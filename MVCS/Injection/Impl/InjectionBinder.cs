@@ -348,6 +348,27 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
 
             UnInject(instance, info);
         }
+        
+        /*
+         * Reflections.
+         */
+        
+        public void PrepareReflectionsData()
+        {
+            foreach (var binding in _bindings.Values)
+            {
+                if (!binding.ToConstruct)
+                    continue;
+                
+                Type type;
+                if (binding.Value is Type value)
+                    type = value;
+                else
+                    type = binding.Value.GetType();
+                        
+                _reflector.Get(type);
+            }
+        }
 
         /*
          * Injections.
