@@ -11,12 +11,12 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
         private readonly Dictionary<object, IInjectionBinding> _bindingsCache;
         private readonly Dictionary<IView, IMediator>          _mediators;
 
-        private readonly MediationMode    _mode;
+        private readonly MediationParams  _params;
         private readonly IInjectionBinder _injectionBinder; // Must be implemented like this to escape link un injection.
 
-        public MediationBinder(MediationMode mode, IInjectionBinder injectionBinder)
+        public MediationBinder(MediationParams @params, IInjectionBinder injectionBinder)
         {
-            _mode = mode;
+            _params = @params;
             _injectionBinder = injectionBinder;
 
             _bindings = new Dictionary<object, IMediationBinding>();
@@ -127,10 +127,8 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
 
             if (!_bindings.TryGetValue(type, out var binding) &&
                 !TryRegisterMediatorUsingMetadata(type, out binding) &&
-                _mode == MediationMode.Strict)
-            {
+                (_params & MediationParams.StrictMediation) == MediationParams.StrictMediation)
                 throw new MediationException(MediationExceptionType.MediationBindingNotFound, view.GetType().FullName);
-            }
 
             _injectionBinder.Construct(view, true);
 
@@ -163,7 +161,7 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
             if (view.Mediator == null)
                 return;
 
-            if (!_bindings.TryGetValue(view.GetType(), out var binding) && _mode == MediationMode.Strict)
+            if (!_bindings.TryGetValue(view.GetType(), out var binding) && (_params & MediationParams.StrictMediation) == MediationParams.StrictMediation)
                 throw new MediationException(MediationExceptionType.MediationBindingNotFound, view.GetType().FullName);
 
             InjectViewAndDependencies(binding, view.Mediator, view, false);
@@ -202,7 +200,7 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
 
             return true;
         }
-        
+
         private void InjectViewAndDependencies(IMediationBinding binding, IMediator mediator, IView view, bool triggerPostConstructors)
         {
             var injectionType = binding.ViewInterface != null ? binding.ViewInterface : binding.ViewType;

@@ -353,7 +353,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
          * Reflections.
          */
         
-        public void PrepareReflectionsData()
+        public void PrepareBindingsReflectionInfo()
         {
             foreach (var binding in _bindings.Values)
             {
@@ -370,12 +370,25 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             }
         }
 
+        public void PrepareReflectionInfo<T>() where T : Type
+        {
+            PrepareReflectionInfo(typeof(T));
+        }
+        
+        public void PrepareReflectionInfo(Type type)
+        {
+            _reflector.Get(type);
+        }
+
         /*
          * Injections.
          */
 
         private void Inject(object instance, IMVCSItemReflectionInfo info)
         {
+            if (info.Injections == null)
+                return;
+            
             foreach (var injection in info.Injections)
             {
                 var binding = GetBinding(injection.PropertyInfo.PropertyType);
@@ -477,6 +490,9 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
 
         private void UnInject(object instance, IMVCSItemReflectionInfo info)
         {
+            if (info.Injections == null)
+                return;
+            
             foreach (var injection in info.Injections)
             {
                 var type = injection.PropertyInfo.PropertyType;
@@ -523,16 +539,18 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
 
         private void PostConstruct(object instance, IMVCSItemReflectionInfo info)
         {
-            if (info.PostConstructors.Count == 0)
+            if (info.PostConstructors == null)
                 return;
+            
             foreach (var method in info.PostConstructors)
                 method.Invoke(instance, null);
         }
 
         private void PreDestroy(object instance, IMVCSItemReflectionInfo info)
         {
-            if (info.PreDestroys.Count == 0)
+            if (info.PreDestroys == null)
                 return;
+            
             foreach (var method in info.PreDestroys)
                 method.Invoke(instance, null);
         }

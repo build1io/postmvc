@@ -35,12 +35,16 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
                                            null,
                                            null);
 
-            var properties = new List<IInjectionInfo>();
+            List<IInjectionInfo> properties = null;
+            
             foreach (var member in members)
             {
                 var injections = member.GetCustomAttributes(typeof(Inject), true);
-                if (injections.Length > 0)
-                    properties.Add(new InjectionInfo(member as PropertyInfo, injections[0] as Inject));
+                if (injections.Length == 0)
+                    continue;
+
+                properties ??= new List<IInjectionInfo>();
+                properties.Add(new InjectionInfo((PropertyInfo)member, (Inject)injections[0]));
             }
 
             return properties;
@@ -54,11 +58,15 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
                                           BindingFlags.Instance |
                                           BindingFlags.InvokeMethod);
 
-            var methodList = new List<MethodInfo>();
+            List<MethodInfo> methodList = null;
+            
             foreach (var method in methods)
             {
-                if (method.GetCustomAttributes(typeof(T), true).Length > 0)
-                    methodList.Add(method);
+                if (method.GetCustomAttributes(typeof(T), true).Length <= 0) 
+                    continue;
+                
+                methodList ??= new List<MethodInfo>();
+                methodList.Add(method);
             }
 
             return methodList;

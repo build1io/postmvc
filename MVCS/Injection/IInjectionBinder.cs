@@ -23,7 +23,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection
 
         IInjectionBindingToValue Rebind<T>(T value);
         IInjectionBindingToValue Rebind<V>(Type type, V value);
-        
+
         IInjectionBindingToBinding Rebind<V, P, A>() where P : IInjectionProvider<V, A>, new()
                                                      where A : Inject;
 
@@ -36,15 +36,15 @@ namespace Build1.PostMVC.Core.MVCS.Injection
 
         void ForEachBinding(Action<IInjectionBinding> handler);
 
-        T      Get<T>();
-        T      GetInstance<T>();
-        
+        T Get<T>();
+        T GetInstance<T>();
+
         object Get(Type key);
         object GetInstance(Type key);
-        
+
         object Get(IInjectionBinding binding);
         object GetInstance(IInjectionBinding binding);
-        
+
         T      Construct<T>(bool triggerPostConstructors) where T : new();
         T      Construct<T>(T instance, bool triggerPostConstructors);
         object Construct(object instance, bool triggerPostConstructors);
@@ -52,6 +52,8 @@ namespace Build1.PostMVC.Core.MVCS.Injection
         T      Destroy<T>(T instance, bool triggerPreDestroys);
         object Destroy(object instance, bool triggerPreDestroys);
 
-        void PrepareReflectionsData();
+        void PrepareBindingsReflectionInfo();
+        void PrepareReflectionInfo<T>() where T : Type;
+        void PrepareReflectionInfo(Type type);
     }
 }

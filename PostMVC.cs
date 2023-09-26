@@ -31,7 +31,7 @@ namespace Build1.PostMVC.Core
         
         public static IContext Context(string name)
         {
-            return Context(new ContextParams());
+            return Context(new ContextParams(name));
         }
         
         public static IContext Context(ContextParams @params)
@@ -39,8 +39,8 @@ namespace Build1.PostMVC.Core
             if (_rootContext != null)
                 throw new ContextException(ContextExceptionType.ContextAlreadyStarted);
 
-            var context = new Context(_contexts?.Count ?? 0, @params.name, _rootContext);
-            context.AddExtension(new MVCSExtension(@params.mediationMode, @params.injectionParams));
+            var context = new Context(_contexts?.Count ?? 0, @params, _rootContext);
+            context.AddExtension<MVCSExtension>();
             context.OnStopped += OnContextStoppedListener;
 
             if (_contexts == null)

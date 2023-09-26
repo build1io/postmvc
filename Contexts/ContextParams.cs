@@ -5,9 +5,9 @@ namespace Build1.PostMVC.Core.Contexts
 {
     public sealed class ContextParams
     {
-        public readonly string          name;
-        public readonly MediationMode   mediationMode;
-        public readonly InjectionParams injectionParams;
+        public string          name;
+        public MediationParams mediationParams;
+        public InjectionParams injectionParams;
 
         public ContextParams() { }
 
@@ -15,10 +15,16 @@ namespace Build1.PostMVC.Core.Contexts
         {
             this.name = name;
         }
-        
+
         public ContextParams(InjectionParams injectionParams)
         {
             this.injectionParams = injectionParams;
+        }
+
+        public ContextParams(InjectionParams injectionParams, MediationParams mediationParams)
+        {
+            this.injectionParams = injectionParams;
+            this.mediationParams = mediationParams;
         }
     }
 }

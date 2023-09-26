@@ -7,12 +7,13 @@ namespace Build1.PostMVC.Core.Contexts.Impl
 {
     internal sealed class Context : IContext
     {
-        public int    Id            { get; }
-        public string Name          { get; }
-        public bool   IsRootContext { get; }
-        public bool   IsStarted     { get; private set; }
-        public bool   IsQuitting    { get; private set; }
-        public bool   IsStopping    { get; private set; }
+        public int           Id            { get; }
+        public string        Name          { get; }
+        public ContextParams Params        { get; }
+        public bool          IsRootContext { get; }
+        public bool          IsStarted     { get; private set; }
+        public bool          IsQuitting    { get; private set; }
+        public bool          IsStopping    { get; private set; }
 
         public event Action<Module> OnModuleConstructing;
         public event Action<Module> OnModuleDisposing;
@@ -31,7 +32,7 @@ namespace Build1.PostMVC.Core.Contexts.Impl
         private readonly List<Type>               _modules;
         private readonly Dictionary<Type, Module> _moduleInstances;
 
-        public Context(int id, string name, IContext rootContext)
+        public Context(int id, ContextParams @params, IContext rootContext)
         {
             _rootContext = rootContext ?? this;
 
@@ -42,7 +43,8 @@ namespace Build1.PostMVC.Core.Contexts.Impl
             _moduleInstances = new Dictionary<Type, Module>();
 
             Id = id;
-            Name = name;
+            Name = @params.name;
+            Params = @params;
             IsRootContext = _rootContext == this;
         }
 
