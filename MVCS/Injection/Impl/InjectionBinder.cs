@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Build1.PostMVC.Core.MVCS.Injection.Api;
-using Build1.PostMVC.Core.Utils.Reflection;
 
 namespace Build1.PostMVC.Core.MVCS.Injection.Impl
 {
@@ -11,14 +10,18 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
         private const int CircularDependencyLimit = 10;
 
         private readonly Dictionary<Type, IInjectionBinding> _bindings;
-        private readonly IReflector<MVCSItemReflectionInfo>  _reflector;
+        private readonly IInjectionReflector                 _reflector;
         private readonly HashSet<object>                     _constructed;
         private readonly Dictionary<IInjectionBinding, int>  _circularDependencyCounters;
 
-        public InjectionBinder()
+        public InjectionBinder() : this(new InjectionReflector())
+        {
+        }
+        
+        public InjectionBinder(IInjectionReflector reflector)
         {
             _bindings = new Dictionary<Type, IInjectionBinding>();
-            _reflector = new Reflector<MVCSItemReflectionInfo>();
+            _reflector = reflector;
             _constructed = new HashSet<object>();
             _circularDependencyCounters = new Dictionary<IInjectionBinding, int>();
         }
@@ -347,37 +350,6 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
                 PreDestroy(instance, info);
 
             UnInject(instance, info);
-        }
-        
-        /*
-         * Reflections.
-         */
-        
-        public void PrepareBindingsReflectionInfo()
-        {
-            foreach (var binding in _bindings.Values)
-            {
-                if (!binding.ToConstruct)
-                    continue;
-                
-                Type type;
-                if (binding.Value is Type value)
-                    type = value;
-                else
-                    type = binding.Value.GetType();
-                        
-                _reflector.Get(type);
-            }
-        }
-
-        public void PrepareReflectionInfo<T>() where T : Type
-        {
-            PrepareReflectionInfo(typeof(T));
-        }
-        
-        public void PrepareReflectionInfo(Type type)
-        {
-            _reflector.Get(type);
         }
 
         /*

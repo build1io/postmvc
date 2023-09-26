@@ -2,29 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Build1.PostMVC.Core.MVCS.Injection.Api;
-using Build1.PostMVC.Core.Utils.Reflection;
 
 namespace Build1.PostMVC.Core.MVCS.Injection.Impl
 {
-    internal sealed class MVCSItemReflectionInfo : IMVCSItemReflectionInfo
+    public class MVCSItemReflectionInfo : IMVCSItemReflectionInfo
     {
-        public IList<IInjectionInfo> Injections       { get; private set; }
-        public IList<MethodInfo>     PostConstructors { get; private set; }
-        public IList<MethodInfo>     PreDestroys      { get; private set; }
+        public IList<IInjectionInfo> Injections       { get; }
+        public IList<MethodInfo>     PostConstructors { get; }
+        public IList<MethodInfo>     PreDestroys      { get; }
 
-        public IReflectionInfo Build(Type type)
+        internal MVCSItemReflectionInfo(IList<IInjectionInfo> injectionInfos, IList<MethodInfo> postConstructors, IList<MethodInfo> preDestroys)
         {
-            Injections = GetInjects(type);
-            PostConstructors = GetMethodList<PostConstruct>(type);
-            PreDestroys = GetMethodList<PreDestroy>(type);
-            return this;
+            Injections = injectionInfos;
+            PostConstructors = postConstructors;
+            PreDestroys = preDestroys;
         }
 
         /*
          * Static.
          */
 
-        private static List<IInjectionInfo> GetInjects(Type type)
+        internal static List<IInjectionInfo> GetInjects(Type type)
         {
             var members = type.FindMembers(MemberTypes.Property,
                                            BindingFlags.FlattenHierarchy |
@@ -50,7 +48,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             return properties;
         }
 
-        private static List<MethodInfo> GetMethodList<T>(IReflect type) where T : Attribute
+        internal static List<MethodInfo> GetMethodList<T>(IReflect type) where T : Attribute
         {
             var methods = type.GetMethods(BindingFlags.FlattenHierarchy |
                                           BindingFlags.Public |
