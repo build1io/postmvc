@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Build1.PostMVC.Core.MVCS.Injection;
 using Build1.PostMVC.Core.MVCS.Mediation;
 
@@ -5,9 +7,10 @@ namespace Build1.PostMVC.Core.Contexts
 {
     public sealed class ContextParams
     {
-        public string          name;
-        public MediationParams mediationParams;
-        public InjectionParams injectionParams;
+        public string                  name;
+        public MediationParams         mediationParams;
+        public ReflectionParams        reflectionParams;
+        public Func<IEnumerable<Type>> assemblyTypesGetter;
 
         public ContextParams() { }
 
@@ -16,14 +19,14 @@ namespace Build1.PostMVC.Core.Contexts
             this.name = name;
         }
 
-        public ContextParams(InjectionParams injectionParams)
+        public ContextParams(ReflectionParams reflectionParams)
         {
-            this.injectionParams = injectionParams;
+            this.reflectionParams = reflectionParams;
         }
 
-        public ContextParams(InjectionParams injectionParams, MediationParams mediationParams)
+        public ContextParams(ReflectionParams reflectionParams, MediationParams mediationParams)
         {
-            this.injectionParams = injectionParams;
+            this.reflectionParams = reflectionParams;
             this.mediationParams = mediationParams;
         }
     }

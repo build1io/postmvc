@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Build1.PostMVC.Core.MVCS.Events;
 using Build1.PostMVC.Core.MVCS.Events.Impl;
@@ -36,5 +37,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
 
         void Break(ICommandBinding binding);
         void BreakAll(EventBase @event);
+        
+        void ForEachBinding(Action<CommandBindingBase> handler);
     }
 }

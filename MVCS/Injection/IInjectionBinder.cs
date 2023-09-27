@@ -51,9 +51,5 @@ namespace Build1.PostMVC.Core.MVCS.Injection
 
         T      Destroy<T>(T instance, bool triggerPreDestroys);
         object Destroy(object instance, bool triggerPreDestroys);
-
-        void PrepareBindingsReflectionInfo();
-        void PrepareReflectionInfo<T>() where T : Type;
-        void PrepareReflectionInfo(Type type);
     }
 }

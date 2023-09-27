@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Build1.PostMVC.Core.Contexts;
 using Build1.PostMVC.Core.Extensions;
@@ -19,18 +20,20 @@ namespace Build1.PostMVC.Core.MVCS
 {
     public sealed class MVCSExtension : Extension
     {
-        public IEventDispatcher EventDispatcher { get; private set; }
-        public IInjectionBinder InjectionBinder { get; private set; }
-        public ICommandBinder   CommandBinder   { get; private set; }
-        public IMediationBinder MediationBinder { get; private set; }
+        public IEventDispatcher    EventDispatcher    { get; private set; }
+        public IInjectionBinder    InjectionBinder    { get; private set; }
+        public IInjectionReflector InjectionReflector { get; private set; }
+        public ICommandBinder      CommandBinder      { get; private set; }
+        public IMediationBinder    MediationBinder    { get; private set; }
 
         public override void Initialize()
         {
             CommandBinder = new CommandBinder();
             EventDispatcher = new EventDispatcherWithCommandProcessing((CommandBinder)CommandBinder);
-            InjectionBinder = new InjectionBinder();
+            InjectionReflector = new InjectionReflector();
+            InjectionBinder = new InjectionBinder(InjectionReflector);
             MediationBinder = new MediationBinder(Context.Params.mediationParams, InjectionBinder);
-            
+
             Context.OnStarting += OnContextStarting;
             Context.OnStarted += OnContextStarted;
             Context.OnQuitting += OnContextQuitting;
@@ -41,10 +44,11 @@ namespace Build1.PostMVC.Core.MVCS
 
             InjectionBinder.Bind(Context);
             InjectionBinder.Bind(EventDispatcher);
+            InjectionBinder.Bind(InjectionReflector);
             InjectionBinder.Bind(InjectionBinder);
             InjectionBinder.Bind(CommandBinder).ConstructValue();
             InjectionBinder.Bind(MediationBinder);
-            
+
             InjectionBinder.Bind<IEventBus, EventBus>();
             InjectionBinder.Bind<IEventMapCore, EventMapProvider, Inject>();
         }
@@ -69,47 +73,65 @@ namespace Build1.PostMVC.Core.MVCS
 
         private void OnContextStarting(IContext context)
         {
-            if ((Context.Params.injectionParams & InjectionParams.PrepareReflectionInfoOnContextStart) == InjectionParams.PrepareReflectionInfoOnContextStart)
-                InjectionBinder.PrepareBindingsReflectionInfo();
-
-            var prepareMediatorsReflectionData = (Context.Params.mediationParams & MediationParams.PrepareMediatorsReflectionInfoOnContextStart) == MediationParams.PrepareMediatorsReflectionInfoOnContextStart;
-            var prepareViewsReflectionData = (Context.Params.mediationParams & MediationParams.PrepareViewsReflectionInfoOnContextStart) == MediationParams.PrepareViewsReflectionInfoOnContextStart;
+            var prepareMediatorsReflectionData = (Context.Params.reflectionParams & ReflectionParams.PrepareMediatorsReflectionInfoOnContextStart) == ReflectionParams.PrepareMediatorsReflectionInfoOnContextStart;
+            var prepareViewsReflectionData = (Context.Params.reflectionParams & ReflectionParams.PrepareViewsReflectionInfoOnContextStart) == ReflectionParams.PrepareViewsReflectionInfoOnContextStart;
             
             if (prepareMediatorsReflectionData || prepareViewsReflectionData)
             {
-                var assembly = AppDomain.CurrentDomain.GetAssemblies().
-                                         Single(assembly => assembly.GetName().Name == "Assembly-CSharp");
+                IEnumerable<Type> types;
 
-                var types = assembly.GetTypes();
-
-                var count = 0;
+                if (Context.Params.assemblyTypesGetter != null)
+                {
+                    types = Context.Params.assemblyTypesGetter.Invoke();
+                }
+                else
+                {
+                    var assembly = AppDomain.CurrentDomain.GetAssemblies().First(assembly => assembly.GetName().Name == "Assembly-CSharp");
+                    types = assembly.GetTypes();
+                }
                 
                 foreach (var type in types)
                 {
-
-                    if (prepareMediatorsReflectionData && type.IsSealed && typeof(Mediator).IsAssignableFrom(type))
-                    {
-                        InjectionBinder.PrepareReflectionInfo(type);
-                        count++;
+                    if (!type.IsSealed)
                         continue;
-                    }
-
-                    if (prepareViewsReflectionData && type.IsSealed && typeof(IView).IsAssignableFrom(type))
-                    {
-                        InjectionBinder.PrepareReflectionInfo(type);
-                        count++;
-                        continue;
-                    }
+                    
+                    if (prepareMediatorsReflectionData && typeof(Mediator).IsAssignableFrom(type))
+                        InjectionReflector.Get(type);
+                    else if (prepareViewsReflectionData && typeof(IView).IsAssignableFrom(type))
+                        InjectionReflector.Get(type);
                 }
             }
 
+            var prepareCommandsReflectionInfo = (Context.Params.reflectionParams & ReflectionParams.PrepareCommandsReflectionInfoOnContextStart) == ReflectionParams.PrepareCommandsReflectionInfoOnContextStart;
+            if (prepareCommandsReflectionInfo)
+            {
+                CommandBinder.ForEachBinding(binding =>
+                {
+                    foreach (var commandType in binding.Commands)
+                        InjectionReflector.Get(commandType);
+                });
+            }
+            
+            var prepareBindingsReflectionInfo = (Context.Params.reflectionParams & ReflectionParams.PrepareBindingsReflectionInfoOnContextStart) == ReflectionParams.PrepareBindingsReflectionInfoOnContextStart;
+
             InjectionBinder.ForEachBinding(binding =>
             {
+                if (prepareBindingsReflectionInfo && binding.ToConstruct)
+                {
+                    Type type;
+                    if (binding.Value is Type value)
+                        type = value;
+                    else
+                        type = binding.Value.GetType();
+
+                    InjectionReflector.Get(type);    
+                }
+                
                 if (binding.ToConstructOnStart)
                     InjectionBinder.GetInstance(binding);
             });
         }
-        
+
         private void OnContextStarted(IContext context)
         {
             EventDispatcher.Dispatch(ContextEvent.Started);
@@ -124,7 +146,7 @@ namespace Build1.PostMVC.Core.MVCS
         {
             EventDispatcher.Dispatch(ContextEvent.Stopped);
         }
-        
+
         /*
          * Modules.
          */
