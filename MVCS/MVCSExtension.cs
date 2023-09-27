@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Build1.PostMVC.Core.Contexts;
 using Build1.PostMVC.Core.Extensions;
@@ -43,6 +44,7 @@ namespace Build1.PostMVC.Core.MVCS
 
             InjectionBinder.Bind(Context);
             InjectionBinder.Bind(EventDispatcher);
+            InjectionBinder.Bind(InjectionReflector);
             InjectionBinder.Bind(InjectionBinder);
             InjectionBinder.Bind(CommandBinder).ConstructValue();
             InjectionBinder.Bind(MediationBinder);
@@ -71,34 +73,50 @@ namespace Build1.PostMVC.Core.MVCS
 
         private void OnContextStarting(IContext context)
         {
-            var prepareMediatorsReflectionData = (Context.Params.mediationParams & MediationParams.PrepareMediatorsReflectionInfoOnContextStart) == MediationParams.PrepareMediatorsReflectionInfoOnContextStart;
-            var prepareViewsReflectionData = (Context.Params.mediationParams & MediationParams.PrepareViewsReflectionInfoOnContextStart) == MediationParams.PrepareViewsReflectionInfoOnContextStart;
-
+            var prepareMediatorsReflectionData = (Context.Params.reflectionParams & ReflectionParams.PrepareMediatorsReflectionInfoOnContextStart) == ReflectionParams.PrepareMediatorsReflectionInfoOnContextStart;
+            var prepareViewsReflectionData = (Context.Params.reflectionParams & ReflectionParams.PrepareViewsReflectionInfoOnContextStart) == ReflectionParams.PrepareViewsReflectionInfoOnContextStart;
+            
             if (prepareMediatorsReflectionData || prepareViewsReflectionData)
             {
-                var assembly = AppDomain.CurrentDomain.GetAssemblies().First(assembly => assembly.GetName().Name == "Assembly-CSharp");
-                var types = assembly.GetTypes();
+                IEnumerable<Type> types;
+
+                if (Context.Params.assemblyTypesGetter != null)
+                {
+                    types = Context.Params.assemblyTypesGetter.Invoke();
+                }
+                else
+                {
+                    var assembly = AppDomain.CurrentDomain.GetAssemblies().First(assembly => assembly.GetName().Name == "Assembly-CSharp");
+                    types = assembly.GetTypes();
+                }
+                
                 foreach (var type in types)
                 {
-                    if (prepareMediatorsReflectionData && type.IsSealed && typeof(Mediator).IsAssignableFrom(type))
-                    {
-                        InjectionReflector.Get(type);
+                    if (!type.IsSealed)
                         continue;
-                    }
-
-                    if (prepareViewsReflectionData && type.IsSealed && typeof(IView).IsAssignableFrom(type))
-                    {
+                    
+                    if (prepareMediatorsReflectionData && typeof(Mediator).IsAssignableFrom(type))
                         InjectionReflector.Get(type);
-                        continue;
-                    }
+                    else if (prepareViewsReflectionData && typeof(IView).IsAssignableFrom(type))
+                        InjectionReflector.Get(type);
                 }
             }
 
-            var prepareReflectionInfo = (Context.Params.injectionParams & InjectionParams.PrepareReflectionInfoOnContextStart) == InjectionParams.PrepareReflectionInfoOnContextStart;
+            var prepareCommandsReflectionInfo = (Context.Params.reflectionParams & ReflectionParams.PrepareCommandsReflectionInfoOnContextStart) == ReflectionParams.PrepareCommandsReflectionInfoOnContextStart;
+            if (prepareCommandsReflectionInfo)
+            {
+                CommandBinder.ForEachBinding(binding =>
+                {
+                    foreach (var commandType in binding.Commands)
+                        InjectionReflector.Get(commandType);
+                });
+            }
+            
+            var prepareBindingsReflectionInfo = (Context.Params.reflectionParams & ReflectionParams.PrepareBindingsReflectionInfoOnContextStart) == ReflectionParams.PrepareBindingsReflectionInfoOnContextStart;
 
             InjectionBinder.ForEachBinding(binding =>
             {
-                if (prepareReflectionInfo && binding.ToConstruct)
+                if (prepareBindingsReflectionInfo && binding.ToConstruct)
                 {
                     Type type;
                     if (binding.Value is Type value)

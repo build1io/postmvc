@@ -165,6 +165,17 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
         }
 
         /*
+         * Iteration Over Bindings.
+         */
+
+        public void ForEachBinding(Action<CommandBindingBase> handler)
+        {
+            foreach (var bindings in _bindings.Values)
+            foreach (CommandBindingBase binding in bindings)
+                handler.Invoke(binding);
+        }
+
+        /*
          * Sequences.
          */
 

@@ -5,6 +5,8 @@ namespace Build1.PostMVC.Core.MVCS.Injection
 {
     public interface IInjectionReflector
     {
+        event Func<Type, MVCSItemReflectionInfo, MVCSItemReflectionInfo> OnReflectionInfoPreparing;
+        
         MVCSItemReflectionInfo Get<T>();
         MVCSItemReflectionInfo Get(Type type);
         

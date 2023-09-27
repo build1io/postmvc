@@ -356,7 +356,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
          * Injections.
          */
 
-        private void Inject(object instance, IMVCSItemReflectionInfo info)
+        private void Inject(object instance, MVCSItemReflectionInfo info)
         {
             if (info.Injections == null)
                 return;
@@ -460,7 +460,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             }
         }
 
-        private void UnInject(object instance, IMVCSItemReflectionInfo info)
+        private void UnInject(object instance, MVCSItemReflectionInfo info)
         {
             if (info.Injections == null)
                 return;
@@ -509,21 +509,23 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
          * PostConstructs & PreDestroys.
          */
 
-        private void PostConstruct(object instance, IMVCSItemReflectionInfo info)
+        private void PostConstruct(object instance, MVCSItemReflectionInfo info)
         {
-            if (info.PostConstructors == null)
+            var infos = info.GetMethodInfos<PostConstruct>();
+            if (infos == null)
                 return;
             
-            foreach (var method in info.PostConstructors)
+            foreach (var method in infos)
                 method.Invoke(instance, null);
         }
 
-        private void PreDestroy(object instance, IMVCSItemReflectionInfo info)
+        private void PreDestroy(object instance, MVCSItemReflectionInfo info)
         {
-            if (info.PreDestroys == null)
+            var infos = info.GetMethodInfos<PreDestroy>();
+            if (infos == null)
                 return;
             
-            foreach (var method in info.PreDestroys)
+            foreach (var method in infos)
                 method.Invoke(instance, null);
         }
 

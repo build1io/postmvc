@@ -5,24 +5,34 @@ using Build1.PostMVC.Core.MVCS.Injection.Api;
 
 namespace Build1.PostMVC.Core.MVCS.Injection.Impl
 {
-    public class MVCSItemReflectionInfo : IMVCSItemReflectionInfo
+    public sealed class MVCSItemReflectionInfo
     {
-        public IList<IInjectionInfo> Injections       { get; }
-        public IList<MethodInfo>     PostConstructors { get; }
-        public IList<MethodInfo>     PreDestroys      { get; }
+        public IList<IInjectionInfo>                Injections  { get; private set; }
+        public IDictionary<Type, IList<MethodInfo>> MethodInfos { get; private set; }
 
-        internal MVCSItemReflectionInfo(IList<IInjectionInfo> injectionInfos, IList<MethodInfo> postConstructors, IList<MethodInfo> preDestroys)
+        public void SetInjectionInfos(IList<IInjectionInfo> infos)
         {
-            Injections = injectionInfos;
-            PostConstructors = postConstructors;
-            PreDestroys = preDestroys;
+            Injections = infos;
         }
 
+        public void AddMethodInfos<T>(IList<MethodInfo> infos) where T : Attribute
+        {
+            MethodInfos ??= new Dictionary<Type, IList<MethodInfo>>();
+            MethodInfos.Add(typeof(T), infos);
+        }
+
+        public IList<MethodInfo> GetMethodInfos<T>() where T : Attribute
+        {
+            if (MethodInfos != null && MethodInfos.TryGetValue(typeof(T), out var infos))
+                return infos;
+            return null;
+        }
+        
         /*
          * Static.
          */
-
-        internal static List<IInjectionInfo> GetInjects(Type type)
+        
+        public static List<IInjectionInfo> GetInjects(Type type)
         {
             var members = type.FindMembers(MemberTypes.Property,
                                            BindingFlags.FlattenHierarchy |
@@ -34,7 +44,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
                                            null);
 
             List<IInjectionInfo> properties = null;
-            
+
             foreach (var member in members)
             {
                 var injections = member.GetCustomAttributes(typeof(Inject), true);
@@ -48,7 +58,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             return properties;
         }
 
-        internal static List<MethodInfo> GetMethodList<T>(IReflect type) where T : Attribute
+        public static List<MethodInfo> GetMethodList<T>(IReflect type) where T : Attribute
         {
             var methods = type.GetMethods(BindingFlags.FlattenHierarchy |
                                           BindingFlags.Public |
@@ -57,12 +67,12 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
                                           BindingFlags.InvokeMethod);
 
             List<MethodInfo> methodList = null;
-            
+
             foreach (var method in methods)
             {
-                if (method.GetCustomAttributes(typeof(T), true).Length <= 0) 
+                if (method.GetCustomAttributes(typeof(T), true).Length <= 0)
                     continue;
-                
+
                 methodList ??= new List<MethodInfo>();
                 methodList.Add(method);
             }
