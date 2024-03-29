@@ -81,6 +81,11 @@ namespace Build1.PostMVC.Core
          * Static Workflow.
          */
 
+        public static T Get<T>() where T : class
+        {
+            return _rootContext.GetExtension<MVCSExtension>().InjectionBinder.GetInstance<T>();
+        }
+        
         public static T GetInstance<T>() where T : class
         {
             return _rootContext.GetExtension<MVCSExtension>().InjectionBinder.GetInstance<T>();
