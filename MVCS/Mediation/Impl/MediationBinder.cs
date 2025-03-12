@@ -9,7 +9,6 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
     {
         private readonly Dictionary<object, IMediationBinding> _bindings;
         private readonly Dictionary<object, IInjectionBinding> _bindingsCache;
-        private readonly Dictionary<IView, IMediator>          _mediators;
 
         private readonly MediationParams  _params;
         private readonly IInjectionBinder _injectionBinder; // Must be implemented like this to escape link un injection.
@@ -21,7 +20,6 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
 
             _bindings = new Dictionary<object, IMediationBinding>();
             _bindingsCache = new Dictionary<object, IInjectionBinding>();
-            _mediators = new Dictionary<IView, IMediator>();
         }
 
         /*
@@ -120,7 +118,7 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
 
         public void OnViewAdd(IView view)
         {
-            if (_mediators.ContainsKey(view))
+            if (view.Mediator != null)
                 throw new MediationException(MediationExceptionType.ViewInstanceAlreadyAdded, view.GetType().FullName);
 
             var type = view.GetType();
@@ -137,21 +135,14 @@ namespace Build1.PostMVC.Core.MVCS.Mediation.Impl
                 view.SetMediator(mediator);
                 InjectViewAndDependencies(binding, mediator, view, true);
             }
-
-            _mediators.Add(view, mediator);
         }
 
         public void OnViewRemove(IView view)
         {
-            if (!_mediators.TryGetValue(view, out var mediator))
-                throw new MediationException(MediationExceptionType.ViewInstanceNotFoundForRemoval, view.GetType().FullName);
-
-            if (mediator != null)
-                _injectionBinder.Destroy(mediator, true);
+            if (view.Mediator != null)
+                _injectionBinder.Destroy(view.Mediator, true);
 
             _injectionBinder.Destroy(view, true);
-
-            _mediators.Remove(view);
         }
 
         public void UpdateViewInjections(IView view)

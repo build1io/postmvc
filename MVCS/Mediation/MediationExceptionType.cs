@@ -18,7 +18,6 @@ namespace Build1.PostMVC.Core.MVCS.Mediation
 
         MediationBindingNotFound = 30,
 
-        ViewInstanceAlreadyAdded       = 40,
-        ViewInstanceNotFoundForRemoval = 41
+        ViewInstanceAlreadyAdded = 40
     }
 }
