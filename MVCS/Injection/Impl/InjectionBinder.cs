@@ -424,7 +424,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
                     if (binding.ToConstruct)
                     {
                         ConstructImpl(value, true);
-                        MarkConstructed(binding.Value);
+                        MarkConstructed(value);
                     }
 
                     return value;
