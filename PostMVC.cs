@@ -64,6 +64,7 @@ namespace Build1.PostMVC.Core
             for (var i = _contexts.Count - 1; i >= 0; i--)
                 _contexts[i].Stop();
 
+            _contexts = null;
             _rootContext = null;
         }
 
