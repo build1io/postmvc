@@ -468,13 +468,14 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             foreach (var injection in info.Injections)
             {
                 var type = injection.PropertyInfo.PropertyType;
-                var binding = GetBinding(type);
-                if (binding != null)
-                    DestroyInjectedValue(instance, binding, injection);
-
+                
                 // No need to reset value type values as it'll be consuming resources.
                 if (!type.IsValueType)
                     injection.PropertyInfo.SetValue(instance, null, null);
+                
+                var binding = GetBinding(type);
+                if (binding != null)
+                    DestroyInjectedValue(instance, binding, injection);
             }
         }
 
