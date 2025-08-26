@@ -145,12 +145,12 @@ namespace Build1.PostMVC.Core.MVCS.Commands
          * Other.
          */
 
-        public CommandBinding InParallel()                    { IsSequence = false;                  return this; }
-        public CommandBinding InSequence()                    { IsSequence = true;                   return this; }
-        public CommandBinding Once()                          { OnceBehavior = OnceBehavior.Default; return this; }
-        public CommandBinding Once(OnceBehavior behavior)     { OnceBehavior = behavior;             return this; }
-        public CommandBinding UnbindOnQuit()                  { IsUnbindOnQuit = true;               return this; }
-        public CommandBinding Out(out CommandBinding binding) { binding = this;                      return this; }
+        public CommandBinding InParallel()                        { IsSequence = false;                  return this; }
+        public CommandBinding InSequence()                        { IsSequence = true;                   return this; }
+        public CommandBinding Once()                              { OnceBehavior = OnceBehavior.Default; return this; }
+        public CommandBinding Once(OnceBehavior behavior)         { OnceBehavior = behavior;             return this; }
+        public CommandBinding UnbindOnQuit()                      { IsUnbindOnQuit = true;               return this; }
+        public CommandBinding Out(out CommandBindingBase binding) { binding = this;                      return this; }
     }
 
     public sealed class CommandBinding<T1> : CommandBindingBase
@@ -362,7 +362,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         public CommandBinding<T1> Once()                              { OnceBehavior = OnceBehavior.Default; return this; }
         public CommandBinding<T1> Once(OnceBehavior behavior)         { OnceBehavior = behavior;             return this; }
         public CommandBinding<T1> UnbindOnQuit()                      { IsUnbindOnQuit = true;               return this; }
-        public CommandBinding<T1> Out(out CommandBinding<T1> binding) { binding = this;                      return this; }
+        public CommandBinding<T1> Out(out CommandBindingBase binding) { binding = this;                      return this; }
     }
 
     public sealed class CommandBinding<T1, T2> : CommandBindingBase
@@ -624,7 +624,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         public CommandBinding<T1, T2> Once()                                  { OnceBehavior = OnceBehavior.Default; return this; }
         public CommandBinding<T1, T2> Once(OnceBehavior behavior)             { OnceBehavior = behavior;             return this; }
         public CommandBinding<T1, T2> UnbindOnQuit()                          { IsUnbindOnQuit = true;               return this; }
-        public CommandBinding<T1, T2> Out(out CommandBinding<T1, T2> binding) { binding = this;                      return this; }
+        public CommandBinding<T1, T2> Out(out CommandBindingBase binding)     { binding = this;                      return this; }
     }
 
     public sealed class CommandBinding<T1, T2, T3> : CommandBindingBase
@@ -896,7 +896,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
         public CommandBinding<T1, T2, T3> Once()                                      { OnceBehavior = OnceBehavior.Default; return this; }
         public CommandBinding<T1, T2, T3> Once(OnceBehavior behavior)                 { OnceBehavior = behavior;             return this; }
         public CommandBinding<T1, T2, T3> UnbindOnQuit()                              { IsUnbindOnQuit = true;               return this; }
-        public CommandBinding<T1, T2, T3> Out(out CommandBinding<T1, T2, T3> binding) { binding = this;                      return this; }
+        public CommandBinding<T1, T2, T3> Out(out CommandBindingBase binding)         { binding = this;                      return this; }
     }
 }
 
