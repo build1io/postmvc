@@ -4,6 +4,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands
     {
         AttemptToReleaseResolvedCommand = 1,
         AttemptToFailResolvedCommand    = 2,
-        AttemptToRetainResolvedCommand  = 3
+        AttemptToRetainResolvedCommand  = 3,
+        AttemptToBreakResolvedCommand   = 4
     }
 }

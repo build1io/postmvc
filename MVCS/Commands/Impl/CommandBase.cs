@@ -77,7 +77,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
         protected void Retain()
         {
             if (IsResolved)
-                throw new CommandException(CommandExceptionType.AttemptToRetainResolvedCommand);
+                throw new CommandException(CommandExceptionType.AttemptToRetainResolvedCommand, this);
 
             IsRetained = true;
         }
@@ -85,7 +85,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
         protected void Release()
         {
             if (IsResolved)
-                throw new CommandException(CommandExceptionType.AttemptToReleaseResolvedCommand);
+                throw new CommandException(CommandExceptionType.AttemptToReleaseResolvedCommand, this);
 
             IsResolved = true;
             IsRetained = false;
@@ -96,7 +96,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
         protected void Break()
         {
             if (IsResolved)
-                throw new CommandException(CommandExceptionType.AttemptToReleaseResolvedCommand);
+                throw new CommandException(CommandExceptionType.AttemptToBreakResolvedCommand, this);
 
             IsResolved = true;
             IsRetained = false;
@@ -108,7 +108,7 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
         protected void Fail(Exception exception)
         {
             if (IsResolved)
-                throw new CommandException(CommandExceptionType.AttemptToFailResolvedCommand);
+                throw new CommandException(CommandExceptionType.AttemptToFailResolvedCommand, this);
 
             IsResolved = true;
             Exception = exception;
