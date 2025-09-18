@@ -134,7 +134,7 @@ namespace Build1.PostMVC.Core.MVCS
 
         private void OnContextStarted(IContext context)
         {
-            EventDispatcher.Dispatch(ContextEvent.Started);
+            EventDispatcher.Dispatch(ContextEvent.Started, context);
         }
 
         private void OnContextQuitting(IContext context)
@@ -144,7 +144,7 @@ namespace Build1.PostMVC.Core.MVCS
 
         private void OnContextStopped(IContext context)
         {
-            EventDispatcher.Dispatch(ContextEvent.Stopped);
+            EventDispatcher.Dispatch(ContextEvent.Stopped, context);
         }
 
         /*
