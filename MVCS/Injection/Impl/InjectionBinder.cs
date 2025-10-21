@@ -469,13 +469,14 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             {
                 var type = injection.PropertyInfo.PropertyType;
                 
-                // No need to reset value type values as it'll be consuming resources.
-                if (!type.IsValueType)
-                    injection.PropertyInfo.SetValue(instance, null, null);
-                
                 var binding = GetBinding(type);
                 if (binding != null)
                     DestroyInjectedValue(instance, binding, injection);
+                
+                // No need to reset value type values as it'll be consuming resources.
+                // This must be last as injected values from providers will be reset and will not return to providers.
+                if (!type.IsValueType)
+                    injection.PropertyInfo.SetValue(instance, null, null);
             }
         }
 
