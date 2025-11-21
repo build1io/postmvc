@@ -71,6 +71,15 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
         internal abstract void InternalExecute(ICommandParams param, ICommandParams paramAdditional);
 
         /*
+         * Internal.
+         */
+
+        internal void RetainInternal()                  { Retain(); }
+        internal void ReleaseInternal()                 { Release(); }
+        internal void BreakInternal()                   { Break(); }
+        internal void FailInternal(Exception exception) { Fail(exception); }
+
+        /*
          * Protected.
          */
 
