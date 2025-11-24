@@ -127,6 +127,11 @@ namespace Build1.PostMVC.Core.MVCS.Commands.Impl
             _commandBinder.OnCommandFail(this, exception);
         }
 
+        protected EventHandleCommand ToHandle()
+        {
+            return new EventHandleCommand(this);
+        }
+
         /*
          * Dictionary Optimizations.
          */

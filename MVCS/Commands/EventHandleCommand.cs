@@ -1,7 +1,8 @@
 using System;
 using Build1.PostMVC.Core.MVCS.Commands.Impl;
+using Build1.PostMVC.Core.MVCS.Events;
 
-namespace Build1.PostMVC.Core.MVCS.Events.Impl
+namespace Build1.PostMVC.Core.MVCS.Commands
 {
     public sealed class EventHandleCommand : IEventHandleFull
     {
