@@ -421,6 +421,12 @@ namespace Build1.PostMVC.Core.MVCS.Commands
             AddCommand<TCommand, TCP1>(param01);
             return this;
         }
+        
+        public CommandBinding<T1, T2> To1<TCommand, TCP1>(Func<TCP1> param01) where TCommand : Command<TCP1>, new() 
+        {
+            AddCommand<TCommand, TCP1>(param01); 
+            return this; 
+        }
 
         /*
          * Params 2.
