@@ -25,7 +25,7 @@ namespace Build1.PostMVC.Core.Tests.Injection
         public void PostConstruct()
         {
             InjectionBinder.Bind<IInjectionProviderItem, InjectionProvider01, Inject>();
-            var instance = InjectionBinder.GetInstance<IInjectionProviderItem>();
+            var instance = InjectionBinder.Get<IInjectionProviderItem>();
 
             Assert.NotNull(instance);
             Assert.AreEqual(InjectionProvider01.Constructed, 1);
@@ -35,7 +35,7 @@ namespace Build1.PostMVC.Core.Tests.Injection
         public void PreDestroy()
         {
             InjectionBinder.Bind<IInjectionProviderItem, InjectionProvider01, Inject>();
-            var instance = InjectionBinder.GetInstance<IInjectionProviderItem>();
+            var instance = InjectionBinder.Get<IInjectionProviderItem>();
 
             InjectionBinder.Unbind<IInjectionProviderItem>();
 
@@ -56,7 +56,7 @@ namespace Build1.PostMVC.Core.Tests.Injection
         public void GetInstance()
         {
             InjectionBinder.Bind<IInjectionProviderItem, InjectionProvider01, Inject>();
-            Assert.NotNull(InjectionBinder.GetInstance<IInjectionProviderItem>());
+            Assert.NotNull(InjectionBinder.Get<IInjectionProviderItem>());
         }
 
         [Test]

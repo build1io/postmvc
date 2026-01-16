@@ -52,7 +52,7 @@ namespace Build1.PostMVC.Core.Tests.Injection
             Assert.IsNotNull(binding);
             Assert.IsNull(InjectionBinder.GetBinding<Controller>());
             Assert.AreEqual(binding, InjectionBinder.GetBinding<IController>());
-            Assert.AreEqual(controller, InjectionBinder.GetInstance<IController>());
+            Assert.AreEqual(controller, InjectionBinder.Get<IController>());
         }
         
         [Test]
@@ -63,7 +63,7 @@ namespace Build1.PostMVC.Core.Tests.Injection
             Assert.IsNotNull(binding);
             Assert.IsNull(InjectionBinder.GetBinding<Controller>());
             Assert.AreEqual(binding, InjectionBinder.GetBinding<IController>());
-            Assert.AreEqual(controller, InjectionBinder.GetInstance<IController>());
+            Assert.AreEqual(controller, InjectionBinder.Get<IController>());
         }
 
         [Test]
@@ -148,12 +148,12 @@ namespace Build1.PostMVC.Core.Tests.Injection
             var controller02 = new Controller();
             
             InjectionBinder.Bind<IController>(controller01);
-            Assert.AreEqual(controller01, InjectionBinder.GetInstance<IController>());
-            Assert.AreNotEqual(controller02, InjectionBinder.GetInstance<IController>());
+            Assert.AreEqual(controller01, InjectionBinder.Get<IController>());
+            Assert.AreNotEqual(controller02, InjectionBinder.Get<IController>());
             
             InjectionBinder.Rebind<IController>(controller02);
-            Assert.AreEqual(controller02, InjectionBinder.GetInstance<IController>());
-            Assert.AreNotEqual(controller01, InjectionBinder.GetInstance<IController>());
+            Assert.AreEqual(controller02, InjectionBinder.Get<IController>());
+            Assert.AreNotEqual(controller01, InjectionBinder.Get<IController>());
         }
         
         [Test]
@@ -163,12 +163,12 @@ namespace Build1.PostMVC.Core.Tests.Injection
             var controller02 = new Controller();
             
             InjectionBinder.Bind(typeof(IController), controller01);
-            Assert.AreEqual(controller01, InjectionBinder.GetInstance<IController>());
-            Assert.AreNotEqual(controller02, InjectionBinder.GetInstance<IController>());
+            Assert.AreEqual(controller01, InjectionBinder.Get<IController>());
+            Assert.AreNotEqual(controller02, InjectionBinder.Get<IController>());
             
             InjectionBinder.Rebind(typeof(IController), controller02);
-            Assert.AreEqual(controller02, InjectionBinder.GetInstance<IController>());
-            Assert.AreNotEqual(controller01, InjectionBinder.GetInstance<IController>());
+            Assert.AreEqual(controller02, InjectionBinder.Get<IController>());
+            Assert.AreNotEqual(controller01, InjectionBinder.Get<IController>());
         }
 
         [Test]
@@ -177,13 +177,13 @@ namespace Build1.PostMVC.Core.Tests.Injection
             InjectionBinder.Bind<IInjectionProviderItem, InjectionProvider01, Inject>();
             InjectionBinder.Bind<InjectionProviderWrapper>().AsFactory();
 
-            var wrapper01 = InjectionBinder.GetInstance<InjectionProviderWrapper>();
+            var wrapper01 = InjectionBinder.Get<InjectionProviderWrapper>();
 
             Assert.IsTrue(wrapper01.Item is InjectionProviderItem01);
             Assert.IsFalse(wrapper01.Item is InjectionProviderItem02);
             
             InjectionBinder.Rebind<IInjectionProviderItem, InjectionProvider02, Inject>();
-            var wrapper02 = InjectionBinder.GetInstance<InjectionProviderWrapper>();
+            var wrapper02 = InjectionBinder.Get<InjectionProviderWrapper>();
             
             Assert.IsTrue(wrapper02.Item is InjectionProviderItem02);
             Assert.IsFalse(wrapper02.Item is InjectionProviderItem01);

@@ -27,10 +27,10 @@ namespace Build1.PostMVC.Core.Tests.Injection
         public void DefaultInjectionBehavior()
         {
             InjectionBinder.Bind<Controller>();
-            Assert.True(InjectionBinder.GetInstance<Controller>() == InjectionBinder.GetInstance<Controller>());
+            Assert.True(InjectionBinder.Get<Controller>() == InjectionBinder.Get<Controller>());
             
             InjectionBinder.Rebind<IController>().To<Controller>();
-            Assert.True(InjectionBinder.GetInstance<IController>() == InjectionBinder.GetInstance<IController>());
+            Assert.True(InjectionBinder.Get<IController>() == InjectionBinder.Get<IController>());
         }
         
         /*
@@ -41,10 +41,10 @@ namespace Build1.PostMVC.Core.Tests.Injection
         public void FactoryInjection()
         {
             InjectionBinder.Bind<Controller>().AsFactory();
-            Assert.True(InjectionBinder.GetInstance<Controller>() != InjectionBinder.GetInstance<Controller>());
+            Assert.True(InjectionBinder.Get<Controller>() != InjectionBinder.Get<Controller>());
             
             InjectionBinder.Rebind<IController, Controller>().AsFactory();
-            Assert.True(InjectionBinder.GetInstance<IController>() != InjectionBinder.GetInstance<IController>());
+            Assert.True(InjectionBinder.Get<IController>() != InjectionBinder.Get<IController>());
         }
         
         /*
@@ -55,10 +55,10 @@ namespace Build1.PostMVC.Core.Tests.Injection
         public void SingletonInjection()
         {
             InjectionBinder.Bind<Controller>().AsSingleton();
-            Assert.True(InjectionBinder.GetInstance<Controller>() == InjectionBinder.GetInstance<Controller>());
+            Assert.True(InjectionBinder.Get<Controller>() == InjectionBinder.Get<Controller>());
             
             InjectionBinder.Rebind<IController, Controller>().AsSingleton();
-            Assert.True(InjectionBinder.GetInstance<IController>() == InjectionBinder.GetInstance<IController>());
+            Assert.True(InjectionBinder.Get<IController>() == InjectionBinder.Get<IController>());
         }
         
         /*
@@ -69,10 +69,10 @@ namespace Build1.PostMVC.Core.Tests.Injection
         public void InterfaceConstruction()
         {
             InjectionBinder.Bind<IController>().AsFactory();
-            Assert.That(() => InjectionBinder.GetInstance<IController>(), Throws.TypeOf<InjectionException>());
+            Assert.That(() => InjectionBinder.Get<IController>(), Throws.TypeOf<InjectionException>());
             
             InjectionBinder.Rebind<IController>().AsSingleton();
-            Assert.That(() => InjectionBinder.GetInstance<IController>(), Throws.TypeOf<InjectionException>());
+            Assert.That(() => InjectionBinder.Get<IController>(), Throws.TypeOf<InjectionException>());
         }
         
         /*
@@ -83,59 +83,59 @@ namespace Build1.PostMVC.Core.Tests.Injection
         public void PrimitiveInjection()
         {
             InjectionBinder.Bind<int>();
-            Assert.AreEqual(InjectionBinder.GetInstance<int>(), InjectionBinder.GetInstance<int>());
+            Assert.AreEqual(InjectionBinder.Get<int>(), InjectionBinder.Get<int>());
             
             InjectionBinder.Rebind<int>().AsFactory();
-            Assert.AreEqual(InjectionBinder.GetInstance<int>(), InjectionBinder.GetInstance<int>());
+            Assert.AreEqual(InjectionBinder.Get<int>(), InjectionBinder.Get<int>());
             
             InjectionBinder.Rebind<int>().AsSingleton();
-            Assert.AreEqual(InjectionBinder.GetInstance<int>(), InjectionBinder.GetInstance<int>());
+            Assert.AreEqual(InjectionBinder.Get<int>(), InjectionBinder.Get<int>());
         }
         
         [Test]
         public void StringInjection()
         {
             InjectionBinder.Bind<string>();
-            Assert.That(() => InjectionBinder.GetInstance<string>(), Throws.TypeOf<InjectionException>());
+            Assert.That(() => InjectionBinder.Get<string>(), Throws.TypeOf<InjectionException>());
             
             InjectionBinder.Rebind<string>().AsFactory();
-            Assert.That(() => InjectionBinder.GetInstance<string>(), Throws.TypeOf<InjectionException>());
+            Assert.That(() => InjectionBinder.Get<string>(), Throws.TypeOf<InjectionException>());
             
             InjectionBinder.Rebind<string>().AsSingleton();
-            Assert.That(() => InjectionBinder.GetInstance<string>(), Throws.TypeOf<InjectionException>());
+            Assert.That(() => InjectionBinder.Get<string>(), Throws.TypeOf<InjectionException>());
         }
         
         [Test]
         public void EnumInjection()
         {
             InjectionBinder.Bind<InjectionEnum>();
-            Assert.AreEqual(InjectionBinder.GetInstance<InjectionEnum>(), InjectionEnum.Value01);
+            Assert.AreEqual(InjectionBinder.Get<InjectionEnum>(), InjectionEnum.Value01);
             
             InjectionBinder.Rebind<InjectionEnum>().AsFactory();
-            Assert.AreEqual(InjectionBinder.GetInstance<InjectionEnum>(), InjectionEnum.Value01);
+            Assert.AreEqual(InjectionBinder.Get<InjectionEnum>(), InjectionEnum.Value01);
             
             InjectionBinder.Rebind<InjectionEnum>().AsSingleton();
-            Assert.AreEqual(InjectionBinder.GetInstance<InjectionEnum>(), InjectionEnum.Value01);
+            Assert.AreEqual(InjectionBinder.Get<InjectionEnum>(), InjectionEnum.Value01);
         }
         
         [Test]
         public void StructInjection()
         {
             InjectionBinder.Bind<Struct>();
-            Assert.AreEqual(InjectionBinder.GetInstance<Struct>(), InjectionBinder.GetInstance<Struct>());
+            Assert.AreEqual(InjectionBinder.Get<Struct>(), InjectionBinder.Get<Struct>());
             
             InjectionBinder.Rebind<Struct>().AsFactory();
-            Assert.AreEqual(InjectionBinder.GetInstance<Struct>(), InjectionBinder.GetInstance<Struct>());
+            Assert.AreEqual(InjectionBinder.Get<Struct>(), InjectionBinder.Get<Struct>());
             
             InjectionBinder.Rebind<Struct>().AsSingleton();
-            Assert.AreEqual(InjectionBinder.GetInstance<Struct>(), InjectionBinder.GetInstance<Struct>());
+            Assert.AreEqual(InjectionBinder.Get<Struct>(), InjectionBinder.Get<Struct>());
         }
         
         [Test]
         public void StructConstruction()
         {
             InjectionBinder.Bind<Struct>();
-            InjectionBinder.GetInstance<Struct>();
+            InjectionBinder.Get<Struct>();
             Assert.AreEqual(Struct.constructedTimes, 1);
         }
     }

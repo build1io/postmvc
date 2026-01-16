@@ -28,10 +28,10 @@ namespace Build1.PostMVC.Core.Tests.Injection
             var controller = new Controller();
             
             InjectionBinder.Bind(controller);
-            Assert.AreEqual(controller, InjectionBinder.GetInstance<Controller>());
+            Assert.AreEqual(controller, InjectionBinder.Get<Controller>());
             
             InjectionBinder.Rebind<Controller>().ToValue(controller);
-            Assert.AreEqual(controller, InjectionBinder.GetInstance<Controller>());
+            Assert.AreEqual(controller, InjectionBinder.Get<Controller>());
         }
         
         [Test]
@@ -40,10 +40,10 @@ namespace Build1.PostMVC.Core.Tests.Injection
             var controller = new Controller();
             
             InjectionBinder.Bind<IController>(controller);
-            Assert.AreEqual(controller, InjectionBinder.GetInstance<IController>());
+            Assert.AreEqual(controller, InjectionBinder.Get<IController>());
             
             InjectionBinder.Rebind<IController>().ToValue(controller);
-            Assert.AreEqual(controller, InjectionBinder.GetInstance<IController>());
+            Assert.AreEqual(controller, InjectionBinder.Get<IController>());
         }
 
         /*
@@ -56,11 +56,11 @@ namespace Build1.PostMVC.Core.Tests.Injection
             var controller = new Controller();
             
             InjectionBinder.Bind(controller);
-            InjectionBinder.GetInstance<Controller>();
+            InjectionBinder.Get<Controller>();
             Assert.AreEqual(Controller.constructedTimes, 0);
             
             InjectionBinder.Rebind(controller).ConstructValue();
-            InjectionBinder.GetInstance<Controller>();
+            InjectionBinder.Get<Controller>();
             Assert.AreEqual(Controller.constructedTimes, 1);
         }
 
@@ -70,11 +70,11 @@ namespace Build1.PostMVC.Core.Tests.Injection
             var controller = new Controller();
             
             InjectionBinder.Bind<IController>(controller);
-            InjectionBinder.GetInstance<IController>();
+            InjectionBinder.Get<IController>();
             Assert.AreEqual(Controller.constructedTimes, 0);
             
             InjectionBinder.Rebind<IController>(controller).ConstructValue();
-            InjectionBinder.GetInstance<IController>();
+            InjectionBinder.Get<IController>();
             Assert.AreEqual(Controller.constructedTimes, 1);
         }
         
@@ -86,21 +86,21 @@ namespace Build1.PostMVC.Core.Tests.Injection
         public void PrimitiveInjection()
         {
             InjectionBinder.Bind(10);
-            Assert.AreEqual(InjectionBinder.GetInstance<int>(), 10);
+            Assert.AreEqual(InjectionBinder.Get<int>(), 10);
         }
         
         [Test]
         public void StringInjection()
         {
             InjectionBinder.Bind("12345");
-            Assert.AreEqual(InjectionBinder.GetInstance<string>(), "12345");
+            Assert.AreEqual(InjectionBinder.Get<string>(), "12345");
         }
         
         [Test]
         public void EnumInjection()
         {
             InjectionBinder.Bind(InjectionEnum.Value02);
-            Assert.AreEqual(InjectionBinder.GetInstance<InjectionEnum>(), InjectionEnum.Value02);
+            Assert.AreEqual(InjectionBinder.Get<InjectionEnum>(), InjectionEnum.Value02);
         }
         
         [Test]
@@ -108,7 +108,7 @@ namespace Build1.PostMVC.Core.Tests.Injection
         {
             var str = new Struct(); 
             InjectionBinder.Bind(str);
-            Assert.AreEqual(InjectionBinder.GetInstance<Struct>(), str);
+            Assert.AreEqual(InjectionBinder.Get<Struct>(), str);
         }
         
         /*
@@ -119,7 +119,7 @@ namespace Build1.PostMVC.Core.Tests.Injection
         public void FalseConstruction01()
         {
             InjectionBinder.Bind<IController>().To(new Controller());
-            InjectionBinder.GetInstance<IController>();
+            InjectionBinder.Get<IController>();
             Assert.AreEqual(0, Controller.constructedTimes);
         }
         
@@ -127,7 +127,7 @@ namespace Build1.PostMVC.Core.Tests.Injection
         public void FalseConstruction02()
         {
             InjectionBinder.Bind<IController>().ToValue(new Controller());
-            InjectionBinder.GetInstance<IController>();
+            InjectionBinder.Get<IController>();
             Assert.AreEqual(0, Controller.constructedTimes);
         }
         
@@ -135,7 +135,7 @@ namespace Build1.PostMVC.Core.Tests.Injection
         public void FalseConstruction03()
         {
             InjectionBinder.Bind<IController>(new Controller());
-            InjectionBinder.GetInstance<IController>();
+            InjectionBinder.Get<IController>();
             Assert.AreEqual(0, Controller.constructedTimes);
         }
     }

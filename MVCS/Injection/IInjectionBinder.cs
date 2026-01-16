@@ -36,14 +36,13 @@ namespace Build1.PostMVC.Core.MVCS.Injection
 
         void ForEachBinding(Action<IInjectionBinding> handler);
 
-        T Get<T>();
-        T GetInstance<T>();
-
+        T      Get<T>();
         object Get(Type key);
-        object GetInstance(Type key);
-
         object Get(IInjectionBinding binding);
-        object GetInstance(IInjectionBinding binding);
+        
+        bool TryGet<T>(out T instance);
+        bool TryGet(Type key, out object instance);
+        bool TryGet(IInjectionBinding binding, out object instance);
 
         T      Construct<T>(bool triggerPostConstructors) where T : new();
         T      Construct<T>(T instance, bool triggerPostConstructors);

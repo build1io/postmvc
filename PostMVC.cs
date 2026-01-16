@@ -84,12 +84,12 @@ namespace Build1.PostMVC.Core
 
         public static T Get<T>() where T : class
         {
-            return _rootContext.GetExtension<MVCSExtension>().InjectionBinder.GetInstance<T>();
+            return _rootContext.GetExtension<MVCSExtension>().InjectionBinder.Get<T>();
         }
         
         public static T GetInstance<T>() where T : class
         {
-            return _rootContext.GetExtension<MVCSExtension>().InjectionBinder.GetInstance<T>();
+            return _rootContext.GetExtension<MVCSExtension>().InjectionBinder.Get<T>();
         }
 
         public static T Construct<T>(bool triggerPostConstructors) where T : class, new()

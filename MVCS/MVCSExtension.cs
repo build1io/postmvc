@@ -128,7 +128,7 @@ namespace Build1.PostMVC.Core.MVCS
                 }
                 
                 if (binding.ToConstructOnStart)
-                    InjectionBinder.GetInstance(binding);
+                    InjectionBinder.Get(binding);
             });
         }
 

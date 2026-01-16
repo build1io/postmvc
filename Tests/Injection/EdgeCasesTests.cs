@@ -26,10 +26,10 @@ namespace Build1.PostMVC.Core.Tests.Injection
             InjectionBinder.Bind<IController>().ToValue(controller);
             Assert.AreEqual(0, Controller.constructedTimes);
 
-            InjectionBinder.GetInstance<IController>();
+            InjectionBinder.Get<IController>();
             Assert.AreEqual(0, Controller.constructedTimes);
 
-            InjectionBinder.GetInstance<IController>();
+            InjectionBinder.Get<IController>();
             Assert.AreEqual(0, Controller.constructedTimes);
         }
 
@@ -42,7 +42,7 @@ namespace Build1.PostMVC.Core.Tests.Injection
             InjectionBinder.Bind<IController>().ToValue(instance);
             Assert.AreEqual(1, Controller.constructedTimes);
 
-            InjectionBinder.GetInstance<IController>();
+            InjectionBinder.Get<IController>();
             Assert.AreEqual(1, Controller.constructedTimes);
         }
 
@@ -52,10 +52,10 @@ namespace Build1.PostMVC.Core.Tests.Injection
             InjectionBinder.Bind<IController, Controller>();
             Assert.AreEqual(Controller.constructedTimes, 0);
 
-            var instance = InjectionBinder.GetInstance<IController>();
+            var instance = InjectionBinder.Get<IController>();
             Assert.AreEqual(1, Controller.constructedTimes);
 
-            instance = InjectionBinder.GetInstance<IController>();
+            instance = InjectionBinder.Get<IController>();
             Assert.AreEqual(1, Controller.constructedTimes);
 
             instance = InjectionBinder.Construct(instance, true);
@@ -68,11 +68,11 @@ namespace Build1.PostMVC.Core.Tests.Injection
             InjectionBinder.Bind<IController, Controller>();
             Assert.AreEqual(Controller.constructedTimes, 0);
 
-            var instance = InjectionBinder.GetInstance<IController>();
+            var instance = InjectionBinder.Get<IController>();
             Assert.AreEqual(1, Controller.constructedTimes);
 
             InjectionBinder.Bind<Controller>().ToValue(instance);
-            InjectionBinder.GetInstance<Controller>();
+            InjectionBinder.Get<Controller>();
             Assert.AreEqual(1, Controller.constructedTimes);
         }
     }

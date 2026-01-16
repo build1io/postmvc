@@ -17,7 +17,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
         public InjectionBinder() : this(new InjectionReflector())
         {
         }
-        
+
         public InjectionBinder(IInjectionReflector reflector)
         {
             _bindings = new Dictionary<Type, IInjectionBinding>();
@@ -231,14 +231,13 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
          * Instances.
          */
 
-        public T Get<T>()         { return GetInstance<T>(GetBinding<T>(), this, null); }
-        public T GetInstance<T>() { return GetInstance<T>(GetBinding<T>(), this, null); }
+        public T      Get<T>()                       { return GetInstance<T>(GetBinding<T>(), this, null); }
+        public object Get(Type key)                  { return GetInstance(GetBinding(key), this, null); }
+        public object Get(IInjectionBinding binding) { return GetInstance(binding, this, null); }
 
-        public object Get(Type key)         { return GetInstance(GetBinding(key), this, null); }
-        public object GetInstance(Type key) { return GetInstance(GetBinding(key), this, null); }
-
-        public object Get(IInjectionBinding binding)         { return GetInstance(binding, this, null); }
-        public object GetInstance(IInjectionBinding binding) { return GetInstance(binding, this, null); }
+        public bool TryGet<T>(out T instance)                              { return TryGetInstance(GetBinding<T>(), this, null, out instance); }
+        public bool TryGet(Type key, out object instance)                  { return TryGetInstance(GetBinding(key), this, null, out instance); }
+        public bool TryGet(IInjectionBinding binding, out object instance) { return TryGetInstance(binding, this, null, out instance); }
 
         private object GetInstance(IInjectionBinding binding, object callerInstance, IInjectionInfo injectionInfo)
         {
@@ -249,7 +248,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             DecrementDependencyCounter(binding);
             return instance;
         }
-        
+
         private T GetInstance<T>(IInjectionBinding binding, object callerInstance, IInjectionInfo injectionInfo)
         {
             if (binding == null)
@@ -258,6 +257,34 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             var instance = GetInjectionValue(callerInstance, binding, injectionInfo);
             DecrementDependencyCounter(binding);
             return (T)instance;
+        }
+
+        private bool TryGetInstance(IInjectionBinding binding, object callerInstance, IInjectionInfo injectionInfo, out object instance)
+        {
+            if (binding == null)
+            {
+                instance = null;
+                return false;
+            }
+            
+            IncrementDependencyCounter(binding, callerInstance);
+            instance = GetInjectionValue(callerInstance, binding, injectionInfo);
+            DecrementDependencyCounter(binding);
+            return instance != null;
+        }
+
+        private bool TryGetInstance<T>(IInjectionBinding binding, object callerInstance, IInjectionInfo injectionInfo, out T instance)
+        {
+            if (binding == null)
+            {
+                instance = default;
+                return false;
+            }
+                
+            IncrementDependencyCounter(binding, callerInstance);
+            instance = (T)GetInjectionValue(callerInstance, binding, injectionInfo);
+            DecrementDependencyCounter(binding);
+            return instance != null;
         }
 
         /*
@@ -360,7 +387,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
         {
             if (info.Injections == null)
                 return;
-            
+
             foreach (var injection in info.Injections)
             {
                 var binding = GetBinding(injection.PropertyInfo.PropertyType);
@@ -464,15 +491,15 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
         {
             if (info.Injections == null)
                 return;
-            
+
             foreach (var injection in info.Injections)
             {
                 var type = injection.PropertyInfo.PropertyType;
-                
+
                 var binding = GetBinding(type);
                 if (binding != null)
                     DestroyInjectedValue(instance, binding, injection);
-                
+
                 // No need to reset value type values as it'll be consuming resources.
                 // This must be last as injected values from providers will be reset and will not return to providers.
                 if (!type.IsValueType)
@@ -516,7 +543,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             var infos = info.GetMethodInfos<PostConstruct>();
             if (infos == null)
                 return;
-            
+
             foreach (var method in infos)
                 method.Invoke(instance, null);
         }
@@ -526,7 +553,7 @@ namespace Build1.PostMVC.Core.MVCS.Injection.Impl
             var infos = info.GetMethodInfos<PreDestroy>();
             if (infos == null)
                 return;
-            
+
             foreach (var method in infos)
                 method.Invoke(instance, null);
         }
